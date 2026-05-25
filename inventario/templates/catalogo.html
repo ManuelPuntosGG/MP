@@ -1,122 +1,93 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo | MP Tech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        /* NUEVA PALETA DE COLORES: Tonos Rojos Tecnológicos */
-        :root { 
-            --primario: #1a0b0b;       /* Negro carbón con un ligero matiz rojo oscuro */
-            --acento: #dc2626;         /* Rojo brillante tecnológico */
-            --fondo: #fbfbfa;          /* Fondo claro limpio */
-            --texto: #3f3f46;          /* Texto gris oscuro neutro */
-            --verde-precio: #10b981;   /* El precio se mantiene verde por psicología de compra */
-        }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--fondo); color: var(--texto); }
+{% extends 'base.html' %}
 
-        header { background-color: var(--primario); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--acento); }
-        header a { color: white; text-decoration: none; font-size: 1.5rem; font-weight: 800; }
-        .nav-links a { background-color: rgba(255,255,255,0.1); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 1rem; transition: 0.3s; }
-        .nav-links a:hover { background-color: var(--acento); }
+{% block title %}Catálogo | MP Tech{% endblock %}
 
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 5%; }
-        .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 2rem; }
+{% block extra_css %}
+<style>
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 5%; }
+    .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 2rem; }
 
-        .catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-        .tarjeta { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; display: flex; flex-direction: column; border: 1px solid #f4f4f5; }
-        .tarjeta:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(220, 38, 38, 0.1); }
-        
-        /* SOLUCIÓN: Formato 1:1 Cuadrado Perfecto utilizando CSS Moderno */
-        .contenedor-imagen { 
-            width: 100%; 
-            aspect-ratio: 1 / 1; 
-            overflow: hidden; 
-            background: #f4f4f5; 
-        }
-        .contenedor-imagen img { width: 100%; height: 100%; object-fit: cover; }
-        .imagen-placeholder { height: 100%; display: flex; align-items: center; justify-content: center; color: #a1a1aa; font-weight: 600; }
-        
-        .tarjeta-contenido { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .tarjeta-categoria { font-size: 0.75rem; color: var(--acento); font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px; }
-        .tarjeta h2 { font-size: 1.2rem; color: var(--primario); margin-bottom: 0.5rem; }
-        .tarjeta p.desc { font-size: 0.9rem; color: #71717a; margin-bottom: 1rem; flex-grow: 1; }
-        .tarjeta-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f4f4f5; padding-top: 1rem; }
-        .precio { color: var(--verde-precio); font-weight: 800; font-size: 1.4rem; }
-        .stock { font-size: 0.85rem; background: #f4f4f5; padding: 4px 8px; border-radius: 4px; font-weight: 600; color: #18181b; }
-
-        /* El botón de WhatsApp se mantiene verde por convención de la app */
-        .whatsapp-btn { position: fixed; bottom: 20px; right: 20px; background: #25D366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 10px rgba(37,211,102,0.4); z-index: 100; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <a href="{% url 'inicio' %}">MP Tech</a>
-        <nav class="nav-links">
-            <a href="{% url 'rastrear_ticket' %}">🔍 Rastrear Reparación</a>
-        </nav>
-    </header>
+    .catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .tarjeta { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; display: flex; flex-direction: column; border: 1px solid #f4f4f5; }
+    .tarjeta:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(220, 38, 38, 0.1); }
     
-    <div class="container">
-        <h2 class="titulo-seccion">Componentes y Repuestos</h2>
-        
-        <div class="catalogo">
-            {% for producto in page_obj %}
-                <div class="tarjeta">
-                    <div class="contenedor-imagen">
-                        {% if producto.imagen %}
-                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
-                        {% else %}
-                            <div class="imagen-placeholder"><span>Sin imagen</span></div>
-                        {% endif %}
-                    </div>
+    .contenedor-imagen { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f4f4f5; }
+    .contenedor-imagen img { width: 100%; height: 100%; object-fit: cover; }
+    .imagen-placeholder { height: 100%; display: flex; align-items: center; justify-content: center; color: #a1a1aa; font-weight: 600; }
+    
+    .tarjeta-contenido { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+    .tarjeta-categoria { font-size: 0.75rem; color: var(--acento); font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+    .tarjeta h2 { font-size: 1.2rem; color: var(--primario); margin-bottom: 0.5rem; }
+    .tarjeta p.desc { font-size: 0.9rem; color: #71717a; margin-bottom: 1rem; flex-grow: 1; }
+    
+    .tarjeta-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f4f4f5; padding-top: 1rem; flex-direction: column; gap: 10px; }
+    .info-precio { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+    .precio { color: var(--verde-precio); font-weight: 800; font-size: 1.4rem; }
+    .stock { font-size: 0.85rem; background: #f4f4f5; padding: 4px 8px; border-radius: 4px; font-weight: 600; color: #18181b; }
+    
+    .btn-comprar { background: var(--acento); color: white; text-align: center; padding: 8px; border-radius: 6px; text-decoration: none; font-weight: 600; width: 100%; transition: background 0.2s; }
+    .btn-comprar:hover { background: #b91c1c; }
+</style>
+{% endblock %}
 
-                    <div class="tarjeta-contenido">
-                        <span class="tarjeta-categoria">{{ producto.categoria.nombre }}</span>
-                        <h2>{{ producto.nombre }}</h2>
-                        <p class="desc">{{ producto.descripcion|truncatewords:15 }}</p>
-                        
-                        <div class="tarjeta-footer">
+{% block content %}
+<div class="container">
+    <h2 class="titulo-seccion">Componentes y Repuestos</h2>
+    
+    <div class="catalogo">
+        {% for producto in page_obj %}
+            <div class="tarjeta">
+                <div class="contenedor-imagen">
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                    {% else %}
+                        <div class="imagen-placeholder"><span>Sin imagen</span></div>
+                    {% endif %}
+                </div>
+
+                <div class="tarjeta-contenido">
+                    <span class="tarjeta-categoria">{{ producto.categoria.nombre }}</span>
+                    <h2>{{ producto.nombre }}</h2>
+                    <p class="desc">{{ producto.descripcion|truncatewords:15 }}</p>
+                    
+                    <div class="tarjeta-footer">
+                        <div class="info-precio">
                             <span class="precio">${{ producto.precio }}</span>
                             <span class="stock">Stock: {{ producto.stock }}</span>
                         </div>
+                        <a href="https://wa.me/584245022292?text=Hola,%20me%20interesa%20el%20producto:%20{{ producto.nombre|urlencode }}" target="_blank" class="btn-comprar">
+                            Me interesa
+                        </a>
                     </div>
                 </div>
-            {% empty %}
-                <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #a1a1aa;">
-                    <h3>No hay componentes registrados en este momento.</h3>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- Paginación -->
-        {% if page_obj.has_other_pages %}
-        <nav style="margin-top:1.5rem; text-align:center;">
-            <ul style="list-style:none; display:inline-flex; gap:8px; padding:0;">
-                {% if page_obj.has_previous %}
-                    <li><a href="?page={{ page_obj.previous_page_number }}">« Prev</a></li>
-                {% endif %}
-                {% for num in page_obj.paginator.page_range %}
-                    {% if num == page_obj.number %}
-                        <li><strong>{{ num }}</strong></li>
-                    {% else %}
-                        <li><a href="?page={{ num }}">{{ num }}</a></li>
-                    {% endif %}
-                {% endfor %}
-                {% if page_obj.has_next %}
-                    <li><a href="?page={{ page_obj.next_page_number }}">Next »</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-        </div>
+            </div>
+        {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #a1a1aa;">
+                <h3>No hay componentes registrados en este momento.</h3>
+            </div>
+        {% endfor %}
     </div>
 
-    <a href="https://wa.me/584245022292" class="whatsapp-btn" target="_blank">💬 Contactar</a>
-
-</body>
-</html>
+    {% if page_obj.has_other_pages %}
+    <nav style="margin-top:2.5rem; text-align:center;">
+        <ul style="list-style:none; display:inline-flex; gap:8px; padding:0;">
+            {% if page_obj.has_previous %}
+                <li><a href="?page={{ page_obj.previous_page_number }}" style="padding: 8px 12px; background: white; border: 1px solid #e4e4e7; border-radius: 6px; text-decoration: none; color: var(--texto);">« Prev</a></li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                    <li><strong style="padding: 8px 12px; background: var(--acento); color: white; border-radius: 6px;">{{ num }}</strong></li>
+                {% else %}
+                    <li><a href="?page={{ num }}" style="padding: 8px 12px; background: white; border: 1px solid #e4e4e7; border-radius: 6px; text-decoration: none; color: var(--texto);">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}" style="padding: 8px 12px; background: white; border: 1px solid #e4e4e7; border-radius: 6px; text-decoration: none; color: var(--texto);">Next »</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

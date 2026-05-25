@@ -1,265 +1,79 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MP Tech | Especialistas en Computación y Servicio Técnico</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primario: #1a0b0b;
-            --acento: #dc2626;
-            --fondo: #fbfbfa;
-            --texto: #3f3f46;
-            --blanco: #ffffff;
-        }
+{% block title %}MP Tech | Especialistas en Computación y Servicio Técnico{% endblock %}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(rgba(26, 11, 11, 0.85), rgba(26, 11, 11, 0.85)), url('https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
+        color: var(--blanco);
+        text-align: center;
+        padding: 100px 5%;
+    }
 
-        body {
-            background-color: var(--fondo);
-            color: var(--texto);
-            line-height: 1.6;
-        }
+    .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; }
+    .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 40px auto; color: #e4e4e7; }
+    
+    .botones-hero { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .btn { padding: 15px 30px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s, background 0.2s; }
+    .btn-primario { background: var(--acento); color: var(--blanco); }
+    .btn-primario:hover { transform: translateY(-3px); background: #b91c1c; }
+    .btn-secundario { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--blanco); color: var(--blanco); }
+    .btn-secundario:hover { background: var(--blanco); color: var(--primario); transform: translateY(-3px); }
 
-        header {
-            background-color: var(--primario);
-            padding: 1rem 5%;
-            border-bottom: 2px solid var(--acento);
-        }
+    .servicios { padding: 80px 5%; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+    .card-servicio { background: var(--blanco); padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03); border: 1px solid #f4f4f5; }
+    .card-servicio h3 { color: var(--primario); font-size: 1.5rem; margin-bottom: 15px; border-bottom: 2px solid var(--acento); display: inline-block; padding-bottom: 5px; }
 
-        .logo-nav {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--blanco);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .ubicacion { background: var(--blanco); padding: 80px 5%; border-top: 1px solid #e4e4e7; }
+    .ubicacion-container { max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+    .ubicacion-info { flex: 1; min-width: 300px; }
+    .ubicacion-info h2 { font-size: 2.2rem; color: var(--primario); margin-bottom: 20px; }
+    .detalle-ubicacion { margin-bottom: 15px; font-size: 1.1rem; }
+    
+    .mapa-container { flex: 1; min-width: 300px; height: 350px; border-radius: 12px; overflow: hidden; border: 1px solid #e4e4e7; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+</style>
+{% endblock %}
 
-        .logo-placeholder {
-            width: 40px;
-            height: 40px;
-            background: var(--acento);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
+{% block content %}
+<section class="hero">
+    <h1>Soluciones Tecnológicas</h1>
+    <p>Expertos en reparación a nivel de componentes y venta de equipos. Calidad y transparencia en cada servicio.</p>
+    <div class="botones-hero">
+        <a href="{% url 'catalogo' %}" class="btn btn-primario">🛒 Ver Catálogo de Componentes</a>
+        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario">🔍 Rastrear mi Reparación</a>
+    </div>
+</section>
 
-        .logo-img {
-            height: 40px;
-            /* Ajusta esto al tamaño que quieras (ej. 40px, 50px) */
-            width: auto;
-            /* Esto es vital: mantiene la proporción y evita que se estire */
-            object-fit: contain;
-            /* Asegura que la imagen completa se vea dentro del espacio */
-            margin-right: 10px;
-            /* Un pequeño espacio entre el logo y el texto */
-            display: block;
-            /* Ayuda a alinearla correctamente */
-        }
+<section class="servicios">
+    <div class="card-servicio">
+        <h3>Servicio Técnico Especializado</h3>
+        <p>Diagnóstico y reparación a nivel de placa, mantenimiento de GPUs, cambio de módulos de pantalla y más.</p>
+    </div>
+    <div class="card-servicio">
+        <h3>Venta de Hardware</h3>
+        <p>Encuentra procesadores, placas base, memorias y repuestos de alta calidad.</p>
+    </div>
+</section>
 
-        .hero {
-            background: linear-gradient(rgba(26, 11, 11, 0.85), rgba(26, 11, 11, 0.85)), url('https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
-            color: var(--blanco);
-            text-align: center;
-            padding: 100px 5%;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            font-weight: 800;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            color: #e4e4e7;
-        }
-
-        .botones-hero {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        .btn-primario {
-            background: var(--acento);
-            color: var(--blanco);
-        }
-
-        .btn-primario:hover {
-            transform: translateY(-3px);
-            background: #b91c1c;
-        }
-
-        .btn-secundario {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--blanco);
-            color: var(--blanco);
-        }
-
-        .btn-secundario:hover {
-            background: var(--blanco);
-            color: var(--primario);
-            transform: translateY(-3px);
-        }
-
-        .servicios {
-            padding: 80px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .card-servicio {
-            background: var(--blanco);
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
-            border: 1px solid #f4f4f5;
-        }
-
-        .card-servicio h3 {
-            color: var(--primario);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--acento);
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-
-        .ubicacion {
-            background: var(--blanco);
-            padding: 80px 5%;
-            border-top: 1px solid #e4e4e7;
-        }
-
-        .ubicacion-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .ubicacion-info {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .ubicacion-info h2 {
-            font-size: 2.2rem;
-            color: var(--primario);
-            margin-bottom: 20px;
-        }
-
-        .detalle-ubicacion {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        /* Estilo para el contenedor del mapa */
-        .mapa-container {
-            flex: 1;
-            min-width: 300px;
-            height: 350px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #e4e4e7;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        footer {
-            background: var(--primario);
-            color: #a1a1aa;
-            text-align: center;
-            padding: 20px;
-            border-top: 2px solid var(--acento);
-        }
-    </style>
-</head>
-
-<body>
-    <header>
-        <a href="{% url 'inicio' %}" class="logo-nav">
-            <img src="{% static 'images/logo.png' %}" alt="MP Tech" class="logo-img">
-            MP Tech
-        </a>
-    </header>
-
-    <section class="hero">
-        <h1>Soluciones Tecnológicas</h1>
-        <p>Expertos en reparación a nivel de componentes y venta de equipos. Calidad y transparencia en cada servicio.
-        </p>
-        <div class="botones-hero">
-            <a href="{% url 'catalogo' %}" class="btn btn-primario">🛒 Ver Catálogo de Componentes</a>
-            <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario">🔍 Rastrear mi Reparación</a>
+<section class="ubicacion">
+    <div class="ubicacion-container">
+        <div class="ubicacion-info">
+            <h2>Ubicación</h2>
+            <div class="detalle-ubicacion">📍 <strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1</div>
+            <div class="detalle-ubicacion">🕒 <strong>Horario:</strong> Lunes a Viernes de 5:00 PM a 10:00 PM</div>
+            <div class="detalle-ubicacion">🕒 <strong>Horario Fin de Semana:</strong> Sabado y Domingo de 9:00 AM a 10:00 PM</div>
+            <div class="detalle-ubicacion">📱 <strong>Contacto:</strong> +58 4245022292</div>
         </div>
-    </section>
 
-    <section class="servicios">
-        <div class="card-servicio">
-            <h3>Servicio Técnico Especializado</h3>
-            <p>Diagnóstico y reparación a nivel de placa, mantenimiento de GPUs, cambio de módulos de pantalla y más.
-            </p>
+        <div class="mapa-container">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15707.03746654205!2d-68.01662939999999!3d10.264669899999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e805d21a2c07659%3A0xcf397223e74a875a!2sTazajal%2C%20Naguanagua%202005%2C%20Carabobo!5e0!3m2!1ses!2sve!4v1716315802143!5m2!1ses!2sve"
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
-        <div class="card-servicio">
-            <h3>Venta de Hardware</h3>
-            <p>Encuentra procesadores, placas base, memorias y repuestos de alta calidad.</p>
-        </div>
-    </section>
-
-    <section class="ubicacion">
-        <div class="ubicacion-container">
-            <div class="ubicacion-info">
-                <h2>Ubicación</h2>
-                <div class="detalle-ubicacion">📍 <strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas
-                    de Monte Alegre 1</div>
-                <div class="detalle-ubicacion">🕒 <strong>Horario:</strong> Lunes a Viernes de 5:00 PM a 10:00 PM</div>
-                <div class="detalle-ubicacion">🕒 <strong>Horario Fin de Semana:</strong> Sabado y Domingo de 9:00 AM a
-                    10:00 PM</div>
-                <div class="detalle-ubicacion">📱 <strong>Contacto:</strong> +58 4245022292</div>
-            </div>
-
-            <div class="mapa-container">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.093197754799!2d-68.00141682430055!3d10.254067068610079!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e805de9950f9af7%3A0x29ff89c68666a5bc!2sMP%20Tech!5e0!3m2!1ses!2sve!4v1779714274239!5m2!1ses!2sve"
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-        </div>
-    </section>
-    <a href="https://wa.me/584245022292" class="whatsapp-btn" target="_blank">💬 Contactar</a>
-    <footer>
-        <p>&copy; 2026 MP Tech. Todos los derechos reservados.</p>
-    </footer>
-</body>
-
-</html>
+    </div>
+</section>
+{% endblock %}

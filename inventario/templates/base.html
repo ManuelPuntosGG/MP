@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MP Tech{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primario: #1a0b0b;
+            --acento: #dc2626;
+            --fondo: #fbfbfa;
+            --texto: #3f3f46;
+            --blanco: #ffffff;
+            --borde: #e4e4e7;
+            --verde-precio: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--fondo); color: var(--texto); line-height: 1.6; }
+
+        /* HEADER GLOBAL */
+        header { background-color: var(--primario); padding: 1rem 5%; border-bottom: 2px solid var(--acento); display: flex; justify-content: space-between; align-items: center; }
+        .logo-nav { font-size: 1.8rem; font-weight: 800; color: var(--blanco); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: 40px; width: auto; object-fit: contain; }
+        
+        .nav-links { display: flex; gap: 10px; }
+        .nav-links a { background-color: rgba(255, 255, 255, 0.1); color: var(--blanco); text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { background-color: var(--acento); }
+
+        /* BOTÓN WHATSAPP FLOTANTE GLOBAL */
+        .whatsapp-btn-flotante { position: fixed; bottom: 20px; right: 20px; background: #25D366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 10px rgba(37,211,102,0.4); z-index: 100; transition: transform 0.2s; }
+        .whatsapp-btn-flotante:hover { transform: scale(1.05); }
+
+        /* BLOQUE PARA ESTILOS ESPECÍFICOS DE CADA PÁGINA */
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicio' %}" class="logo-nav">
+            <img src="{% static 'images/logo.png' %}" alt="MP Tech" class="logo-img">
+            MP Tech
+        </a>
+        <nav class="nav-links">
+            <a href="{% url 'catalogo' %}">🛒 Catálogo</a>
+            <a href="{% url 'rastrear_ticket' %}">🔍 Rastrear</a>
+        </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <a href="https://wa.me/584245022292" class="whatsapp-btn-flotante" target="_blank">💬 Contactar</a>
+    
+    <footer style="background: var(--primario); color: #a1a1aa; text-align: center; padding: 20px; border-top: 2px solid var(--acento); margin-top: 40px;">
+        <p>© 2026 MP Tech. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

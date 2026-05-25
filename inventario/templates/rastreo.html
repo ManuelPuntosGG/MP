@@ -1,204 +1,82 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastrear Reparación | MP Tech</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primario: #1a0b0b;
-            --acento: #dc2626;
-            --fondo: #fbfbfa;
-            --texto: #3f3f46;
-            --blanco: #ffffff;
-            --borde: #e4e4e7;
-        }
+{% block title %}Rastrear Reparación | MP Tech{% endblock %}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+{% block extra_css %}
+<style>
+    .container { max-width: 800px; margin: 3rem auto; padding: 0 5%; }
+    .rastreo-box { background: var(--blanco); padding: 2.5rem; border-radius: 12px; border: 1px solid var(--borde); text-align: center; }
+    
+    .formulario-rastreo { display: flex; gap: 10px; justify-content: center; margin-top: 1rem; }
+    .btn-buscar { background: var(--acento); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    
+    .resultado-card { background: var(--blanco); margin-top: 2rem; border-radius: 12px; border: 1px solid var(--borde); overflow: hidden; }
+    .resultado-header { background: var(--primario); color: white; padding: 1.5rem; border-bottom: 4px solid var(--acento); display: flex; justify-content: space-between; align-items: center; }
+    .resultado-body { padding: 2rem; }
+    
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    .info-item label { font-size: 0.8rem; color: #71717a; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 5px; }
+    
+    .timeline { border-left: 3px solid var(--acento); padding-left: 20px; margin-left: 10px; position: relative; }
+    .timeline-item { margin-bottom: 20px; position: relative; }
+    .timeline-item::before { content: ''; position: absolute; left: -26px; top: 0; width: 10px; height: 10px; background: var(--acento); border-radius: 50%; }
+    
+    .timeline-desc { background: #f4f4f5; padding: 12px; border-radius: 8px; margin-top: 5px; }
+    .timeline-img { margin-top: 10px; max-width: 100%; border-radius: 8px; }
+</style>
+{% endblock %}
 
-        body {
-            background-color: var(--fondo);
-            color: var(--texto);
-            line-height: 1.6;
-        }
-
-        header {
-            background-color: var(--primario);
-            padding: 1rem 5%;
-            border-bottom: 2px solid var(--acento);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header a {
-            color: var(--blanco);
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: 800;
-        }
-
-        .nav-links a {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--blanco);
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 3rem auto;
-            padding: 0 5%;
-        }
-
-        .rastreo-box {
-            background: var(--blanco);
-            padding: 2.5rem;
-            border-radius: 12px;
-            border: 1px solid var(--borde);
-            text-align: center;
-        }
-
-        .formulario-rastreo {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-
-        .btn-buscar {
-            background: var(--acento);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .resultado-card {
-            background: var(--blanco);
-            margin-top: 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--borde);
-            overflow: hidden;
-        }
-
-        .resultado-header {
-            background: var(--primario);
-            color: white;
-            padding: 1.5rem;
-            border-bottom: 4px solid var(--acento);
-        }
-
-        .resultado-body {
-            padding: 2rem;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .info-item label {
-            font-size: 0.8rem;
-            color: #71717a;
-            text-transform: uppercase;
-            font-weight: 700;
-            display: block;
-        }
-
-        .timeline {
-            border-left: 3px solid var(--acento);
-            padding-left: 20px;
-            margin-left: 10px;
-        }
-
-        .timeline-item {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .timeline-desc {
-            background: #f4f4f5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 5px;
-        }
-
-        .timeline-img {
-            margin-top: 10px;
-            max-width: 100%;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-
-<body>
-    <header>
-        <a href="{% url 'inicio' %}">MP Tech</a>
-        <nav class="nav-links"><a href="{% url 'catalogo' %}">🛒 Catálogo</a></nav>
-    </header>
-
-    <div class="container">
-        <div class="rastreo-box">
-            <h2>Rastrear Reparación</h2>
-            <form class="formulario-rastreo" method="GET">
-                <input type="text" name="codigo" placeholder="Código de Rastreo" value="{{ codigo }}" required
-                    style="padding: 10px; border: 1px solid #ccc; border-radius: 8px; text-transform: uppercase;">
-                <button type="submit" class="btn-buscar">Buscar</button>
-            </form>
-        </div>
-
-        {% if ticket %}
-        <div class="resultado-card">
-            <div class="resultado-header">
-                <h3>Ticket #{{ ticket.codigo_rastreo }}</h3>
-                <span style="background:var(--acento); padding: 2px 10px; border-radius: 10px; font-size: 0.8rem;">{{
-                    ticket.get_estado_display }}</span>
-            </div>
-            <div class="resultado-body">
-                <div class="info-grid">
-                    <div class="info-item"><label>Cliente</label>
-                        <p>{{ ticket.cliente_nombre }}</p>
-                    </div>
-                    <div class="info-item"><label>Equipo</label>
-                        <p>{{ ticket.equipo }}</p>
-                    </div>
-                    <div class="info-item" style="grid-column: 1 / -1;"><label>Problema</label>
-                        <p>{{ ticket.falla_reportada }}</p>
-                    </div>
-                </div>
-                <h4>Bitácora de Avances</h4>
-                <div class="timeline">
-                    {% for avance in ticket.avances.all %}
-                    <div class="timeline-item">
-                        <p style="font-size: 0.8rem; color: #666;">{{ avance.fecha|date:"d/m/Y - H:i" }}</p>
-                        <div class="timeline-desc">{{ avance.descripcion }}</div>
-                        {% if avance.imagen %}
-                        <img src="{{ avance.imagen.url }}" class="timeline-img">
-                        {% endif %}
-                    </div>
-                    {% empty %}
-                    <p style="color: #666; margin-top: 10px;">Aún no hay avances registrados.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        {% elif error %}
-        <p style="text-align: center; color: red; margin-top: 20px; font-weight: 600;">{{ error }}</p>
-        {% endif %}
+{% block content %}
+<div class="container">
+    <div class="rastreo-box">
+        <h2>Rastrear Reparación</h2>
+        <form class="formulario-rastreo" method="GET">
+            <input type="text" name="codigo" placeholder="Código de Rastreo" value="{{ codigo }}" required
+                style="padding: 10px; border: 1px solid #ccc; border-radius: 8px; text-transform: uppercase; width: 100%; max-width: 300px;">
+            <button type="submit" class="btn-buscar">Buscar</button>
+        </form>
     </div>
-</body>
 
-</html>
+    {% if ticket %}
+    <div class="resultado-card">
+        <div class="resultado-header">
+            <h3>Ticket #{{ ticket.codigo_rastreo }}</h3>
+            <span style="background:var(--acento); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                {{ ticket.get_estado_display }}
+            </span>
+        </div>
+        <div class="resultado-body">
+            <div class="info-grid">
+                <div class="info-item"><label>Cliente</label>
+                    <p><strong>{{ ticket.cliente_nombre }}</strong></p>
+                </div>
+                <div class="info-item"><label>Equipo</label>
+                    <p><strong>{{ ticket.equipo }}</strong></p>
+                </div>
+                <div class="info-item" style="grid-column: 1 / -1;"><label>Problema Reportado</label>
+                    <p>{{ ticket.falla_reportada }}</p>
+                </div>
+            </div>
+            
+            <h4 style="color: var(--primario); border-bottom: 2px solid #f4f4f5; padding-bottom: 10px; margin-bottom: 20px;">Bitácora de Avances</h4>
+            
+            <div class="timeline">
+                {% for avance in ticket.avances.all %}
+                <div class="timeline-item">
+                    <p style="font-size: 0.8rem; color: #71717a; font-weight: 600;">{{ avance.fecha|date:"d/m/Y - H:i" }}</p>
+                    <div class="timeline-desc">{{ avance.descripcion }}</div>
+                    {% if avance.imagen %}
+                    <img src="{{ avance.imagen.url }}" class="timeline-img">
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p style="color: #71717a; margin-top: 10px; font-style: italic;">Aún no hay avances registrados en este equipo.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% elif error %}
+    <p style="text-align: center; color: var(--acento); margin-top: 20px; font-weight: 600;">{{ error }}</p>
+    {% endif %}
+</div>
+{% endblock %}
