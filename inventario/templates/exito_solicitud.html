@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Solicitud Exitosa | MP Tech{% endblock %}
+
+{% block extra_css %}
+<style>
+    .container-exito { max-width: 600px; margin: 4rem auto; padding: 0 5%; text-align: center; }
+    .exito-box { background: var(--blanco); padding: 3rem 2rem; border-radius: 12px; border: 2px solid #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1); }
+    
+    .codigo-destacado { font-size: 2.5rem; font-weight: 800; color: var(--primario); background: #f4f4f5; padding: 15px 30px; border-radius: 8px; display: inline-block; margin: 20px 0; letter-spacing: 2px; }
+    
+    .btn-volver { display: inline-block; background: var(--primario); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 20px; transition: 0.3s; }
+    .btn-volver:hover { background: #3f3f46; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-exito">
+    <div class="exito-box">
+        <h1 style="color: #10b981; margin-bottom: 10px;">¡Solicitud Registrada!</h1>
+        <p style="font-size: 1.1rem;">Hola <strong>{{ orden.cliente_nombre }}</strong>, hemos recibido los datos de tu <strong>{{ orden.equipo }}</strong>.</p>
+        
+        <p style="margin-top: 25px; color: #71717a;">Tu código único de rastreo es:</p>
+        <div class="codigo-destacado">{{ orden.codigo_rastreo }}</div>
+        
+        <p style="font-size: 0.95rem; color: var(--acento); font-weight: 600;">⚠️ Por favor, guarda este código. Lo necesitarás para consultar los avances de tu reparación.</p>
+        
+        <a href="{% url 'inicio' %}" class="btn-volver">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

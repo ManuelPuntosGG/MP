@@ -28,7 +28,8 @@ class Producto(models.Model):
 
 class OrdenServicio(models.Model):
     ESTADOS = [
-        ('RECIBIDO', 'Equipo Recibido'),
+        ('ESPERANDO', 'Esperando Ingreso'),
+        ('RECIBIDO', 'Recibido'),
         ('DIAGNOSTICO', 'En Diagnóstico'),
         ('REPUESTOS', 'Esperando Repuestos'),
         ('REPARADO', 'Reparado / Listo para entrega'),
@@ -50,7 +51,7 @@ class OrdenServicio(models.Model):
         editable=False
     )
     
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='RECIBIDO')
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='ESPERANDO')
     costo_estimado = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     
     fecha_ingreso = models.DateTimeField(default=timezone.now)

@@ -11,6 +11,7 @@ urlpatterns = [
     path('', views.inicio, name='inicio'),                          # Portada / Landing Page
     path('catalogo/', views.catalogo, name='catalogo'),             # Catálogo de componentes
     path('rastreo/', views.rastrear_ticket, name='rastrear_ticket'),# Rastreador de reparaciones
+    path('solicitar/', views.solicitar_reparacion, name='solicitar_reparacion'),
 ]
 
 # CORRECCIÓN: Quitamos 'if settings.DEBUG' para que también sirva imágenes en Render

@@ -1,5 +1,23 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import SolicitudReparacionForm
+# Asegúrate de importar tu modelo OrdenServicio si no está importado
 from .models import Producto, OrdenServicio
+
+def solicitar_reparacion(request):
+    # Si el formulario fue enviado
+    if request.method == 'POST':
+        form = SolicitudReparacionForm(request.POST)
+        if form.is_valid():
+            # Guardamos la orden en la base de datos
+            nueva_orden = form.save()
+            
+            # Pasamos el código generado a la plantilla de éxito
+            return render(request, 'exito_solicitud.html', {'orden': nueva_orden})
+    else:
+        # Si es la primera vez que entra, mostramos el formulario vacío
+        form = SolicitudReparacionForm()
+
+    return render(request, 'solicitar_reparacion.html', {'form': form})
 
 # 1. Vista de la Landing Page (Portada de MP Tech)
 def inicio(request):
