@@ -65,7 +65,7 @@
         <h2 class="titulo-seccion">Componentes y Repuestos</h2>
         
         <div class="catalogo">
-            {% for producto in productos %}
+            {% for producto in page_obj %}
                 <div class="tarjeta">
                     <div class="contenedor-imagen">
                         {% if producto.imagen %}
@@ -91,6 +91,28 @@
                     <h3>No hay componentes registrados en este momento.</h3>
                 </div>
             {% endfor %}
+        </div>
+
+        <!-- Paginación -->
+        {% if page_obj.has_other_pages %}
+        <nav style="margin-top:1.5rem; text-align:center;">
+            <ul style="list-style:none; display:inline-flex; gap:8px; padding:0;">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page={{ page_obj.previous_page_number }}">« Prev</a></li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <li><strong>{{ num }}</strong></li>
+                    {% else %}
+                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li><a href="?page={{ page_obj.next_page_number }}">Next »</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
         </div>
     </div>
 
