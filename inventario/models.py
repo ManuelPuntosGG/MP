@@ -9,12 +9,13 @@ def generar_codigo_unico():
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
+    
 
     def __str__(self):
         return self.nombre
 
 class Producto(models.Model):
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
@@ -54,6 +55,31 @@ class OrdenServicio(models.Model):
     
     fecha_ingreso = models.DateTimeField(default=timezone.now)
     fecha_entrega = models.DateTimeField(blank=True, null=True)
+    def enlace_whatsapp(self):
+        # Limpia el string del teléfono dejando únicamente los números
+        numero_limpio = ''.join(filter(str.isdigit, self.cliente_telefono))
+        
+        mensaje = (
+            f"¡Hola *{self.cliente_nombre}*! Tu equipo (*{self.equipo}*) "
+            f"ya se encuentra registrado en nuestro sistema. "
+            f"Puedes consultar los avances en tiempo real ingresando en nuestra web "
+            f"con tu código único de rastreo: *{self.codigo_rastreo}*"
+        )
+        # Puedes añadir caracteres especiales de codificación para los espacios en blanco
+        import urllib.parse
+        mensaje_url = urllib.parse.quote(mensaje)
+        
+        return f"https://wa.me/{numero_limpio}?text={mensaje_url}"
+    
+    def save(self, *args, **kwargs):
+        # Si el estado es 'ENTREGADO' y no hay fecha de entrega, poner la fecha actual
+        if self.estado == 'ENTREGADO' and not self.fecha_entrega:
+            self.fecha_entrega = timezone.now()
+        # Si lo devuelven a otro estado por error, limpiamos la fecha
+        elif self.estado != 'ENTREGADO':
+            self.fecha_entrega = None
+            
+        super().save(*args, **kwargs)
 
     def __str__(self):
         # Ahora el __str__ muestra el código de rastreo en lugar del ID
