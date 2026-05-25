@@ -21,6 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # 1. ¡CRUCIAL! Añadir 'storages' a las aplicaciones instaladas
+    'storages', 
+    
     'inventario',
 ]
 
@@ -70,44 +74,54 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'es-co' # Cambiado a español por comodidad, puedes revertirlo
+LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Archivos Estáticos (CSS, JS) - Manejados por WhiteNoise
+
+# ==============================================================================
+# CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS Y MULTIMEDIA (LOCAL VS SUPABASE)
+# ==============================================================================
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Base por defecto para Django 4.2+ (Local)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
-# ==============================================================================
-# CONFIGURACIÓN DE ARCHIVOS MULTIMEDIA (LOCAL VS SUPABASE STORAGE)
-# ==============================================================================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
+# Si estamos en Render y configuraste el Bucket de Supabase:
 if 'AWS_STORAGE_BUCKET_NAME' in os.environ:
-    # Producción en Render: Forzamos el uso de Supabase Storage para Media
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        },
+    # Cambiamos el backend de almacenamiento local a S3 de Supabase
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     }
     
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
-    AWS_QUERYSTRING_AUTH = False
-    AWS_S3_CUSTOM_DOMAIN = None
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
+    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL') # Ej: https://xyz.supabase.co/storage/v1/s3
     
-    # URL pública apuntando directamente a tu bucket de Supabase
-    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
-else:
-    # Desarrollo local en tu PC: Guarda los archivos en la carpeta local
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    AWS_QUERYSTRING_AUTH = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+    
+    # 2. EL TRUCO MAESTRO: Forzar la URL pública nativa de Supabase
+    # Si tu endpoint es: https://xyz.supabase.co/storage/v1/s3
+    # Convertimos la salida a: xyz.supabase.co/storage/v1/object/public/tu-bucket
+    if AWS_S3_ENDPOINT_URL:
+        clean_domain = AWS_S3_ENDPOINT_URL.replace('https://', '').replace('http://', '').replace('/storage/v1/s3', '')
+        AWS_S3_CUSTOM_DOMAIN = f"{clean_domain}/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}"
+        
+        # Seteamos la URL final
+        MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
