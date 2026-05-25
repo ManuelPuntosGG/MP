@@ -21,15 +21,14 @@ def catalogo(request):
 def rastrear_ticket(request):
     ticket = None
     error = None
+    # Cambiamos 'numero_ticket' por 'codigo' para que sea más intuitivo
+    codigo = request.GET.get('codigo', '').strip().upper()
 
-    if 'numero_ticket' in request.GET and request.GET['numero_ticket']:
-        numero = request.GET['numero_ticket']
+    if codigo:
         try:
-            # Intentamos obtener la orden por su ID (número de ticket)
-            ticket = OrdenServicio.objects.get(id=numero)
+            # Buscamos por el código único generado
+            ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
         except OrdenServicio.DoesNotExist:
-            error = f"No se encontró ninguna orden con el número {numero}."
-        except ValueError:
-            error = "Por favor, ingresa un número de ticket válido."
+            error = f"No se encontró ninguna orden con el código {codigo}."
 
-    return render(request, 'rastreo.html', {'ticket': ticket, 'error': error})
+    return render(request, 'rastreo.html', {'ticket': ticket, 'error': error, 'codigo': codigo})
