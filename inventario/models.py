@@ -69,7 +69,7 @@ class OrdenServicio(models.Model):
         import urllib.parse
         mensaje_url = urllib.parse.quote(mensaje)
         
-        return f"https://wa.me/{numero_limpio}?text={mensaje_url}"
+        return f"https://wa.me/+58{numero_limpio}?text={mensaje_url}"
     
     def save(self, *args, **kwargs):
         # Si el estado es 'ENTREGADO' y no hay fecha de entrega, poner la fecha actual
