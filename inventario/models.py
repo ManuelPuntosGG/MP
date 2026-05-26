@@ -62,8 +62,8 @@ class OrdenServicio(models.Model):
         
         mensaje = (
             f"¡Hola *{self.cliente_nombre}*! Tu equipo (*{self.equipo}*) "
-            f"ya se encuentra registrado en nuestro sistema. "
-            f"Puedes consultar los avances en tiempo real ingresando en nuestra web "
+            f"tiene una actualización registrada en nuestro sistema. "
+            f"Puedes consultar los detalles en tiempo real ingresando en nuestra web "
             f"con tu código único de rastreo: *{self.codigo_rastreo}*"
         )
         # Puedes añadir caracteres especiales de codificación para los espacios en blanco
