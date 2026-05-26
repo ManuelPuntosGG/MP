@@ -5,63 +5,49 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
 
-from .forms import SolicitudReparacionForm
-from .models import Categoria, Producto, OrdenServicio
-
+from pyDolarVenezuela import LocalDatabase, Monitor
+from pyDolarVenezuela.pages import CriptoDolar  # CriptoDolar recopila Binance perfectamente
 
 def obtener_tasa_binance():
     """
-    Consulta el precio del USDT en Bolívares usando el API público de Gabriel Baute.
-    Estructura optimizada para evitar NameResolutionError en Render.
+    Obtiene la tasa de Binance P2P usando la librería pyDolarVenezuela.
+    Utiliza una base de datos SQLite efímera para el procesamiento interno de la librería.
     """
+    # 1. Intentar obtener el valor guardado en la caché de Django
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
 
-    # PLAN A: API Oficial del repositorio de Gabriel Baute (alojado en Vercel)
-    url_gabriel = "https://binance-bcv-dolar.vercel.app/api/binance"
-    
     try:
-        print("🔄 [INTENTO 1] Consultando API de Gabriel Baute (binance-bcv-dolar)...")
-        response = requests.get(url_gabriel, timeout=6)
+        print("🔄 [INTENTO] Iniciando pyDolarVenezuela...")
         
-        print(f"🔍 [DIAGNÓSTICO] Status Code: {response.status_code}")
+        # 2. Inicializar la base de datos local que exige la librería para funcionar
+        db = LocalDatabase(motor='sqlite', url='pydolar_cache.db')
         
-        if response.status_code == 200:
-            data = response.json()
+        # 3. Instanciar el monitor apuntando a CriptoDolar (monitorea Binance, Paralelo, etc.)
+        monitor = Monitor(CriptoDolar, 'USD', db=db)
+        
+        # 4. Solicitar específicamente el sub-monitor de Binance
+        print("🔍 [DIAGNÓSTICO] Extrayendo datos de Binance desde el proveedor...")
+        binance_data = monitor.get_value_monitors("binance")
+        
+        if binance_data and hasattr(binance_data, 'price'):
+            precio = float(binance_data.price)
+            print(f"✅ [ÉXITO] Tasa obtenida vía pyDolarVenezuela: {precio} Bs.")
             
-            # El JSON de este repo entrega directamente {'rate': 45.20, 'source': 'binance', ...}
-            # Usamos un filtrado flexible por si viene como string o float
-            if 'rate' in data:
-                precio = float(data['rate'])
-                print(f"✅ [ÉXITO] Tasa obtenida de Gabriel Baute: {precio} Bs.")
-                cache.set('tasa_usdt_ves', precio, 900) # Guardar por 15 min
-                return precio
-                
-        print(f"⚠️ API de Gabriel respondió con status {response.status_code}. Intentando espejo alternativo...")
+            # Guardamos en la caché de Django por 15 minutos para no saturar
+            cache.set('tasa_usdt_ves', precio, 900)
+            return precio
+            
+        print("⚠️ [ALERTA] La librería no encontró la propiedad 'price' en el nodo de Binance.")
+        
     except Exception as e:
-        print(f"⚠️ Falló conexión con API de Gabriel debido a: {e}. Intentando espejo...")
+        # Aquí capturamos cualquier fallo de inicialización o cambio interno de la librería
+        print(f"💥 [ERROR CRÍTICO] Falló la ejecución de pyDolarVenezuela: {e}")
 
-    # PLAN B: API de respaldo (DolarApi - Altamente estable para Latinoamérica)
-    url_espejo = "https://ve.dolarapi.com/v1/dolares/binance"
-    
-    try:
-        print("🔄 [INTENTO 2] Consultando DolarApi de respaldo...")
-        response = requests.get(url_espejo, timeout=6)
-        if response.status_code == 200:
-            data = response.json()
-            # Este API devuelve la llave 'promedio'
-            if 'promedio' in data:
-                precio = float(data['promedio'])
-                print(f"✅ [ÉXITO] Tasa obtenida del API Espejo: {precio} Bs.")
-                cache.set('tasa_usdt_ves', precio, 900)
-                return precio
-    except Exception as e:
-        print(f"💥 [ERROR CRÍTICO] Todos los proveedores públicos fallaron: {e}")
-
-    # PLAN C: Último recurso si te quedas sin internet o todos los servicios caen
-    fallback = cache.get('tasa_usdt_ves', 720.00)
-    print(f"ℹ️ [INFO] Entregando tasa de respaldo de seguridad: {fallback}")
+    # PLAN DE RESPALDO: Si algo falla, devuelve la última guardada o un valor base sensato
+    fallback = cache.get('tasa_usdt_ves', 45.00)
+    print(f"ℹ️ [INFO] Usando tasa de respaldo de seguridad: {fallback}")
     return fallback
 
 
