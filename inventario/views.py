@@ -10,7 +10,8 @@ from pyDolarVenezuela import LocalDatabase, Monitor
 from pyDolarVenezuela.pages import ExchangeMonitor  # Cambiamos a ExchangeMonitor (más completo)
 
 def obtener_tasa_binance():
-    # 1. Intentar leer desde la caché (Cambiado a 1 hora / 3600 segundos)
+
+    # 1. Intentar leer desde la caché de Django (1 hora)
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
@@ -27,20 +28,20 @@ def obtener_tasa_binance():
         if binance_data:
             precio = float(binance_data.price) if hasattr(binance_data, 'price') else float(binance_data['price'])
             print(f"✅ [ÉXITO] Tasa obtenida de pyDolarVenezuela: {precio} Bs.")
-            cache.set('tasa_usdt_ves', precio, 3600)  # Guardar por 1 hora
+            cache.set('tasa_usdt_ves', precio, 3600)
             return precio
     except Exception as e:
-        print(f"⚠️ [ALERTA] pyDolarVenezuela no disponible ('{e}'). Pasando a CoinGecko Autenticado...")
+        print(f"⚠️ [ALERTA] pyDolarVenezuela no disponible ('{e}'). Pasando a CoinGecko...")
 
     # -------------------------------------------------------------------------
-    # PLAN B: CoinGecko API con autenticación (Inmune al 429 de IPs compartidas)
+    # INTENTO 2: CoinGecko API con Diagnóstico de JSON
     # -------------------------------------------------------------------------
     try:
-        print("🔄 [INTENTO 2] Consultando CoinGecko con credenciales...")
+        print("🔄 [INTENTO 2] Consultando CoinGecko...")
         url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
         
-        # Coloca aquí la llave que generaste en el panel de CoinGecko
-        COINGECKO_KEY = "CG-ybVxa4i2NXhfgLtKzHa2YPY8" 
+        # ⚠️ Asegúrate de colocar tu llave real aquí si usas CoinGecko
+        COINGECKO_KEY = "CG-XXXXXXXXXXXXX" 
         
         headers = {
             "accept": "application/json",
@@ -51,21 +52,42 @@ def obtener_tasa_binance():
         
         if response.status_code == 200:
             data = response.json()
+            # 👇 ESTE PRINT TE MOSTRARÁ EN RENDER QUÉ ESTÁ LLEGANDO REALMENTE
+            print(f"📊 [DIAGNÓSTICO COINGECKO] JSON recibido: {data}")
+            
             if 'tether' in data and 'ves' in data['tether']:
                 precio = float(data['tether']['ves'])
-                print(f"✅ [ÉXITO] Tasa recuperada con API Key de CoinGecko: {precio} Bs.")
-                cache.set('tasa_usdt_ves', precio, 3600)  # Guardar por 1 hora
+                print(f"✅ [ÉXITO] Tasa recuperada de CoinGecko: {precio} Bs.")
+                cache.set('tasa_usdt_ves', precio, 3600)
                 return precio
                 
-        print(f"⚠️ CoinGecko respondió con estatus {response.status_code}. Pasando al último recurso...")
+        print(f"⚠️ CoinGecko respondió con estatus {response.status_code} pero no pasó la validación. Intentando ExchangeRate...")
     except Exception as error_api:
-        print(f"⚠️ Falló la conexión de respaldo con CoinGecko: {error_api}")
+        print(f"⚠️ Falló la conexión con CoinGecko: {error_api}. Intentando ExchangeRate...")
 
     # -------------------------------------------------------------------------
-    # PLAN C: Último recurso (Tasa de emergencia aterrizada en la realidad actual)
+    # INTENTO 3: ExchangeRate-API (Inmune a bloqueos de Render, libre de llaves, estable)
+    # -------------------------------------------------------------------------
+    try:
+        print("🔄 [INTENTO 3] Consultando API de respaldo global (ExchangeRate)...")
+        url_exchangerate = "https://open.er-api.com/v6/latest/USD"
+        response = requests.get(url_exchangerate, timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if 'rates' in data and 'VES' in data['rates']:
+                precio = float(data['rates']['VES'])
+                print(f"✅ [ÉXITO GLOBAL] Tasa recuperada de ExchangeRate-API: {precio} Bs.")
+                cache.set('tasa_usdt_ves', precio, 3600)
+                return precio
+    except Exception as error_global:
+        print(f"⚠️ Falló la conexión con ExchangeRate-API: {error_global}")
+
+    # -------------------------------------------------------------------------
+    # ÚLTIMO RECURSO: Colchón de seguridad estático basado en tu realidad actual
     # -------------------------------------------------------------------------
     fallback = cache.get('tasa_usdt_ves', 720.00)
-    print(f"ℹ️ [INFO] Entregando tasa de respaldo de seguridad: {fallback} Bs.")
+    print(f"ℹ️ [INFO] Entregando tasa de respaldo final de seguridad: {fallback} Bs.")
     return fallback
 
 def solicitar_reparacion(request):
