@@ -11,55 +11,40 @@ from .models import Categoria, Producto, OrdenServicio
 
 def obtener_tasa_binance():
     """
-    Consulta el precio actual del USDT en Bolívares (VES) en el P2P de Binance.
-    Usa headers avanzados para evitar el bloqueo anti-bots.
+    Consulta el precio del USDT en Bolívares.
+    Utiliza un API intermedio para evitar que el firewall de Binance bloquee a Render.
     """
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
 
-    url = "https://p2p.binance.com/bapi/c2c/v2/public/c2c/p2p/main/tradeList"
-    payload = {
-        "asset": "USDT",
-        "fiat": "VES",
-        "merchantCheck": False,
-        "page": 1,
-        "payTypes": [],
-        "publisherType": None,
-        "rows": 3,
-        "tradeType": "BUY"
-    }
+    # Usamos el API público de pyDolarVenezuela (Node/Vercel) que funciona perfectamente en la nube
+    url = "https://pydolarvenezuela-api.vercel.app/api/v1/dollar"
     
-    # HEADERS MEJORADOS: Simulamos ser Google Chrome navegando desde la página de P2P
-    headers = {
-        "Accept": "*/*",
-        "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-        "Content-Type": "application/json",
-        "Origin": "https://p2p.binance.com",
-        "Referer": "https://p2p.binance.com/es/trade/Buy/USDT?fiat=VES&payment=all-payments",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-    }
-
     try:
-        # Aumentamos el timeout a 8 segundos por si la conexión local está inestable
-        response = requests.post(url, json=payload, headers=headers, timeout=8)
+        # Hacemos una petición GET simple
+        response = requests.get(url, timeout=6)
         
         if response.status_code == 200:
             data = response.json()
-            if data.get('data'):
-                precio_filtrado = float(data['data'][0]['adv']['price'])
+            
+            # Buscamos la información específica de Binance en la respuesta
+            # Este API devuelve una estructura con los monitores principales
+            monitores = data.get('monitors', {})
+            binance_data = monitores.get('binance', {})
+            
+            if binance_data and 'price' in binance_data:
+                precio_filtrado = float(binance_data['price'])
+                
+                # Guardamos en caché por 15 minutos (900 segundos)
                 cache.set('tasa_usdt_ves', precio_filtrado, 900)
                 return precio_filtrado
-        else:
-            # CHIVATO: Si Binance rechaza la conexión, lo verás en la consola donde corre tu servidor
-            print(f"⚠️ Binance bloqueó la petición: Status {response.status_code}")
-            
-    except requests.exceptions.Timeout:
-        print("⚠️ El servidor tardó mucho en responder (Timeout).")
+                
     except Exception as e:
-        print(f"⚠️ Error general consultando Binance: {e}")
+        # Si agregaste PYTHONUNBUFFERED=1 en Render, ahora sí verás este error exacto en tu log
+        print(f"⚠️ Error consultando API alternativo en Render: {e}")
     
-    # Retorna la última tasa guardada, o 720.00 si el caché está vacío
+    # Si todo falla, intentamos retornar lo último que haya quedado en caché, o 720.00 como base más realista actual
     return cache.get('tasa_usdt_ves', 720.00)
 
 
