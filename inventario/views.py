@@ -12,7 +12,7 @@ from .models import Categoria, Producto, OrdenServicio
 def obtener_tasa_binance():
     """
     Consulta el precio actual del USDT en Bolívares (VES) en el P2P de Binance.
-    Guarda el resultado en caché por 15 minutos para optimizar la velocidad.
+    Usa headers avanzados para evitar el bloqueo anti-bots.
     """
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
@@ -29,22 +29,38 @@ def obtener_tasa_binance():
         "rows": 3,
         "tradeType": "BUY"
     }
+    
+    # HEADERS MEJORADOS: Simulamos ser Google Chrome navegando desde la página de P2P
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "Accept": "*/*",
+        "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
+        "Content-Type": "application/json",
+        "Origin": "https://p2p.binance.com",
+        "Referer": "https://p2p.binance.com/es/trade/Buy/USDT?fiat=VES&payment=all-payments",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=4)
+        # Aumentamos el timeout a 8 segundos por si la conexión local está inestable
+        response = requests.post(url, json=payload, headers=headers, timeout=8)
+        
         if response.status_code == 200:
             data = response.json()
             if data.get('data'):
                 precio_filtrado = float(data['data'][0]['adv']['price'])
                 cache.set('tasa_usdt_ves', precio_filtrado, 900)
                 return precio_filtrado
+        else:
+            # CHIVATO: Si Binance rechaza la conexión, lo verás en la consola donde corre tu servidor
+            print(f"⚠️ Binance bloqueó la petición: Status {response.status_code}")
+            
+    except requests.exceptions.Timeout:
+        print("⚠️ El servidor tardó mucho en responder (Timeout).")
     except Exception as e:
-        print(f"Error consultando Binance: {e}")
+        print(f"⚠️ Error general consultando Binance: {e}")
     
-    return cache.get('tasa_usdt_ves', 40.00)
+    # Retorna la última tasa guardada, o 720.00 si el caché está vacío
+    return cache.get('tasa_usdt_ves', 720.00)
 
 
 def solicitar_reparacion(request):
