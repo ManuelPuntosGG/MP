@@ -9,48 +9,70 @@ from .models import Categoria, Producto, OrdenServicio
 from pyDolarVenezuela import LocalDatabase, Monitor
 from pyDolarVenezuela.pages import ExchangeMonitor  # Cambiamos a ExchangeMonitor (más completo)
 
+
 def obtener_tasa_binance():
     """
-    Obtiene la tasa de Binance P2P pasando el argumento requerido a pyDolarVenezuela.
-    Usa ExchangeMonitor para asegurar la existencia de la llave.
+    Obtiene la tasa de Binance de forma híbrida.
+    Si pyDolarVenezuela falla por bloqueos de IP o cambios de estructura ('data'),
+    resuelve automáticamente con CoinGecko antes de usar el fallback estático.
     """
+    # 1. Intentar leer desde la caché de Django para ahorrar peticiones
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
 
+    # -------------------------------------------------------------------------
+    # INTENTO 1: pyDolarVenezuela (Tu opción preferida)
+    # -------------------------------------------------------------------------
     try:
-        print("🔄 [INTENTO] Iniciando pyDolarVenezuela con ExchangeMonitor...")
-        
-        # Inicializamos la base de datos interna de la librería
+        print("🔄 [INTENTO 1] Iniciando pyDolarVenezuela...")
         db = LocalDatabase(motor='sqlite', url='pydolar_cache.db')
         monitor = Monitor(ExchangeMonitor, 'USD', db=db)
         
-        # Corregido: Pasamos explícitamente el argumento 'binance' que exige la función
-        print("🔍 [DIAGNÓSTICO] Solicitando el monitor 'binance'...")
         binance_data = monitor.get_value_monitors('binance')
         
         if binance_data:
-            # Manejo seguro por si la librería devuelve un objeto o un diccionario
             if hasattr(binance_data, 'price'):
                 precio = float(binance_data.price)
             elif isinstance(binance_data, dict) and 'price' in binance_data:
                 precio = float(binance_data['price'])
             else:
                 precio = None
-                
+
             if precio:
-                print(f"✅ [ÉXITO] Tasa Binance obtenida con pyDolarVenezuela: {precio} Bs.")
-                cache.set('tasa_usdt_ves', precio, 900) # Guardar por 15 minutos
+                print(f"✅ [ÉXITO] Tasa obtenida de pyDolarVenezuela: {precio} Bs.")
+                cache.set('tasa_usdt_ves', precio, 900)
                 return precio
                 
-        print("⚠️ [ALERTA] El monitor respondió pero no se pudo extraer el precio.")
-            
     except Exception as e:
-        print(f"💥 [ERROR CRÍTICO] Falló la ejecución de pyDolarVenezuela: {e}")
+        # Aquí atajamos el error 'data' o cualquier cambio de la librería
+        print(f"⚠️ [ALERTA] pyDolarVenezuela falló internamente (Error: '{e}'). Pasando al Plan B corporativo...")
 
-    # Tu plan de respaldo realista por si ocurre cualquier imprevisto de red
+    # -------------------------------------------------------------------------
+    # PLAN B: CoinGecko API (El escudo balanceador: 100% estable en Render)
+    # -------------------------------------------------------------------------
+    try:
+        print("🔄 [INTENTO 2] Consultando API global de CoinGecko (USDT/VES)...")
+        url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
+        response = requests.get(url_coingecko, timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if 'tether' in data and 'ves' in data['tether']:
+                precio = float(data['tether']['ves'])
+                print(f"✅ [ÉXITO] Tasa recuperada exitosamente de CoinGecko: {precio} Bs.")
+                cache.set('tasa_usdt_ves', precio, 900)
+                return precio
+                
+        print(f"⚠️ CoinGecko respondió con estatus {response.status_code}. Pasando al último recurso...")
+    except Exception as error_api:
+        print(f"⚠️ Falló la conexión de respaldo con CoinGecko: {error_api}")
+
+    # -------------------------------------------------------------------------
+    # PLAN C: Último recurso (Tasa de emergencia guardada en caché o base)
+    # -------------------------------------------------------------------------
     fallback = cache.get('tasa_usdt_ves', 45.00)
-    print(f"ℹ️ [INFO] Usando tasa de respaldo de seguridad: {fallback}")
+    print(f"ℹ️ [INFO] Entregando tasa de respaldo final de seguridad: {fallback}")
     return fallback
 
 def solicitar_reparacion(request):

@@ -11,7 +11,13 @@
     
     .codigo-destacado { font-size: 2.2rem; font-weight: 800; color: var(--primario); background: var(--fondo); padding: 12px 24px; border-radius: 8px; display: inline-block; margin: 20px 0; letter-spacing: 3px; border: 1px solid var(--borde); font-family: 'Courier New', Courier, monospace; }
     
-    .btn-volver { display: inline-flex; align-items: center; gap: 8px; background: var(--primario); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 20px; transition: all 0.2s; font-size: 0.95rem; border: 1px solid var(--primario); }
+    /* Nuevos estilos para la sección del próximo paso y mapas */
+    .caja-siguiente-paso { background: var(--fondo); border: 1px solid var(--borde); padding: 1.5rem; border-radius: 8px; margin: 25px 0; text-align: left; border-left: 4px solid var(--primario); }
+    .paso-titulo { font-weight: 700; color: var(--primario); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-mapa { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--primario); border: 1px solid var(--borde); padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; margin-top: 12px; transition: all 0.2s; }
+    .btn-mapa:hover { background: var(--borde); transform: translateY(-1px); }
+    
+    .btn-volver { display: inline-flex; align-items: center; gap: 8px; background: var(--primario); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px; transition: all 0.2s; font-size: 0.95rem; border: 1px solid var(--primario); }
     .btn-volver:hover { background: #27272a; border-color: #27272a; transform: translateY(-1px); }
 </style>
 {% endblock %}
@@ -30,6 +36,18 @@
             <p style="font-size: 0.88rem; color: var(--acento); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0;">
                 <i class="bi bi-shield-exclamation"></i> Guarde este código para monitorear el diagnóstico técnico en vivo.
             </p>
+        </div>
+        
+        <div class="caja-siguiente-paso">
+            <div class="paso-titulo">
+                <i class="bi bi-geo-alt-fill"></i> Siguiente Paso Requerido
+            </div>
+            <p style="font-size: 0.9rem; color: var(--texto); margin: 0; line-height: 1.5;">
+                Para iniciar la revisión física y el proceso de diagnóstico de su componente, por favor proceda a entregar el equipo en nuestro laboratorio técnico.
+            </p>
+            <a href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.093263064714!2d-67.9988419!3d10.2540618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e805de9950f9af7%3A0x29ff89c68666a5bc!2sMP%20Tech!5e0!3m2!1ses!2sve!4v1779739157376!5m2!1ses!2sve" target="_blank" class="btn-mapa">
+                <i class="bi bi-map-fill"></i> Ver Ubicación en Google Maps
+            </a>
         </div>
         
         <a href="{% url 'inicio' %}" class="btn-volver">
