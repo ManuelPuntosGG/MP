@@ -5,25 +5,35 @@
 {% block extra_css %}
 <style>
     .container-form { max-width: 600px; margin: 3rem auto; padding: 0 5%; }
-    .form-box { background: var(--blanco); padding: 2.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    .form-box { background: var(--blanco); padding: 2.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02); }
     
     .form-group { margin-bottom: 1.5rem; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--primario); font-size: 0.95rem; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 0.6rem; color: var(--primario); font-size: 0.95rem; }
     
-    /* Estilos para los inputs del formulario de Django */
-    .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--borde); border-radius: 8px; font-size: 1rem; color: var(--texto); background: var(--fondo); transition: border-color 0.3s; }
-    .form-input:focus { outline: none; border-color: var(--acento); }
+    /* Forzado estético para los inputs internos automáticos de Django Form */
+    .form-box input, .form-box textarea, .form-box select { 
+        width: 100%; 
+        padding: 12px 15px; 
+        border: 1px solid var(--borde); 
+        border-radius: 8px; 
+        font-size: 1rem; 
+        color: var(--texto); 
+        background: var(--fondo); 
+        transition: all 0.3s ease; 
+    }
     
-    .btn-submit { background: var(--acento); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; margin-top: 1rem; }
-    .btn-submit:hover { background: #b91c1c; transform: translateY(-2px); }
+    .form-box textarea { min-height: 100px; resize: vertical; }
+
+    .btn-submit { background: var(--acento); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: all 0.2s ease; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-submit:hover { background: var(--acento-hover); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(220,38,38,0.2); }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-form">
     <div class="form-box">
-        <h2 style="color: var(--primario); text-align: center; margin-bottom: 10px;">Ingresar Equipo</h2>
-        <p style="text-align: center; color: #71717a; margin-bottom: 25px;">Por favor, llena los datos para registrar tu solicitud en nuestro sistema.</p>
+        <h2 style="color: var(--primario); text-align: center; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px;">Ingresar Orden Técnica</h2>
+        <p style="text-align: center; color: #71717a; margin-bottom: 25px; font-size: 0.95rem;">Complete los datos del cliente y del componente para su posterior diagnóstico en el laboratorio.</p>
         
         <form method="POST">
             {% csrf_token %}
@@ -33,12 +43,14 @@
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
-                    <span style="color: var(--acento); font-size: 0.85rem;">{{ field.errors.0 }}</span>
+                    <span style="color: var(--acento); font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 600;"><i class="bi bi-exclamation-circle"></i> {{ field.errors.0 }}</span>
                 {% endif %}
             </div>
             {% endfor %}
             
-            <button type="submit" class="btn-submit">Registrar Solicitud</button>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-hdd-network"></i> Registrar Solicitud en Sistema
+            </button>
         </form>
     </div>
 </div>

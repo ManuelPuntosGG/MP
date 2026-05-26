@@ -5,28 +5,36 @@
 {% block extra_css %}
 <style>
     .container { max-width: 1200px; margin: 2rem auto; padding: 0 5%; }
-    .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 2rem; }
+    .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 2rem; font-weight: 800; letter-spacing: -0.5px; }
 
     .catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-    .tarjeta { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; display: flex; flex-direction: column; border: 1px solid #f4f4f5; }
-    .tarjeta:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(220, 38, 38, 0.1); }
     
-    .contenedor-imagen { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f4f4f5; }
-    .contenedor-imagen img { width: 100%; height: 100%; object-fit: cover; }
-    .imagen-placeholder { height: 100%; display: flex; align-items: center; justify-content: center; color: #a1a1aa; font-weight: 600; }
+    /* Tarjetas premium con bordes finos y sombras suaves */
+    .tarjeta { background: var(--blanco); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; display: flex; flex-direction: column; border: 1px solid var(--borde); }
+    .tarjeta:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border-color: rgba(220, 38, 38, 0.2); }
+    
+    .contenedor-imagen { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f4f4f5; border-bottom: 1px solid var(--borde); }
+    .contenedor-imagen img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .tarjeta:hover .contenedor-imagen img { transform: scale(1.03); }
+    
+    .imagen-placeholder { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #a1a1aa; font-weight: 600; font-size: 0.9rem; gap: 8px; background: #f4f4f5; }
     
     .tarjeta-contenido { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
     .tarjeta-categoria { font-size: 0.75rem; color: var(--acento); font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px; }
-    .tarjeta h2 { font-size: 1.2rem; color: var(--primario); margin-bottom: 0.5rem; }
-    .tarjeta p.desc { font-size: 0.9rem; color: #71717a; margin-bottom: 1rem; flex-grow: 1; }
+    .tarjeta h2 { font-size: 1.2rem; color: var(--primario); margin-bottom: 0.5rem; font-weight: 600; }
+    .tarjeta p.desc { font-size: 0.9rem; color: var(--texto); opacity: 0.85; margin-bottom: 1.25rem; flex-grow: 1; }
     
-    .tarjeta-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f4f4f5; padding-top: 1rem; flex-direction: column; gap: 10px; }
+    .tarjeta-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--borde); padding-top: 1rem; flex-direction: column; gap: 12px; }
     .info-precio { display: flex; justify-content: space-between; width: 100%; align-items: center; }
     .precio { color: var(--verde-precio); font-weight: 800; font-size: 1.4rem; }
-    .stock { font-size: 0.85rem; background: #f4f4f5; padding: 4px 8px; border-radius: 4px; font-weight: 600; color: #18181b; }
+    .stock { font-size: 0.85rem; background: var(--fondo); padding: 4px 10px; border-radius: 6px; font-weight: 600; color: var(--texto); border: 1px solid var(--borde); }
     
-    .btn-comprar { background: var(--acento); color: white; text-align: center; padding: 8px; border-radius: 6px; text-decoration: none; font-weight: 600; width: 100%; transition: background 0.2s; }
-    .btn-comprar:hover { background: #b91c1c; }
+    .btn-comprar { background: var(--acento); color: white; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: 600; width: 100%; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; }
+    .btn-comprar:hover { background: var(--acento-hover); transform: translateY(-2px); }
+    
+    /* Paginación estilizada */
+    .paginacion-link { padding: 8px 14px; background: var(--blanco); border: 1px solid var(--borde); border-radius: 8px; text-decoration: none; color: var(--texto); font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+    .paginacion-link:hover { border-color: var(--acento); color: var(--acento); background: rgba(220, 38, 38, 0.02); }
 </style>
 {% endblock %}
 
@@ -40,8 +48,11 @@
                 <div class="contenedor-imagen">
                     {% if producto.imagen %}
                         <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
-                    {% else %}
-                        <div class="imagen-placeholder"><span>Sin imagen</span></div>
+                    {% append_else %}
+                        <div class="imagen-placeholder">
+                            <i class="bi bi-image" style="font-size: 1.5rem;"></i>
+                            <span>Sin imagen</span>
+                        </div>
                     {% endif %}
                 </div>
 
@@ -56,35 +67,36 @@
                             <span class="stock">Stock: {{ producto.stock }}</span>
                         </div>
                         <a href="https://wa.me/584245022292?text=Hola,%20me%20interesa%20el%20producto:%20{{ producto.nombre|urlencode }}" target="_blank" class="btn-comprar">
-                            Me interesa
+                            <i class="bi bi-whatsapp"></i> Me interesa
                         </a>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #a1a1aa;">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #a1a1aa;">
+                <i class="bi bi-box-seam" style="font-size: 3rem; color: var(--borde); display: block; margin-bottom: 15px;"></i>
                 <h3>No hay componentes registrados en este momento.</h3>
             </div>
         {% endfor %}
     </div>
 
     {% if page_obj.has_other_pages %}
-    <nav style="margin-top:2.5rem; text-align:center;">
-        <ul style="list-style:none; display:inline-flex; gap:8px; padding:0;">
+    <nav style="margin-top: 3rem; text-align: center;">
+        <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0; align-items: center;">
             {% if page_obj.has_previous %}
-                <li><a href="?page={{ page_obj.previous_page_number }}" style="padding: 8px 12px; background: white; border: 1px solid #e4e4e7; border-radius: 6px; text-decoration: none; color: var(--texto);">« Prev</a></li>
+                <li><a href="?page={{ page_obj.previous_page_number }}" class="paginacion-link"><i class="bi bi-chevron-left"></i> Anterior</a></li>
             {% endif %}
             
             {% for num in page_obj.paginator.page_range %}
                 {% if num == page_obj.number %}
-                    <li><strong style="padding: 8px 12px; background: var(--acento); color: white; border-radius: 6px;">{{ num }}</strong></li>
+                    <li><strong style="padding: 8px 14px; background: var(--acento); color: white; border-radius: 8px; font-size: 0.9rem; font-weight: 700;">{{ num }}</strong></li>
                 {% else %}
-                    <li><a href="?page={{ num }}" style="padding: 8px 12px; background: white; border: 1px solid #e4e4e7; border-radius: 6px; text-decoration: none; color: var(--texto);">{{ num }}</a></li>
+                    <li><a href="?page={{ num }}" class="paginacion-link">{{ num }}</a></li>
                 {% endif %}
             {% endfor %}
             
             {% if page_obj.has_next %}
-                <li><a href="?page={{ page_obj.next_page_number }}" style="padding: 8px 12px; background: white; border: 1px solid #e4e4e7; border-radius: 6px; text-decoration: none; color: var(--texto);">Next »</a></li>
+                <li><a href="?page={{ page_obj.next_page_number }}" class="paginacion-link">Siguiente <i class="bi bi-chevron-right"></i></a></li>
             {% endif %}
         </ul>
     </nav>

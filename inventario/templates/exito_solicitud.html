@@ -4,28 +4,37 @@
 
 {% block extra_css %}
 <style>
-    .container-exito { max-width: 600px; margin: 4rem auto; padding: 0 5%; text-align: center; }
-    .exito-box { background: var(--blanco); padding: 3rem 2rem; border-radius: 12px; border: 2px solid #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1); }
+    .container-exito { max-width: 550px; margin: 4rem auto; padding: 0 5%; }
+    .exito-box { background: var(--blanco); padding: 3rem 2rem; border-radius: 12px; border: 1px solid var(--borde); border-top: 4px solid var(--verde-precio); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.03); text-align: center; }
     
-    .codigo-destacado { font-size: 2.5rem; font-weight: 800; color: var(--primario); background: #f4f4f5; padding: 15px 30px; border-radius: 8px; display: inline-block; margin: 20px 0; letter-spacing: 2px; }
+    .icono-check { font-size: 3.5rem; color: var(--verde-precio); margin-bottom: 15px; display: block; }
     
-    .btn-volver { display: inline-block; background: var(--primario); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 20px; transition: 0.3s; }
-    .btn-volver:hover { background: #3f3f46; }
+    .codigo-destacado { font-size: 2.2rem; font-weight: 800; color: var(--primario); background: var(--fondo); padding: 12px 24px; border-radius: 8px; display: inline-block; margin: 20px 0; letter-spacing: 3px; border: 1px solid var(--borde); font-family: 'Courier New', Courier, monospace; }
+    
+    .btn-volver { display: inline-flex; align-items: center; gap: 8px; background: var(--primario); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 20px; transition: all 0.2s; font-size: 0.95rem; border: 1px solid var(--primario); }
+    .btn-volver:hover { background: #27272a; border-color: #27272a; transform: translateY(-1px); }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-exito">
     <div class="exito-box">
-        <h1 style="color: #10b981; margin-bottom: 10px;">¡Solicitud Registrada!</h1>
-        <p style="font-size: 1.1rem;">Hola <strong>{{ orden.cliente_nombre }}</strong>, hemos recibido los datos de tu <strong>{{ orden.equipo }}</strong>.</p>
+        <span class="icono-check"><i class="bi bi-check-circle-fill"></i></span>
+        <h1 style="color: var(--primario); margin-bottom: 10px; font-weight: 800; font-size: 1.75rem; letter-spacing: -0.5px;">¡Ingreso Registrado con Éxito!</h1>
+        <p style="font-size: 1rem; color: var(--texto); line-height: 1.5;">Estimado(a) <strong>{{ orden.cliente_nombre }}</strong>, los parámetros técnicos de su equipo (<strong>{{ orden.equipo }}</strong>) han sido cargados al core del sistema.</p>
         
-        <p style="margin-top: 25px; color: #71717a;">Tu código único de rastreo es:</p>
+        <p style="margin-top: 25px; color: #71717a; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Código Único de Rastreo:</p>
         <div class="codigo-destacado">{{ orden.codigo_rastreo }}</div>
         
-        <p style="font-size: 0.95rem; color: var(--acento); font-weight: 600;">⚠️ Por favor, guarda este código. Lo necesitarás para consultar los avances de tu reparación.</p>
+        <div style="background: rgba(220, 38, 38, 0.03); border: 1px solid rgba(220, 38, 38, 0.15); padding: 12px; border-radius: 8px; margin-top: 10px;">
+            <p style="font-size: 0.88rem; color: var(--acento); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0;">
+                <i class="bi bi-shield-exclamation"></i> Guarde este código para monitorear el diagnóstico técnico en vivo.
+            </p>
+        </div>
         
-        <a href="{% url 'inicio' %}" class="btn-volver">Volver al Inicio</a>
+        <a href="{% url 'inicio' %}" class="btn-volver">
+            <i class="bi bi-house"></i> Volver al Inicio
+        </a>
     </div>
 </div>
 {% endblock %}

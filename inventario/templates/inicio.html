@@ -5,74 +5,102 @@
 
 {% block extra_css %}
 <style>
+    /* Hero unificado con la paleta oscura premium */
     .hero {
-        background: linear-gradient(rgba(26, 11, 11, 0.85), rgba(26, 11, 11, 0.85)), url('https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
+        background: linear-gradient(rgba(9, 9, 11, 0.88), rgba(9, 9, 11, 0.92)), url('https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
         color: var(--blanco);
         text-align: center;
-        padding: 100px 5%;
+        padding: 120px 5%;
     }
 
-    .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; }
-    .hero p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 40px auto; color: #e4e4e7; }
+    .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; letter-spacing: -1px; }
+    .hero p { font-size: 1.25rem; max-width: 650px; margin: 0 auto 40px auto; color: #a1a1aa; font-weight: 400; }
     
-    .botones-hero { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-    .btn { padding: 15px 30px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1.1rem; transition: transform 0.2s, background 0.2s; }
-    .btn-primario { background: var(--acento); color: var(--blanco); }
-    .btn-primario:hover { transform: translateY(-3px); background: #b91c1c; }
-    .btn-secundario { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--blanco); color: var(--blanco); }
+    .botones-hero { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+    
+    .btn { padding: 14px 28px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 1rem; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px; }
+    .btn-primario { background: var(--acento); color: var(--blanco); border: 1px solid var(--acento); }
+    .btn-primario:hover { transform: translateY(-3px); background: var(--acento-hover); box-shadow: 0 10px 20px -10px rgba(220,38,38,0.5); }
+    
+    .btn-secundario { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.15); color: var(--blanco); }
     .btn-secundario:hover { background: var(--blanco); color: var(--primario); transform: translateY(-3px); }
 
-    .servicios { padding: 80px 5%; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
-    .card-servicio { background: var(--blanco); padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03); border: 1px solid #f4f4f5; }
-    .card-servicio h3 { color: var(--primario); font-size: 1.5rem; margin-bottom: 15px; border-bottom: 2px solid var(--acento); display: inline-block; padding-bottom: 5px; }
-
-    .ubicacion { background: var(--blanco); padding: 80px 5%; border-top: 1px solid #e4e4e7; }
-    .ubicacion-container { max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
-    .ubicacion-info { flex: 1; min-width: 300px; }
-    .ubicacion-info h2 { font-size: 2.2rem; color: var(--primario); margin-bottom: 20px; }
-    .detalle-ubicacion { margin-bottom: 15px; font-size: 1.1rem; }
+    /* Bloque de servicios modificado con sombras orgánicas */
+    .servicios { padding: 80px 5%; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+    .card-servicio { background: var(--blanco); padding: 40px 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); border: 1px solid var(--borde); transition: all 0.3s ease; }
+    .card-servicio:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: rgba(220,38,38,0.15); }
     
-    .mapa-container { flex: 1; min-width: 300px; height: 350px; border-radius: 12px; overflow: hidden; border: 1px solid #e4e4e7; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+    .card-servicio-icono { font-size: 2.5rem; color: var(--acento); margin-bottom: 15px; display: block; }
+    .card-servicio h3 { color: var(--primario); font-size: 1.4rem; margin-bottom: 12px; font-weight: 700; letter-spacing: -0.3px; }
+    .card-servicio p { color: var(--texto); opacity: 0.85; font-size: 0.95rem; margin-bottom: 20px; }
+
+    /* Ubicación y Datos del taller */
+    .ubicacion { background: var(--blanco); padding: 80px 5%; border-top: 1px solid var(--borde); }
+    .ubicacion-container { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 50px; align-items: center; }
+    .ubicacion-info { flex: 1; min-width: 320px; }
+    .ubicacion-info h2 { font-size: 2.2rem; color: var(--primario); margin-bottom: 25px; font-weight: 800; letter-spacing: -0.5px; }
+    
+    .detalle-ubicacion { margin-bottom: 20px; font-size: 1.05rem; display: flex; align-items: flex-start; gap: 12px; color: var(--texto); }
+    .detalle-ubicacion i { color: var(--acento); font-size: 1.25rem; margin-top: 2px; }
+    
+    .mapa-container { flex: 1; min-width: 320px; height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid var(--borde); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03); }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="hero">
     <h1>Soluciones Tecnológicas</h1>
-    <p>Expertos en reparación a nivel de componentes y venta de equipos. Calidad y transparencia en cada servicio.</p>
+    <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de alta gama. Transparencia digital en cada ticket.</p>
     <div class="botones-hero">
-        <a href="{% url 'catalogo' %}" class="btn btn-primario">🛒 Ver Catálogo de Componentes</a>
-        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario">🔍 Rastrear mi Reparación</a>
+        <a href="{% url 'catalogo' %}" class="btn btn-primario"><i class="bi bi-cpu"></i> Catálogo de Hardware</a>
+        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Rastrear Mi Reparación</a>
     </div>
 </section>
 
 <section class="servicios">
     <div class="card-servicio">
+        <span class="card-servicio-icono"><i class="bi bi-tools"></i></span>
         <h3>Servicio Técnico Especializado</h3>
-        <p>Diagnóstico y reparación a nivel de placa, mantenimiento de GPUs, cambio de módulos de pantalla y más.</p>
-        <a href="{% url 'solicitar_reparacion' %}" class="btn btn-primario" style="display: inline-block; margin-top: 15px; font-size: 1rem; padding: 10px 20px;">
-            📝 Solicitar Reparación
+        <p>Diagnóstico avanzado en osciloscopio, microsoldadura a nivel de placa, mantenimiento térmico estructural de GPUs y laptops.</p>
+        <a href="{% url 'solicitar_reparacion' %}" class="btn btn-primario" style="font-size: 0.9rem; padding: 10px 20px;">
+            <i class="bi bi-file-earmark-plus"></i> Solicitar Reparación
         </a>
     </div>
     <div class="card-servicio">
-        <h3>Venta de Hardware</h3>
-        <p>Encuentra procesadores, placas base, memorias y repuestos de alta calidad.</p>
+        <span class="card-servicio-icono"><i class="bi bi-gpu-card"></i></span>
+        <h3>Componentes Originales</h3>
+        <p>Disponemos de un amplio inventario verificado de procesadores, tarjetas de video, memorias modulares y refacciones certificadas.</p>
+        <a href="{% url 'catalogo' %}" class="btn btn-secundario" style="font-size: 0.9rem; padding: 10px 20px; color: var(--primario); border-color: var(--borde);">
+            <i class="bi bi-arrow-right"></i> Explorar Tienda
+        </a>
     </div>
 </section>
 
 <section class="ubicacion">
     <div class="ubicacion-container">
         <div class="ubicacion-info">
-            <h2>Ubicación</h2>
-            <div class="detalle-ubicacion">📍 <strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1</div>
-            <div class="detalle-ubicacion">🕒 <strong>Horario:</strong> Lunes a Viernes de 5:00 PM a 10:00 PM</div>
-            <div class="detalle-ubicacion">🕒 <strong>Horario Fin de Semana:</strong> Sabado y Domingo de 9:00 AM a 10:00 PM</div>
-            <div class="detalle-ubicacion">📱 <strong>Contacto:</strong> +58 4245022292</div>
+            <h2>Datos de Contacto y Ubicación</h2>
+            <div class="detalle-ubicacion">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span><strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1, Valencia, Carabobo.</span>
+            </div>
+            <div class="detalle-ubicacion">
+                <i class="bi bi-clock-history"></i>
+                <span><strong>Lunes a Viernes:</strong> 5:00 PM a 10:00 PM</span>
+            </div>
+            <div class="detalle-ubicacion">
+                <i class="bi bi-calendar-week"></i>
+                <span><strong>Fines de Semana:</strong> Sábado y Domingo de 9:00 AM a 10:00 PM</span>
+            </div>
+            <div class="detalle-ubicacion">
+                <i class="bi bi-phone"></i>
+                <span><strong>Soporte Directo:</strong> +58 424-5022292</span>
+            </div>
         </div>
 
         <div class="mapa-container">
             <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.093263064714!2d-67.9988419!3d10.2540618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e805de9950f9af7%3A0x29ff89c68666a5bc!2sMP%20Tech!5e0!3m2!1ses!2sve!4v1779739157376!5m2!1ses!2sve"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.845423851084!2d-68.0125!3d10.2736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDE2JzI1LjAiTiA2OMKwMDAnNDUuMCJX!5e0!3m2!1ses!2sve!4v1700000000000!5m2!1ses!2sve"
                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade">
             </iframe>
