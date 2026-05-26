@@ -6,8 +6,15 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from .forms import SolicitudReparacionForm
 from .models import Categoria, Producto, OrdenServicio
-from pyDolarVenezuela import LocalDatabase, Monitor
-from pyDolarVenezuela.pages import ExchangeMonitor  # Cambiamos a ExchangeMonitor (más completo)
+from django.shortcuts import render, get_object_or_404
+
+
+def imprimir_ticket(request, pk):
+    # Buscamos la orden por su ID (o pk)
+    orden = get_object_or_404(OrdenServicio, pk=pk)
+    
+    # Renderizamos la plantilla de 58mm
+    return render(request, 'imprimir_ticket.html', {'ticket': orden})
 
 def obtener_tasa_binance():
 

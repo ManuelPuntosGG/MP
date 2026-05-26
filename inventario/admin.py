@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html  # Importante para los botones
+from django.urls import reverse           # Importante para las rutas
 from .models import Producto, OrdenServicio, AvanceOrden, Categoria
 
 # 1. Configuración de Categorías y Productos
@@ -12,51 +14,46 @@ class ProductoAdmin(admin.ModelAdmin):
     list_filter = ('categoria', 'disponible')
     search_fields = ('nombre', 'descripcion')
 
-
-# 2. Configuración del Sistema de Soporte Técnico (Inlines)
+# 2. Configuración del Sistema de Soporte Técnico
 class AvanceOrdenInline(admin.TabularInline):
-    """Permite gestionar los avances de la reparación dentro del mismo ticket"""
     model = AvanceOrden
-    extra = 1  # Muestra un espacio vacío por defecto para añadir un nuevo avance rápido
+    extra = 1
     fields = ('descripcion', 'imagen')
     readonly_fields = ('fecha',)
 
-
 class OrdenServicioAdmin(admin.ModelAdmin):
-    # Mostramos el nuevo código de rastreo y agregamos la columna de WhatsApp
-    list_display = ('codigo_rastreo', 'cliente_nombre', 'equipo', 'estado', 'fecha_ingreso', 'notificar_cliente')
+    # Agregamos 'imprimir_ticket_link' a la lista de columnas
+    list_display = ('codigo_rastreo', 'cliente_nombre', 'equipo', 'estado', 'fecha_ingreso', 'notificar_cliente', 'imprimir_ticket_link')
     
-    # Filtros laterales para una navegación rápida en el taller
     list_filter = ('estado', 'fecha_ingreso')
-    
-    # Buscador avanzado por código único, nombre o teléfono del cliente
     search_fields = ('codigo_rastreo', 'cliente_nombre', 'cliente_telefono', 'equipo')
-    
-    # Ordenar por defecto desde los ingresos más recientes
     ordering = ('-fecha_ingreso',)
-    
-    # Integra la bitácora de avances dentro de la vista detallada de la orden
     inlines = [AvanceOrdenInline]
 
-    # Método para renderizar el botón estético de WhatsApp en la lista de registros
+    # Botón WhatsApp
     def notificar_cliente(self, obj):
         url = obj.enlace_whatsapp()
-        return mark_safe(
-            f'<a href="{url}" target="_blank" style="'
-            f'background-color: #25D366; color: white; '
-            f'padding: 5px 10px; border-radius: 6px; '
-            f'text-decoration: none; font-weight: 600; '
-            f'font-size: 0.75rem; display: inline-block;">'
-            f'💬 WhatsApp</a>'
+        return format_html(
+            '<a href="{}" target="_blank" style="background-color: #25D366; color: white; '
+            'padding: 5px 10px; border-radius: 6px; text-decoration: none; '
+            'font-weight: 600; font-size: 0.75rem;">💬 WhatsApp</a>',
+            url
         )
-    
-    # Título que llevará la columna en la tabla del panel administrador
-    notificar_cliente.short_description = 'Acción'
+    notificar_cliente.short_description = 'WhatsApp'
 
+    # Botón Imprimir Ticket (NUEVO)
+    def imprimir_ticket_link(self, obj):
+        # Asegúrate de que el nombre de la URL en tu urls.py sea exactamente 'imprimir_ticket'
+        url = reverse('imprimir_ticket', args=[obj.pk])
+        return format_html(
+            '<a href="{}" target="_blank" style="background-color: #3b82f6; color: white; '
+            'padding: 5px 10px; border-radius: 6px; text-decoration: none; '
+            'font-weight: 600; font-size: 0.75rem;">🖨️ Ticket</a>',
+            url
+        )
+    imprimir_ticket_link.short_description = 'Imprimir'
 
-# 3. Registro de Modelos en el Panel
+# 3. Registro de Modelos
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(OrdenServicio, OrdenServicioAdmin)
-# Nota: Ya no es necesario registrar 'AvanceOrden' de forma individual
-# porque se gestiona directamente desde dentro de cada OrdenServicio.

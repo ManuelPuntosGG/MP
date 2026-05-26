@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket {{ ticket.codigo_rastreo }}</title>
+    <style>
+        /* CSS para Ticket Térmico 58mm */
+        @page { size: 58mm auto; margin: 0; }
+        body { width: 58mm; margin: 0; padding: 5px; font-family: 'Courier New', monospace; font-size: 12px; color: #000; }
+        
+        .ticket-container { text-align: center; }
+        .logo { font-weight: 800; font-size: 18px; margin-bottom: 2px; }
+        .linea { border-top: 1px dashed #000; margin: 8px 0; }
+        .info-bloque { text-align: left; margin: 5px 0; }
+        .qr-img { width: 120px; height: 120px; margin: 10px auto; display: block; }
+        
+        .footer { font-size: 10px; margin-top: 10px; }
+
+        @media print {
+            .btn-imprimir { display: none; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="ticket-container">
+        <div class="logo">MP TECH</div>
+        <div style="font-size: 10px;">{{ now|date:"d/m/Y H:i" }}</div>
+        <div class="linea"></div>
+        
+        <div class="info-bloque">
+            <strong>Orden:</strong> {{ ticket.codigo_rastreo }}<br>
+            <strong>Cliente:</strong> {{ ticket.cliente_nombre }}<br>
+            <strong>Equipo:</strong> {{ ticket.equipo }}
+        </div>
+        
+        <div class="linea"></div>
+        
+        {% if ticket.qr_code %}
+            <img src="{{ ticket.qr_code.url }}" class="qr-img" alt="QR Rastreo">
+        {% endif %}
+        
+        <div style="font-size: 11px;">Escanea para ver el estatus</div>
+        <div class="linea"></div>
+        
+        <div class="footer">
+            ¡Gracias por confiar en MP Tech!<br>
+            www.tu-web.com
+        </div>
+    </div>
+    
+    <button class="btn-imprimir" onclick="window.print()">Imprimir Ticket</button>
+</body>
+</html>
