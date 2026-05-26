@@ -65,7 +65,7 @@ class OrdenServicio(models.Model):
     def generar_qr(self):
         """Genera el QR y lo guarda en el campo qr_code"""
         # CAMBIA 'tusitio.com' por el dominio real de tu web
-        url_seguimiento = f"https://tusitio.com/rastrear/{self.codigo_rastreo}"
+        url_seguimiento = f"https://mp-tech-dl5s.onrender.com/rastrear/{self.codigo_rastreo}"
         
         qr = qrcode.QRCode(version=1, box_size=5, border=1)
         qr.add_data(url_seguimiento)
@@ -95,7 +95,7 @@ class OrdenServicio(models.Model):
         mensaje = (
             f"¡Hola *{self.cliente_nombre}*! Tu equipo (*{self.equipo}*) "
             f"tiene una actualización registrada. "
-            f"Consulta los detalles en: https://tusitio.com/rastrear/{self.codigo_rastreo}"
+            f"Consulta los detalles en: https://mp-tech-dl5s.onrender.com/rastrear/{self.codigo_rastreo}"
         )
         import urllib.parse
         mensaje_url = urllib.parse.quote(mensaje)
