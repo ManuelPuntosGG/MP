@@ -7,18 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MP Tech{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <style>
         /* NUEVO: Paleta de colores Tech-Premium */
         :root {
-            --primario: #09090b;       /* Negro zinc profundo para fondos/textos principales */
-            --gris-oscuro: #18181b;    /* Gris oscuro para headers/footers */
-            --fondo: #fafafa;          /* Blanco roto para el fondo general */
-            --texto: #27272a;          /* Gris carbón para lectura suave */
+            --primario: #09090b;
+            /* Negro zinc profundo para fondos/textos principales */
+            --gris-oscuro: #18181b;
+            /* Gris oscuro para headers/footers */
+            --fondo: #fafafa;
+            /* Blanco roto para el fondo general */
+            --texto: #27272a;
+            /* Gris carbón para lectura suave */
             --blanco: #ffffff;
-            --acento: #dc2626;         /* Rojo tech vibrante */
+            --acento: #dc2626;
+            /* Rojo tech vibrante */
             --acento-hover: #b91c1c;
             --borde: #e4e4e7;
             --verde-precio: #10b981;
@@ -97,7 +102,8 @@
         .nav-links a:hover {
             background-color: var(--acento);
             border-color: var(--acento);
-            transform: translateY(-2px); /* Micro-interacción: el botón sube un poco */
+            transform: translateY(-2px);
+            /* Micro-interacción: el botón sube un poco */
         }
 
         /* BOTÓN WHATSAPP FLOTANTE MEJORADO */
@@ -125,7 +131,9 @@
         }
 
         /* NUEVO: EFECTO GLOW PARA TODOS LOS INPUTS (Buscador, Formularios, etc.) */
-        input:focus, textarea:focus, .form-input:focus {
+        input:focus,
+        textarea:focus,
+        .form-input:focus {
             outline: none !important;
             border-color: var(--acento) !important;
             box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
@@ -137,12 +145,44 @@
         .tarjeta-premium {
             transition: all 0.3s ease;
         }
+
         .tarjeta-premium:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         /* BLOQUE PARA ESTILOS ESPECÍFICOS DE CADA PÁGINA */
+        /* Ajustes para Pantallas Móviles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                /* Pone el logo arriba y los botones abajo */
+                gap: 1rem;
+                padding: 1rem 5%;
+                text-align: center;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                /* Si no caben los 3 botones, se bajan ordenadamente */
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+                /* Letra un poco más pequeña en móvil */
+                padding: 8px 12px;
+                flex: 1 1 calc(50% - 8px);
+                /* Hace que los botones se acomoden en cuadrícula */
+                justify-content: center;
+            }
+
+            .logo-nav {
+                font-size: 1.5rem;
+            }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
