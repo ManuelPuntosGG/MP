@@ -11,8 +11,8 @@ from pyDolarVenezuela.pages import ExchangeMonitor  # Cambiamos a ExchangeMonito
 
 def obtener_tasa_binance():
     """
-    Obtiene la tasa de Binance P2P de forma dinámica usando pyDolarVenezuela.
-    Evita errores de llaves (KeyErrors) buscando el monitor de forma flexible.
+    Obtiene la tasa de Binance P2P pasando el argumento requerido a pyDolarVenezuela.
+    Usa ExchangeMonitor para asegurar la existencia de la llave.
     """
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
@@ -21,29 +21,16 @@ def obtener_tasa_binance():
     try:
         print("🔄 [INTENTO] Iniciando pyDolarVenezuela con ExchangeMonitor...")
         
-        # Inicializar la base de datos local interna de la librería
+        # Inicializamos la base de datos interna de la librería
         db = LocalDatabase(motor='sqlite', url='pydolar_cache.db')
         monitor = Monitor(ExchangeMonitor, 'USD', db=db)
         
-        # 1. Solicitamos TODOS los monitores en lugar de uno solo para inspeccionar sus llaves
-        todos_los_monitores = monitor.get_value_monitors()
+        # Corregido: Pasamos explícitamente el argumento 'binance' que exige la función
+        print("🔍 [DIAGNÓSTICO] Solicitando el monitor 'binance'...")
+        binance_data = monitor.get_value_monitors('binance')
         
-        # 2. Diagnóstico en logs para que veas qué llaves trajo el proveedor
-        llaves_disponibles = list(todos_los_monitores.keys()) if isinstance(todos_los_monitores, dict) else []
-        print(f"🔍 [DIAGNÓSTICO] Llaves disponibles en el proveedor: {llaves_disponibles}")
-        
-        # 3. Búsqueda inteligente de la llave de Binance
-        llave_binance = None
-        for llave in llaves_disponibles:
-            if 'binance' in llave.lower():
-                llave_binance = llave
-                break
-                
-        # 4. Extraer el precio de la llave encontrada
-        if llave_binance:
-            binance_data = todos_los_monitores[llave_binance]
-            
-            # La librería puede devolver un objeto o un diccionario según la subversión
+        if binance_data:
+            # Manejo seguro por si la librería devuelve un objeto o un diccionario
             if hasattr(binance_data, 'price'):
                 precio = float(binance_data.price)
             elif isinstance(binance_data, dict) and 'price' in binance_data:
@@ -52,20 +39,19 @@ def obtener_tasa_binance():
                 precio = None
                 
             if precio:
-                print(f"✅ [ÉXITO] Tasa encontrada dinámicamente ({llave_binance}): {precio} Bs.")
-                cache.set('tasa_usdt_ves', precio, 900)
+                print(f"✅ [ÉXITO] Tasa Binance obtenida con pyDolarVenezuela: {precio} Bs.")
+                cache.set('tasa_usdt_ves', precio, 900) # Guardar por 15 minutos
                 return precio
-        else:
-            print("⚠️ [ALERTA] No se encontró ningún monitor que contenga la palabra 'binance'.")
+                
+        print("⚠️ [ALERTA] El monitor respondió pero no se pudo extraer el precio.")
             
     except Exception as e:
         print(f"💥 [ERROR CRÍTICO] Falló la ejecución de pyDolarVenezuela: {e}")
 
-    # PLAN DE RESPALDO: Si las llaves cambian por completo, salvamos las papas con un valor base real
+    # Tu plan de respaldo realista por si ocurre cualquier imprevisto de red
     fallback = cache.get('tasa_usdt_ves', 45.00)
     print(f"ℹ️ [INFO] Usando tasa de respaldo de seguridad: {fallback}")
     return fallback
-
 
 def solicitar_reparacion(request):
     if request.method == 'POST':
