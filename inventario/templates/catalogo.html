@@ -21,7 +21,6 @@
         letter-spacing: -0.5px;
     }
 
-    /* Contenedor de la barra de herramientas de filtrado */
     .barra-filtros {
         background: var(--blanco);
         padding: 1.25rem;
@@ -122,7 +121,6 @@
         color: var(--primario);
     }
 
-    /* Corrección del bug de paginación con filtros activos */
     @media (max-width: 768px) {
         .barra-filtros {
             padding: 1rem;
@@ -147,7 +145,6 @@
         gap: 1.5rem;
     }
 
-    /* Tarjetas premium con bordes finos y sombras suaves */
     .tarjeta {
         background: var(--blanco);
         border-radius: 12px;
@@ -283,7 +280,6 @@
         transform: translateY(-2px);
     }
 
-    /* Paginación estilizada */
     .paginacion-link {
         padding: 8px 14px;
         background: var(--blanco);
@@ -302,7 +298,6 @@
         background: rgba(220, 38, 38, 0.02);
     }
 
-    /* Ajustes para móviles en el Catálogo */
     @media (max-width: 768px) {
         .titulo-seccion {
             font-size: 1.6rem;
@@ -322,7 +317,6 @@
             padding: 1.25rem;
         }
 
-        /* CRÍTICO: Evita que los números de página se salgan de la pantalla */
         nav ul {
             flex-wrap: wrap;
             justify-content: center;
@@ -340,7 +334,13 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="titulo-seccion">Componentes y Repuestos</h2>
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 2rem; border-bottom: 3px solid var(--acento); padding-bottom: 8px;">
+        <h2 class="titulo-seccion" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Componentes y Repuestos</h2>
+        <span style="font-size: 0.85rem; background: #eff6ff; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="bi bi-currency-exchange"></i> Tasa Binance: {{ tasa_ves|floatformat:2 }} Bs/USDT
+        </span>
+    </div>
 
     <div class="barra-filtros">
         <form method="GET" action="{% url 'catalogo' %}" class="form-filters form-filtros">
@@ -392,9 +392,15 @@
 
                 <div class="tarjeta-footer">
                     <div class="info-precio">
-                        <span class="precio">${{ producto.precio }}</span>
+                        <div style="display: flex; flex-direction: column; gap: 1px;">
+                            <span class="precio">${{ producto.precio }}</span>
+                            <span style="font-size: 0.85rem; color: #71717a; font-weight: 500; letter-spacing: -0.2px;">
+                                ≈ {{ producto.precio_ves|floatformat:2 }} Bs.
+                            </span>
+                        </div>
                         <span class="stock">Stock: {{ producto.stock }}</span>
                     </div>
+                    
                     <a href="https://wa.me/584245022292?text=Hola,%20me%20interesa%20el%20producto:%20{{ producto.nombre|urlencode }}"
                         target="_blank" class="btn-comprar">
                         <i class="bi bi-whatsapp"></i> Me interesa

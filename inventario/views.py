@@ -1,78 +1,115 @@
+import decimal
+import requests
+from django.core.cache import cache
 from django.shortcuts import render, redirect
-from .forms import SolicitudReparacionForm
-# Asegúrate de importar tu modelo OrdenServicio si no está importado
-from .models import Categoria, Producto, OrdenServicio
+from django.core.paginator import Paginator
 from django.db.models import Q
 
+from .forms import SolicitudReparacionForm
+from .models import Categoria, Producto, OrdenServicio
+
+
+def obtener_tasa_binance():
+    """
+    Consulta el precio actual del USDT en Bolívares (VES) en el P2P de Binance.
+    Guarda el resultado en caché por 15 minutos para optimizar la velocidad.
+    """
+    tasa = cache.get('tasa_usdt_ves')
+    if tasa:
+        return tasa
+
+    url = "https://p2p.binance.com/bapi/c2c/v2/public/c2c/p2p/main/tradeList"
+    payload = {
+        "asset": "USDT",
+        "fiat": "VES",
+        "merchantCheck": False,
+        "page": 1,
+        "payTypes": [],
+        "publisherType": None,
+        "rows": 3,
+        "tradeType": "BUY"
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=4)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('data'):
+                precio_filtrado = float(data['data'][0]['adv']['price'])
+                cache.set('tasa_usdt_ves', precio_filtrado, 900)
+                return precio_filtrado
+    except Exception as e:
+        print(f"Error consultando Binance: {e}")
+    
+    return cache.get('tasa_usdt_ves', 40.00)
+
+
 def solicitar_reparacion(request):
-    # Si el formulario fue enviado
     if request.method == 'POST':
         form = SolicitudReparacionForm(request.POST)
         if form.is_valid():
-            # Guardamos la orden en la base de datos
             nueva_orden = form.save()
-            
-            # Pasamos el código generado a la plantilla de éxito
             return render(request, 'exito_solicitud.html', {'orden': nueva_orden})
     else:
-        # Si es la primera vez que entra, mostramos el formulario vacío
         form = SolicitudReparacionForm()
 
     return render(request, 'solicitar_reparacion.html', {'form': form})
 
-# 1. Vista de la Landing Page (Portada de MP Tech)
+
 def inicio(request):
     return render(request, 'inicio.html')
 
-# 2. Vista del Catálogo (Muestra solo productos disponibles)
-from django.core.paginator import Paginator
 
 def catalogo(request):
-    # 1. Base del query: solo productos disponibles con su categoría precargada
     productos_qs = Producto.objects.filter(disponible=True).select_related('categoria')
     
-    # 2. Capturar los parámetros GET que viajan desde el formulario HTML
     query_busqueda = request.GET.get('q', '').strip()
     categoria_id = request.GET.get('categoria', '')
 
-    # 3. Aplicar Filtro de texto (Buscador) si existe
     if query_busqueda:
         productos_qs = productos_qs.filter(
             Q(nombre__icontains=query_busqueda) | 
             Q(descripcion__icontains=query_busqueda)
         )
     
-    # 4. Aplicar Filtro por Categoría si seleccionaron alguna específica
     if categoria_id and categoria_id.isdigit():
         productos_qs = productos_qs.filter(categoria_id=int(categoria_id))
     
-    # 5. Paginación (Mantenemos tus 20 productos por página)
     paginator = Paginator(productos_qs, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # 6. Necesitamos enviar todas las categorías disponibles para pintar los botones/select
+    # --- CÁLCULO DE LA TASA EN BOLÍVARES ---
+    tasa_usdt = obtener_tasa_binance()
+    tasa_decimal = decimal.Decimal(tasa_usdt)
+    
+    for producto in page_obj:
+        producto.precio_ves = producto.precio * tasa_decimal
+    # ---------------------------------------
+
     categorias = Categoria.objects.all()
     
     contexto = {
         'page_obj': page_obj,
         'categorias': categorias,
         'query_busqueda': query_busqueda,
-        'categoria_seleccionada': int(categoria_id) if (categoria_id and categoria_id.isdigit()) else None
+        'categoria_seleccionada': int(categoria_id) if (categoria_id and categoria_id.isdigit()) else None,
+        'tasa_ves': tasa_usdt # Enviamos la tasa al HTML
     }
     
     return render(request, 'catalogo.html', contexto)
 
-# 3. Vista del Rastreador de Tickets para los clientes
+
 def rastrear_ticket(request):
     ticket = None
     error = None
-    # Cambiamos 'numero_ticket' por 'codigo' para que sea más intuitivo
     codigo = request.GET.get('codigo', '').strip().upper()
 
     if codigo:
         try:
-            # Buscamos por el código único generado
             ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
         except OrdenServicio.DoesNotExist:
             error = f"No se encontró ninguna orden con el código {codigo}."
