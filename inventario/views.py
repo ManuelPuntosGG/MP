@@ -4,7 +4,8 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from .forms import SolicitudReparacionForm
+from .models import Categoria, Producto, OrdenServicio
 from pyDolarVenezuela import LocalDatabase, Monitor
 from pyDolarVenezuela.pages import CriptoDolar  # CriptoDolar recopila Binance perfectamente
 
@@ -49,7 +50,6 @@ def obtener_tasa_binance():
     fallback = cache.get('tasa_usdt_ves', 45.00)
     print(f"ℹ️ [INFO] Usando tasa de respaldo de seguridad: {fallback}")
     return fallback
-
 
 def solicitar_reparacion(request):
     if request.method == 'POST':
