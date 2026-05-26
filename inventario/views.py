@@ -40,7 +40,7 @@ def obtener_tasa_binance():
         url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
         
         # Coloca aquí la llave que generaste en el panel de CoinGecko
-        COINGECKO_KEY = "CG-XXXXXXXXXXXXX" 
+        COINGECKO_KEY = "CG-ybVxa4i2NXhfgLtKzHa2YPY8" 
         
         headers = {
             "accept": "application/json",
