@@ -7,23 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MP Tech{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        /* NUEVO: Paleta de colores Tech-Premium */
         :root {
             --primario: #09090b;
-            /* Negro zinc profundo para fondos/textos principales */
             --gris-oscuro: #18181b;
-            /* Gris oscuro para headers/footers */
             --fondo: #fafafa;
-            /* Blanco roto para el fondo general */
             --texto: #27272a;
-            /* Gris carbón para lectura suave */
             --blanco: #ffffff;
             --acento: #dc2626;
-            /* Rojo tech vibrante */
             --acento-hover: #b91c1c;
             --borde: #e4e4e7;
             --verde-precio: #10b981;
@@ -50,7 +43,7 @@
             flex: 1;
         }
 
-        /* HEADER GLOBAL MEJORADO */
+        /* HEADER GLOBAL */
         header {
             background-color: var(--primario);
             padding: 1rem 5%;
@@ -83,7 +76,6 @@
             gap: 12px;
         }
 
-        /* ESTILO DE BOTONES DEL NAVBAR MODERNIZADO */
         .nav-links a {
             background-color: transparent;
             color: var(--blanco);
@@ -103,34 +95,35 @@
             background-color: var(--acento);
             border-color: var(--acento);
             transform: translateY(-2px);
-            /* Micro-interacción: el botón sube un poco */
         }
 
-        /* BOTÓN WHATSAPP FLOTANTE MEJORADO */
+        /* BOTÓN WHATSAPP FLOTANTE */
         .whatsapp-btn-flotante {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 25px;
+            right: 25px;
             background: #25D366;
             color: white;
-            padding: 12px 20px;
+            padding: 14px 22px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 700;
             box-shadow: 0 10px 15px -3px rgba(37, 211, 102, 0.3);
-            z-index: 100;
-            transition: all 0.3s ease;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-size: 1.05rem;
         }
 
         .whatsapp-btn-flotante:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 15px 20px -3px rgba(37, 211, 102, 0.4);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 25px -5px rgba(37, 211, 102, 0.5);
+            color: white;
         }
 
-        /* NUEVO: EFECTO GLOW PARA TODOS LOS INPUTS (Buscador, Formularios, etc.) */
+        /* EFECTO GLOW INPUTS */
         input:focus,
         textarea:focus,
         .form-input:focus {
@@ -140,8 +133,7 @@
             background: var(--blanco) !important;
         }
 
-        /* NUEVO: CLASE DE UTILIDAD PARA SOMBRAS FLOTANTES */
-        /* Agrega la clase 'tarjeta-premium' a los divs de tu inicio.html o catalogo.html para este efecto */
+        /* SOMBRAS FLOTANTES */
         .tarjeta-premium {
             transition: all 0.3s ease;
         }
@@ -151,12 +143,24 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        /* BLOQUE PARA ESTILOS ESPECÍFICOS DE CADA PÁGINA */
-        /* Ajustes para Pantallas Móviles */
+        /* ==========================================
+           🌟 NUEVO: CLASES PARA ANIMACIÓN FADE-IN
+           ========================================== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, transform;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
-                /* Pone el logo arriba y los botones abajo */
                 gap: 1rem;
                 padding: 1rem 5%;
                 text-align: center;
@@ -165,22 +169,31 @@
             .nav-links {
                 width: 100%;
                 flex-wrap: wrap;
-                /* Si no caben los 3 botones, se bajan ordenadamente */
                 justify-content: center;
                 gap: 8px;
             }
 
             .nav-links a {
                 font-size: 0.85rem;
-                /* Letra un poco más pequeña en móvil */
                 padding: 8px 12px;
                 flex: 1 1 calc(50% - 8px);
-                /* Hace que los botones se acomoden en cuadrícula */
                 justify-content: center;
             }
 
-            .logo-nav {
+            .whatsapp-btn-flotante {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px;
+            }
+            
+            /* Ocultar el texto en móviles para que solo quede el ícono redondo */
+            .whatsapp-texto {
+                display: none;
+            }
+            
+            .whatsapp-btn-flotante i {
                 font-size: 1.5rem;
+                margin: 0;
             }
         }
     </style>
@@ -204,3 +217,32 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    <a href="https://wa.me/584245022292?text=¡Hola%20MP%20Tech!%20Quisiera%20hacer%20una%20consulta%20sobre%20un%20equipo..." target="_blank" class="whatsapp-btn-flotante">
+        <i class="bi bi-whatsapp"></i>
+        <span class="whatsapp-texto">Consultar por WhatsApp</span>
+    </a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 // El elemento aparecerá cuando el 15% sea visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Deja de observar una vez que ya apareció
+                    }
+                });
+            }, observerOptions);
+
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
