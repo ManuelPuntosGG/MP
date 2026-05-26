@@ -11,41 +11,46 @@ from .models import Categoria, Producto, OrdenServicio
 
 def obtener_tasa_binance():
     """
-    Consulta el precio del USDT en Bolívares.
-    Utiliza un API intermedio para evitar que el firewall de Binance bloquee a Render.
+    Consulta el precio del USDT en Bolívares con logs de diagnóstico detallados.
     """
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
 
-    # Usamos el API público de pyDolarVenezuela (Node/Vercel) que funciona perfectamente en la nube
+    # Usamos el endpoint global de monitores (más estable)
     url = "https://pydolarvenezuela-api.vercel.app/api/v1/dollar"
     
     try:
-        # Hacemos una petición GET simple
         response = requests.get(url, timeout=6)
+        
+        # PRIMER DIAGNÓSTICO: Ver qué responde el servidor del API
+        print(f"🔍 [DIAGNÓSTICO] Status Code del API externo: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()
-            
-            # Buscamos la información específica de Binance en la respuesta
-            # Este API devuelve una estructura con los monitores principales
             monitores = data.get('monitors', {})
             binance_data = monitores.get('binance', {})
             
             if binance_data and 'price' in binance_data:
                 precio_filtrado = float(binance_data['price'])
-                
-                # Guardamos en caché por 15 minutos (900 segundos)
+                print(f"✅ [ÉXITO] Tasa Binance obtenida: {precio_filtrado} Bs.")
                 cache.set('tasa_usdt_ves', precio_filtrado, 900)
                 return precio_filtrado
+            else:
+                # SEGUNDO DIAGNÓSTICO: Si cambió la estructura del JSON
+                print(f"⚠️ [ALERTA] Estructura JSON desconocida. Llaves recibidas: {list(data.keys())}")
+        else:
+            # TERCER DIAGNÓSTICO: Si el API nos da error de servidor o bloqueo
+            print(f"⚠️ [ALERTA] El API falló con código {response.status_code}. Respuesta cruda: {response.text[:100]}")
                 
     except Exception as e:
-        # Si agregaste PYTHONUNBUFFERED=1 en Render, ahora sí verás este error exacto en tu log
-        print(f"⚠️ Error consultando API alternativo en Render: {e}")
+        # CUARTO DIAGNÓSTICO: Caída de conexión total
+        print(f"💥 [ERROR CRÍTICO] Fallo de red en Render: {e}")
     
-    # Si todo falla, intentamos retornar lo último que haya quedado en caché, o 720.00 como base más realista actual
-    return cache.get('tasa_usdt_ves', 720.00)
+    # Si llegó aquí, algo falló. Avisamos cuál tasa de respaldo se usará.
+    fallback = cache.get('tasa_usdt_ves', 725.00)
+    print(f"ℹ️ [INFO] Usando tasa de respaldo temporal: {fallback}")
+    return fallback
 
 
 def solicitar_reparacion(request):
