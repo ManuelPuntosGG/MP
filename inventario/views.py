@@ -41,7 +41,7 @@ def obtener_tasa_binance():
         url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
         
         # ⚠️ Asegúrate de colocar tu llave real aquí si usas CoinGecko
-        COINGECKO_KEY = "CG-XXXXXXXXXXXXX" 
+        COINGECKO_KEY = "CG-ybVxa4i2NXhfgLtKzHa2YPY8" 
         
         headers = {
             "accept": "application/json",
@@ -79,7 +79,7 @@ def obtener_tasa_binance():
                 precio = float(data['rates']['VES'])
                 print(f"✅ [ÉXITO GLOBAL] Tasa recuperada de ExchangeRate-API: {precio} Bs.")
                 cache.set('tasa_usdt_ves', precio, 3600)
-                return precio
+                return precio*1.35  # Ajuste de seguridad para acercarnos a la realidad del mercado
     except Exception as error_global:
         print(f"⚠️ Falló la conexión con ExchangeRate-API: {error_global}")
 
