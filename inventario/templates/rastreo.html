@@ -111,6 +111,99 @@
         padding: 2.5rem 2rem;
     }
 
+    /* ==========================================
+       🌟 DISEÑO DEL STEPPER INTERACTIVO (6 PASOS)
+       ========================================== */
+    .stepper-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 3rem;
+        position: relative;
+        width: 100%;
+    }
+
+    .step-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        z-index: 2;
+    }
+
+    /* Línea conectora entre círculos */
+    .step-item::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        width: 100%;
+        height: 3px;
+        background-color: var(--borde);
+        z-index: -1;
+        transition: background-color 0.4s ease;
+    }
+
+    .step-item:last-child::after {
+        display: none;
+    }
+
+    .step-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--fondo);
+        border: 2px solid var(--borde);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.1rem;
+        color: #71717a;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 10px;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #71717a;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        max-width: 110px;
+        transition: color 0.4s ease;
+    }
+
+    /* ESTADO: COMPLETO (Pasos anteriores) */
+    .step-item.completed .step-icon {
+        background: var(--acento);
+        border-color: var(--acento);
+        color: white;
+    }
+
+    .step-item.completed .step-label {
+        color: var(--primario);
+    }
+
+    .step-item.completed::after {
+        background-color: var(--acento);
+    }
+
+    /* ESTADO: ACTIVO (Paso actual) */
+    .step-item.active .step-icon {
+        background: var(--primario);
+        border-color: var(--acento);
+        color: white;
+        box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.15);
+    }
+
+    .step-item.active .step-label {
+        color: var(--acento);
+    }
+
+    /* ========================================== */
+
     .info-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -191,7 +284,41 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
+        /* Cambio del Stepper a modo Vertical en tablets y móviles */
+        .stepper-container {
+            flex-direction: column;
+            gap: 24px;
+            padding-left: 10px;
+            margin-bottom: 2.5rem;
+        }
+
+        .step-item {
+            flex-direction: row;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .step-item::after {
+            left: 21px;
+            top: 42px;
+            width: 3px;
+            height: calc(100% + 24px);
+        }
+
+        .step-icon {
+            margin-bottom: 0;
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .step-label {
+            text-align: left;
+            max-width: 100%;
+        }
+
         .rastreo-box {
             padding: 1.5rem;
         }
@@ -216,7 +343,6 @@
             padding: 1rem;
         }
 
-        /* Pone los datos uno abajo del otro */
         .resultado-header {
             flex-direction: column;
             gap: 10px;
@@ -232,8 +358,7 @@
     <div class="rastreo-box">
         <h2><i class="bi bi-search-heart" style="color: var(--acento);"></i> Rastrear Reparación</h2>
         <form class="formulario-rastreo" method="GET">
-            <input type="text" name="codigo" placeholder="Ej: 4F8B2E9X" value="{{ codigo }}" class="input-rastreo"
-                required>
+            <input type="text" name="codigo" placeholder="Ej: 4F8B2E9X" value="{{ codigo }}" class="input-rastreo" required>
             <button type="submit" class="btn-buscar">
                 <i class="bi bi-search"></i> Buscar
             </button>
@@ -249,6 +374,62 @@
             </span>
         </div>
         <div class="resultado-body">
+
+            {% if ticket.estado == 'CANCELADO' %}
+                <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 1.5rem; border-radius: 12px; margin-bottom: 3rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.05);">
+                    <div style="width: 50px; height: 50px; background: #dc2626; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.5rem;">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <h4 style="color: #991b1b; font-weight: 800; margin-bottom: 5px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Proceso Finalizado / Cancelado</h4>
+                    <p style="color: #b91c1c; font-size: 0.95rem; margin: 0; opacity: 0.9;">
+                        Esta orden de servicio ha sido cerrada. Puedes revisar los detalles y motivos en el historial técnico abajo.
+                    </p>
+                </div>
+            {% else %}
+                <div class="stepper-container">
+                    
+                    <div class="step-item 
+                        {% if ticket.estado == 'ESPERANDO' %}active
+                        {% elif ticket.estado in 'RECIBIDO DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-hourglass"></i></div>
+                        <div class="step-label">Esperando Ingreso</div>
+                    </div>
+
+                    <div class="step-item 
+                        {% if ticket.estado == 'RECIBIDO' %}active
+                        {% elif ticket.estado in 'DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-box-seam"></i></div>
+                        <div class="step-label">Recibido</div>
+                    </div>
+
+                    <div class="step-item 
+                        {% if ticket.estado == 'DIAGNOSTICO' %}active
+                        {% elif ticket.estado in 'REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-cpu"></i></div>
+                        <div class="step-label">En Diagnóstico</div>
+                    </div>
+
+                    <div class="step-item 
+                        {% if ticket.estado == 'REPUESTOS' %}active
+                        {% elif ticket.estado in 'REPARADO ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-tools"></i></div>
+                        <div class="step-label">Esperando Repuestos</div>
+                    </div>
+
+                    <div class="step-item 
+                        {% if ticket.estado == 'REPARADO' %}active
+                        {% elif ticket.estado in 'ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-check-circle"></i></div>
+                        <div class="step-label">Listo para Entrega</div>
+                    </div>
+
+                    <div class="step-item {% if ticket.estado == 'ENTREGADO' %}active{% endif %}">
+                        <div class="step-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+                        <div class="step-label">Entregado</div>
+                    </div>
+
+                </div>
+            {% endif %}
             <div class="info-grid">
                 <div class="info-item">
                     <label>Cliente</label>
@@ -258,15 +439,13 @@
                     <label>Equipo Técnico</label>
                     <p><strong>{{ ticket.equipo }}</strong></p>
                 </div>
-                <div class="info-item"
-                    style="grid-column: 1 / -1; border-top: 1px solid var(--borde); padding-top: 12px; margin-top: 4px;">
+                <div class="info-item" style="grid-column: 1 / -1; border-top: 1px solid var(--borde); padding-top: 12px; margin-top: 4px;">
                     <label>Falla Reportada</label>
                     <p style="opacity: 0.9;">{{ ticket.falla_reportada }}</p>
                 </div>
             </div>
 
-            <h4
-                style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+            <h4 style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
                 <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
             </h4>
 
@@ -282,8 +461,7 @@
                     {% endif %}
                 </div>
                 {% empty %}
-                <div
-                    style="padding: 10px 0; color: #71717a; font-style: italic; display: flex; align-items: center; gap: 8px;">
+                <div style="padding: 10px 0; color: #71717a; font-style: italic; display: flex; align-items: center; gap: 8px;">
                     <i class="bi bi-info-circle"></i> Tu equipo ha sido registrado. Se añadirán avances pronto.
                 </div>
                 {% endfor %}
@@ -291,8 +469,7 @@
         </div>
     </div>
     {% elif error %}
-    <div
-        style="text-align: center; background: #fef2f2; border: 1px solid #fee2e2; padding: 15px; border-radius: 8px; color: var(--acento); margin-top: 25px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <div style="text-align: center; background: #fef2f2; border: 1px solid #fee2e2; padding: 15px; border-radius: 8px; color: var(--acento); margin-top: 25px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
         <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
     </div>
     {% endif %}

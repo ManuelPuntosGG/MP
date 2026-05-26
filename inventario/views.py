@@ -17,27 +17,10 @@ def obtener_tasa_binance():
         return tasa
 
     # -------------------------------------------------------------------------
-    # INTENTO 1: pyDolarVenezuela
+    # INTENTO 1: CoinGecko API con Diagnóstico de JSON
     # -------------------------------------------------------------------------
     try:
-        print("🔄 [INTENTO 1] Iniciando pyDolarVenezuela...")
-        db = LocalDatabase(motor='sqlite', url='pydolar_cache.db')
-        monitor = Monitor(ExchangeMonitor, 'USD', db=db)
-        binance_data = monitor.get_value_monitors('binance')
-        
-        if binance_data:
-            precio = float(binance_data.price) if hasattr(binance_data, 'price') else float(binance_data['price'])
-            print(f"✅ [ÉXITO] Tasa obtenida de pyDolarVenezuela: {precio} Bs.")
-            cache.set('tasa_usdt_ves', precio, 3600)
-            return precio
-    except Exception as e:
-        print(f"⚠️ [ALERTA] pyDolarVenezuela no disponible ('{e}'). Pasando a CoinGecko...")
-
-    # -------------------------------------------------------------------------
-    # INTENTO 2: CoinGecko API con Diagnóstico de JSON
-    # -------------------------------------------------------------------------
-    try:
-        print("🔄 [INTENTO 2] Consultando CoinGecko...")
+        print("🔄 [INTENTO 1] Consultando CoinGecko...")
         url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
         
         # ⚠️ Asegúrate de colocar tu llave real aquí si usas CoinGecko
@@ -66,10 +49,10 @@ def obtener_tasa_binance():
         print(f"⚠️ Falló la conexión con CoinGecko: {error_api}. Intentando ExchangeRate...")
 
     # -------------------------------------------------------------------------
-    # INTENTO 3: ExchangeRate-API (Inmune a bloqueos de Render, libre de llaves, estable)
+    # INTENTO 2: ExchangeRate-API (Inmune a bloqueos de Render, libre de llaves, estable)
     # -------------------------------------------------------------------------
     try:
-        print("🔄 [INTENTO 3] Consultando API de respaldo global (ExchangeRate)...")
+        print("🔄 [INTENTO 2] Consultando API de respaldo global (ExchangeRate)...")
         url_exchangerate = "https://open.er-api.com/v6/latest/USD"
         response = requests.get(url_exchangerate, timeout=5)
         
