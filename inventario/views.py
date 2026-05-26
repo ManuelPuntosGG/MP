@@ -59,10 +59,17 @@ def obtener_tasa_binance():
         if response.status_code == 200:
             data = response.json()
             if 'rates' in data and 'VES' in data['rates']:
-                precio = float(data['rates']['VES'])
-                print(f"✅ [ÉXITO GLOBAL] Tasa recuperada de ExchangeRate-API: {precio} Bs.")
-                cache.set('tasa_usdt_ves', precio, 3600)
-                return precio*1.35  # Ajuste de seguridad para acercarnos a la realidad del mercado
+                tasa_bcv = float(data['rates']['VES'])
+                
+                # 🛠️ TU MASTERSTROKE: Ajuste del 35% para saltar de tasa oficial a tasa P2P real
+                FACTOR_AJUSTE = 1.35
+                precio = round(tasa_bcv * FACTOR_AJUSTE, 2)
+                
+                print(f"✅ [ÉXITO GLOBAL] Tasa BCV encontrada ({tasa_bcv} Bs) + 35% de ajuste aplicado.")
+                print(f"📈 Tasa final calculada para el catálogo: {precio} Bs.")
+                
+                cache.set('tasa_usdt_ves', precio, 3600)  # Guardar este resultado optimizado por 1 hora
+                return precio
     except Exception as error_global:
         print(f"⚠️ Falló la conexión con ExchangeRate-API: {error_global}")
 

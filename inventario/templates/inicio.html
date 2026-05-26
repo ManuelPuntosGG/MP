@@ -119,6 +119,117 @@
         margin-bottom: 20px;
     }
 
+    /* ==========================================
+       🌟 NUEVO: INDICADORES DE CONFIANZA
+       ========================================== */
+    .trust-section {
+        background: var(--primario); /* Fondo oscuro premium */
+        color: var(--blanco);
+        padding: 60px 5%;
+    }
+
+    .trust-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        text-align: center;
+    }
+
+    .trust-item i {
+        font-size: 2.5rem;
+        color: var(--acento);
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+
+    .trust-item h4 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 5px;
+        letter-spacing: -1px;
+    }
+
+    .trust-item p {
+        color: #a1a1aa;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    /* ==========================================
+       🌟 NUEVO: REDES SOCIALES
+       ========================================== */
+    .social-section {
+        padding: 80px 5%;
+        background: var(--fondo);
+        text-align: center;
+        border-top: 1px solid var(--borde);
+    }
+
+    .social-section h2 {
+        font-size: 2.2rem;
+        color: var(--primario);
+        margin-bottom: 15px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .social-section > p {
+        color: var(--texto);
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+
+    .social-grid {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .social-card {
+        background: var(--blanco);
+        padding: 30px 20px;
+        border-radius: 12px;
+        border: 1px solid var(--borde);
+        text-decoration: none;
+        color: var(--primario);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    .social-card i {
+        font-size: 2.2rem;
+        transition: transform 0.4s ease;
+    }
+
+    .social-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .social-card:hover i {
+        transform: scale(1.15);
+    }
+
+    /* Colores de marca en hover */
+    .social-card.tk:hover { border-color: #000000; color: #000000; }
+    .social-card.yt:hover { border-color: #FF0000; color: #FF0000; }
+    .social-card.ig:hover { border-color: #E1306C; color: #E1306C; }
+    .social-card.fb:hover { border-color: #1877F2; color: #1877F2; }
+
+
     /* Ubicación y Datos del taller */
     .ubicacion {
         background: var(--blanco);
@@ -182,7 +293,6 @@
             font-size: 2.2rem;
         }
 
-        /* Reduce el título gigante a un tamaño de celular */
         .hero p {
             font-size: 1rem;
         }
@@ -198,8 +308,6 @@
             justify-content: center;
         }
 
-        /* Botones a lo ancho de la pantalla */
-
         .servicios {
             padding: 40px 5%;
             gap: 20px;
@@ -207,6 +315,19 @@
 
         .card-servicio {
             padding: 30px 20px;
+        }
+
+        .trust-section {
+            padding: 40px 5%;
+        }
+        
+        .trust-grid {
+            gap: 30px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .social-section {
+            padding: 50px 5%;
         }
 
         .ubicacion {
@@ -220,8 +341,12 @@
         .mapa-container {
             height: 280px;
         }
-
-        /* Mapa ligeramente más bajo */
+    }
+    
+    @media (max-width: 480px) {
+        .trust-grid {
+            grid-template-columns: 1fr; /* Una sola columna en teléfonos muy pequeños */
+        }
     }
 </style>
 {% endblock %}
@@ -229,12 +354,10 @@
 {% block content %}
 <section class="hero">
     <h1>Soluciones Tecnológicas</h1>
-    <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de alta gama. Transparencia
-        digital en cada ticket.</p>
+    <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de alta gama. Transparencia digital en cada ticket.</p>
     <div class="botones-hero">
         <a href="{% url 'catalogo' %}" class="btn btn-primario"><i class="bi bi-cpu"></i> Catálogo de Hardware</a>
-        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Rastrear Mi
-            Reparación</a>
+        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Rastrear Mi Reparación</a>
     </div>
 </section>
 
@@ -242,21 +365,61 @@
     <div class="card-servicio">
         <span class="card-servicio-icono"><i class="bi bi-tools"></i></span>
         <h3>Servicio Técnico Especializado</h3>
-        <p>Diagnóstico avanzado en osciloscopio, microsoldadura a nivel de placa, mantenimiento térmico estructural de
-            GPUs y laptops.</p>
-        <a href="{% url 'solicitar_reparacion' %}" class="btn btn-primario"
-            style="font-size: 0.9rem; padding: 10px 20px;">
+        <p>Diagnóstico avanzado y reparación de equipos electrónicos.</p>
+        <a href="{% url 'solicitar_reparacion' %}" class="btn btn-primario" style="font-size: 0.9rem; padding: 10px 20px;">
             <i class="bi bi-file-earmark-plus"></i> Solicitar Reparación
         </a>
     </div>
     <div class="card-servicio">
         <span class="card-servicio-icono"><i class="bi bi-gpu-card"></i></span>
-        <h3>Componentes Originales</h3>
-        <p>Disponemos de un amplio inventario verificado de procesadores, tarjetas de video, memorias modulares y
-            refacciones certificadas.</p>
-        <a href="{% url 'catalogo' %}" class="btn btn-secundario"
-            style="font-size: 0.9rem; padding: 10px 20px; color: var(--primario); border-color: var(--borde);">
+        <h3>Tienda de Hardware</h3>
+        <p>Disponemos de un amplio inventario verificado de procesadores, tarjetas de video, memorias modulares y refacciones certificadas.</p>
+        <a href="{% url 'catalogo' %}" class="btn btn-secundario" style="font-size: 0.9rem; padding: 10px 20px; color: var(--primario); border-color: var(--borde);">
             <i class="bi bi-arrow-right"></i> Explorar Tienda
+        </a>
+    </div>
+</section>
+
+<section class="trust-section">
+    <div class="trust-grid">
+        <div class="trust-item">
+            <i class="bi bi-shield-check"></i>
+            <h4>Garantía</h4>
+            <p>Todos nuestros productos y servicios cuentan con 120 días de garantía</p>
+        </div>
+        <div class="trust-item">
+            <i class="bi bi-motherboard"></i>
+            <h4>+500</h4>
+            <p>Equipos Recuperados</p>
+        </div>
+        <div class="trust-item">
+            <i class="bi bi-search-heart"></i>
+            <h4>Transparencia</h4>
+            <p>Rastreo en Tiempo Real</p>
+        </div>
+    </div>
+</section>
+
+<section class="social-section">
+    <h2>Nuestra Comunidad Digital</h2>
+    <p>Conoce nuestro trabajo de cerca, aprende tips técnicos y mira nuestros equipos disponibles.</p>
+    
+    <div class="social-grid">
+        <a href="https://www.tiktok.com/@manuelpuntos" target="_blank" class="social-card tk">
+            <i class="bi bi-tiktok"></i>
+            TikTok
+        </a>
+        <a href="https://www.youtube.com/@manuelpuntos/" target="_blank" class="social-card yt">
+            <i class="bi bi-youtube"></i>
+            YouTube
+        </a>
+        <a href="https://www.instagram.com/mp_tech_vzla/" target="_blank" class="social-card ig">
+            <i class="bi bi-instagram"></i>
+            Instagram
+        </a>
+        <a href="https://www.facebook.com/marketplace/profile/100080715969057/?ref=permalink&mibextid=dXMIcH" target="_blank" class="social-card fb">
+            <i class="bi bi-shop"></i>
+            Marketplace
         </a>
     </div>
 </section>
@@ -267,8 +430,7 @@
             <h2>Datos de Contacto y Ubicación</h2>
             <div class="detalle-ubicacion">
                 <i class="bi bi-geo-alt-fill"></i>
-                <span><strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1, Valencia,
-                    Carabobo.</span>
+                <span><strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1, Valencia, Carabobo.</span>
             </div>
             <div class="detalle-ubicacion">
                 <i class="bi bi-clock-history"></i>
