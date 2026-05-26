@@ -21,6 +21,126 @@
         letter-spacing: -0.5px;
     }
 
+    /* Contenedor de la barra de herramientas de filtrado */
+    .barra-filtros {
+        background: var(--blanco);
+        padding: 1.25rem;
+        border-radius: 12px;
+        border: 1px solid var(--borde);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+    }
+
+    .form-filtros {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .grupo-busqueda {
+        flex: 1;
+        min-width: 260px;
+        position: relative;
+    }
+
+    .grupo-busqueda i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a1a1aa;
+        font-size: 1.1rem;
+    }
+
+    .grupo-busqueda input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border: 1px solid var(--borde);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: var(--fondo);
+        transition: all 0.3s;
+    }
+
+    .grupo-busqueda input:focus,
+    .select-filtro:focus {
+        outline: none;
+        border-color: var(--acento);
+        background: var(--blanco);
+    }
+
+    .select-filtro {
+        padding: 10px 15px;
+        border: 1px solid var(--borde);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: var(--fondo);
+        color: var(--texto);
+        min-width: 180px;
+        cursor: pointer;
+    }
+
+    .btn-filtrar {
+        background: var(--primario);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-filtrar:hover {
+        background: #27272a;
+    }
+
+    .btn-limpiar {
+        background: transparent;
+        color: #71717a;
+        border: 1px solid var(--borde);
+        padding: 10px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-limpiar:hover {
+        background: var(--fondo);
+        color: var(--primario);
+    }
+
+    /* Corrección del bug de paginación con filtros activos */
+    @media (max-width: 768px) {
+        .barra-filtros {
+            padding: 1rem;
+        }
+
+        .form-filtros {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .select-filtro,
+        .btn-filtrar,
+        .btn-limpiar {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
     .catalogo {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -186,7 +306,6 @@
     @media (max-width: 768px) {
         .titulo-seccion {
             font-size: 1.6rem;
-            /* Letra un poco más pequeña y sutil */
             margin-bottom: 1.5rem;
             display: block;
             text-align: center;
@@ -197,12 +316,10 @@
 
         .catalogo {
             gap: 1rem;
-            /* Espaciado más compacto entre tarjetas */
         }
 
         .tarjeta-contenido {
             padding: 1.25rem;
-            /* Menos espacio interno para aprovechar la pantalla */
         }
 
         /* CRÍTICO: Evita que los números de página se salgan de la pantalla */
@@ -210,13 +327,11 @@
             flex-wrap: wrap;
             justify-content: center;
             row-gap: 10px;
-            /* Si hay muchas páginas, se bajan ordenadamente sin romper nada */
         }
 
         .paginacion-link,
         nav ul strong {
             padding: 8px 10px;
-            /* Botones numéricos ligeramente más cómodos para el dedo */
             font-size: 0.85rem;
         }
     }
@@ -226,6 +341,35 @@
 {% block content %}
 <div class="container">
     <h2 class="titulo-seccion">Componentes y Repuestos</h2>
+
+    <div class="barra-filtros">
+        <form method="GET" action="{% url 'catalogo' %}" class="form-filters form-filtros">
+            
+            <div class="grupo-busqueda">
+                <i class="bi bi-search"></i>
+                <input type="text" name="q" placeholder="Buscar componente (ej: Intel, pantalla, RAM)..." value="{{ query_busqueda }}">
+            </div>
+            
+            <select name="categoria" class="select-filtro">
+                <option value="">Todas las categorías</option>
+                {% for cat in categorias %}
+                    <option value="{{ cat.id }}" {% if cat.id == categoria_seleccionada %}selected{% endif %}>
+                        {{ cat.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn-filtrar">
+                Filtrar
+            </button>
+            
+            {% if query_busqueda or categoria_seleccionada %}
+                <a href="{% url 'catalogo' %}" class="btn-limpiar">
+                    <i class="bi bi-x-circle" style="margin-right: 5px;"></i> Limpiar
+                </a>
+            {% endif %}
+        </form>
+    </div>
 
     <div class="catalogo">
         {% for producto in page_obj %}
@@ -262,7 +406,7 @@
         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #a1a1aa;">
             <i class="bi bi-box-seam"
                 style="font-size: 3rem; color: var(--borde); display: block; margin-bottom: 15px;"></i>
-            <h3>No hay componentes registrados en este momento.</h3>
+            <h3>No hay componentes que coincidan con tu búsqueda.</h3>
         </div>
         {% endfor %}
     </div>
@@ -271,23 +415,35 @@
     <nav style="margin-top: 3rem; text-align: center;">
         <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0; align-items: center;">
             {% if page_obj.has_previous %}
-            <li><a href="?page={{ page_obj.previous_page_number }}" class="paginacion-link"><i
-                        class="bi bi-chevron-left"></i> Anterior</a></li>
+            <li>
+                <a href="?page={{ page_obj.previous_page_number }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" class="paginacion-link">
+                    <i class="bi bi-chevron-left"></i> Anterior
+                </a>
+            </li>
             {% endif %}
 
             {% for num in page_obj.paginator.page_range %}
-            {% if num == page_obj.number %}
-            <li><strong
-                    style="padding: 8px 14px; background: var(--acento); color: white; border-radius: 8px; font-size: 0.9rem; font-weight: 700;">{{
-                    num }}</strong></li>
-            {% else %}
-            <li><a href="?page={{ num }}" class="paginacion-link">{{ num }}</a></li>
-            {% endif %}
+                {% if num == page_obj.number %}
+                <li>
+                    <strong style="padding: 8px 14px; background: var(--acento); color: white; border-radius: 8px; font-size: 0.9rem; font-weight: 700;">
+                        {{ num }}
+                    </strong>
+                </li>
+                {% else %}
+                <li>
+                    <a href="?page={{ num }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" class="paginacion-link">
+                        {{ num }}
+                    </a>
+                </li>
+                {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-            <li><a href="?page={{ page_obj.next_page_number }}" class="paginacion-link">Siguiente <i
-                        class="bi bi-chevron-right"></i></a></li>
+            <li>
+                <a href="?page={{ page_obj.next_page_number }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" class="paginacion-link">
+                    Siguiente <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
             {% endif %}
         </ul>
     </nav>

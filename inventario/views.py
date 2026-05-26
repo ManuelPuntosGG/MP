@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from .forms import SolicitudReparacionForm
 # Asegúrate de importar tu modelo OrdenServicio si no está importado
-from .models import Producto, OrdenServicio
+from .models import Categoria, Producto, OrdenServicio
+from django.db.models import Q
 
 def solicitar_reparacion(request):
     # Si el formulario fue enviado
@@ -27,13 +28,40 @@ def inicio(request):
 from django.core.paginator import Paginator
 
 def catalogo(request):
-    # Usar select_related para evitar consultas N+1 sobre la categoria
+    # 1. Base del query: solo productos disponibles con su categoría precargada
     productos_qs = Producto.objects.filter(disponible=True).select_related('categoria')
-    # Paginación: 20 productos por página
+    
+    # 2. Capturar los parámetros GET que viajan desde el formulario HTML
+    query_busqueda = request.GET.get('q', '').strip()
+    categoria_id = request.GET.get('categoria', '')
+
+    # 3. Aplicar Filtro de texto (Buscador) si existe
+    if query_busqueda:
+        productos_qs = productos_qs.filter(
+            Q(nombre__icontains=query_busqueda) | 
+            Q(descripcion__icontains=query_busqueda)
+        )
+    
+    # 4. Aplicar Filtro por Categoría si seleccionaron alguna específica
+    if categoria_id and categoria_id.isdigit():
+        productos_qs = productos_qs.filter(categoria_id=int(categoria_id))
+    
+    # 5. Paginación (Mantenemos tus 20 productos por página)
     paginator = Paginator(productos_qs, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'catalogo.html', {'page_obj': page_obj})
+    
+    # 6. Necesitamos enviar todas las categorías disponibles para pintar los botones/select
+    categorias = Categoria.objects.all()
+    
+    contexto = {
+        'page_obj': page_obj,
+        'categorias': categorias,
+        'query_busqueda': query_busqueda,
+        'categoria_seleccionada': int(categoria_id) if (categoria_id and categoria_id.isdigit()) else None
+    }
+    
+    return render(request, 'catalogo.html', contexto)
 
 # 3. Vista del Rastreador de Tickets para los clientes
 def rastrear_ticket(request):
