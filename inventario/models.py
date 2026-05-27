@@ -95,7 +95,7 @@ class OrdenServicio(models.Model):
         mensaje = (
             f"¡Hola *{self.cliente_nombre}*! Tu equipo (*{self.equipo}*) "
             f"tiene una actualización registrada. "
-            f"Consulta los detalles en: https://mp-tech-dl5s.onrender.com/rastrear/{self.codigo_rastreo}"
+            f"Consulta los detalles en: https://mp-tech-dl5s.onrender.com/rastreo/?codigo={self.codigo_rastreo}"
         )
         import urllib.parse
         mensaje_url = urllib.parse.quote(mensaje)

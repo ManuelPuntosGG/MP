@@ -3,6 +3,7 @@ from django.urls import path
 from inventario import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -11,6 +12,8 @@ urlpatterns = [
     path('rastreo/', views.rastrear_ticket, name='rastrear_ticket'),# Rastreador de reparaciones
     path('solicitar/', views.solicitar_reparacion, name='solicitar_reparacion'),
     path('imprimir-ticket/<int:pk>/', views.imprimir_ticket, name='imprimir_ticket'),
+    path('manifest.json', TemplateView.as_view(template_name='pwa/manifest.json', content_type='application/json'), name='manifest'),
+    path('sw.js', TemplateView.as_view(template_name='pwa/sw.js', content_type='application/javascript'), name='sw'),
 ]
 
 # CORRECCIÓN: Quitamos 'if settings.DEBUG' para que también sirva imágenes en Render
