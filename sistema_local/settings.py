@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin'
     
     # 1. ¡CRUCIAL! Añadir 'storages' a las aplicaciones instaladas
     'storages', 
