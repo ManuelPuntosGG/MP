@@ -15,17 +15,13 @@ ALLOWED_HOSTS = ['mp-tech-dl5s.onrender.com', '127.0.0.1', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'django.contrib.admin', # Dejado solo aquí arriba con su coma
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin'
-    
-    # 1. ¡CRUCIAL! Añadir 'storages' a las aplicaciones instaladas
-    'storages', 
-    
+    'storages',             # ¡Corregido! Ya no se fusiona con admin
     'inventario',
 ]
 
