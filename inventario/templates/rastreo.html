@@ -132,7 +132,6 @@
         z-index: 2;
     }
 
-    /* Línea conectora entre círculos */
     .step-item::after {
         content: '';
         position: absolute;
@@ -175,7 +174,6 @@
         transition: color 0.4s ease;
     }
 
-    /* ESTADO: COMPLETO (Pasos anteriores) */
     .step-item.completed .step-icon {
         background: var(--acento);
         border-color: var(--acento);
@@ -190,7 +188,6 @@
         background-color: var(--acento);
     }
 
-    /* ESTADO: ACTIVO (Paso actual) */
     .step-item.active .step-icon {
         background: var(--primario);
         border-color: var(--acento);
@@ -228,9 +225,74 @@
     .info-item p {
         font-size: 1rem;
         color: var(--primario);
+        margin: 0;
     }
 
-    /* Historial Técnico / Timeline Moderno */
+    /* ==========================================
+       🌟 DISEÑO DEL PRESUPUESTO
+       ========================================== */
+    .presupuesto-box {
+        margin-bottom: 2.5rem;
+        padding: 24px;
+        border: 2px dashed var(--acento);
+        border-radius: 12px;
+        background-color: #fffafaf5; /* Ligeramente tintado para destacar */
+    }
+
+    .presupuesto-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .presupuesto-table th {
+        padding: 10px 0;
+        border-bottom: 2px solid var(--borde);
+        text-align: left;
+        color: #71717a;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .presupuesto-table td {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--fondo);
+        color: var(--primario);
+        font-size: 0.95rem;
+    }
+
+    .btn-aprobar {
+        background-color: #10b981;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .btn-aprobar:hover { background-color: #059669; }
+
+    .btn-rechazar {
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .btn-rechazar:hover { background-color: #dc2626; }
+
+    /* ========================================== */
+
     .timeline {
         border-left: 2px solid var(--borde);
         padding-left: 24px;
@@ -272,7 +334,7 @@
         border-radius: 8px;
         border: 1px solid var(--borde);
         font-size: 0.95rem;
-        color: var(--texto);
+        color: var(--primario); /* Ajustado para mejor lectura */
         line-height: 1.5;
     }
 
@@ -285,7 +347,6 @@
     }
 
     @media (max-width: 768px) {
-        /* Cambio del Stepper a modo Vertical en tablets y móviles */
         .stepper-container {
             flex-direction: column;
             gap: 24px;
@@ -348,6 +409,10 @@
             gap: 10px;
             text-align: center;
             padding: 1rem;
+        }
+
+        .acciones-presupuesto {
+            flex-direction: column;
         }
     }
 </style>
@@ -430,6 +495,7 @@
 
                 </div>
             {% endif %}
+            
             <div class="info-grid">
                 <div class="info-item">
                     <label>Cliente</label>
@@ -445,6 +511,67 @@
                 </div>
             </div>
 
+            {% if ticket.presupuesto_estado != 'SIN_PRESUPUESTO' %}
+            <div class="presupuesto-box">
+                <h3 style="margin-top: 0; margin-bottom: 15px; color: var(--primario); display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-calculator" style="color: var(--acento);"></i> Presupuesto de Reparación
+                </h3>
+                
+                <table class="presupuesto-table">
+                    <thead>
+                        <tr>
+                            <th>Descripción / Repuesto</th>
+                            <th style="text-align: right;">Costo ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for linea in ticket.lineas_presupuesto.all %}
+                        <tr>
+                            <td>{{ linea.concepto }}</td>
+                            <td style="text-align: right; font-weight: 600;">${{ linea.monto }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr style="border-top: 2px solid var(--borde); font-weight: bold; font-size: 1.1rem;">
+                            <td style="padding-top: 15px;">Total Estimado:</td>
+                            <td style="padding-top: 15px; text-align: right; color: var(--acento);">
+                                ${{ total_usd }}
+                                <span style="display: block; font-size: 0.8rem; color: #71717a; font-weight: normal; margin-top: 4px;">
+                                    Aprox: {{ total_ves|floatformat:2 }} Bs.
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                {% if ticket.presupuesto_estado == 'PENDIENTE' %}
+                    <p style="color: #71717a; font-size: 0.9rem; margin-bottom: 15px; text-align: center;">Por favor, revise los conceptos y elija una acción para proceder.</p>
+                    
+                    <div class="acciones-presupuesto" style="display: flex; gap: 10px;">
+                        <form action="{% url 'responder_presupuesto' ticket.pk 'aprobar' %}" method="POST" style="flex: 1;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-aprobar">
+                                <i class="bi bi-check-circle-fill"></i> Aprobar Presupuesto
+                            </button>
+                        </form>
+                        
+                        <form action="{% url 'responder_presupuesto' ticket.pk 'rechazar' %}" method="POST" style="flex: 1;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-rechazar" onclick="return confirm('¿Está seguro de que desea rechazar el presupuesto? Esto detendrá el proceso de reparación.')">
+                                <i class="bi bi-x-circle-fill"></i> Rechazar
+                            </button>
+                        </form>
+                    </div>
+                {% elif ticket.presupuesto_estado == 'APROBADO' %}
+                    <div style="background-color: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.95rem; border: 1px solid #a7f3d0;">
+                        <i class="bi bi-check-all"></i> Has aprobado este presupuesto. El equipo técnico está trabajando en tu orden.
+                    </div>
+                {% elif ticket.presupuesto_estado == 'RECHAZADO' %}
+                    <div style="background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.95rem; border: 1px solid #fecaca;">
+                        <i class="bi bi-exclamation-octagon"></i> Presupuesto rechazado. Contacta con nosotros si deseas realizar alguna consulta.
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
             <h4 style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
                 <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
             </h4>

@@ -7,6 +7,7 @@ from django.db.models import Q
 from .forms import SolicitudReparacionForm
 from .models import Categoria, Producto, OrdenServicio
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_POST # Añade esto para proteger el envío
 
 
 def imprimir_ticket(request, pk):
@@ -146,12 +147,63 @@ def catalogo(request):
 def rastrear_ticket(request):
     ticket = None
     error = None
+    total_usd = decimal.Decimal('0.00')
+    total_ves = decimal.Decimal('0.00')
     codigo = request.GET.get('codigo', '').strip().upper()
 
     if codigo:
         try:
             ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
+            
+            # Si la orden ya tiene un presupuesto asignado, sumamos sus líneas manuales
+            if ticket.presupuesto_estado != 'SIN_PRESUPUESTO':
+                total_usd = sum(linea.monto for linea in ticket.lineas_presupuesto.all())
+                
+                # Convertimos a Bolívares usando tu sistema automatizado de tasas
+                tasa_usdt = obtener_tasa_binance()
+                tasa_decimal = decimal.Decimal(tasa_usdt)
+                total_ves = total_usd * tasa_decimal
+                
         except OrdenServicio.DoesNotExist:
             error = f"No se encontró ninguna orden con el código {codigo}."
 
-    return render(request, 'rastreo.html', {'ticket': ticket, 'error': error, 'codigo': codigo})
+    contexto = {
+        'ticket': ticket, 
+        'error': error, 
+        'codigo': codigo,
+        'total_usd': total_usd,
+        'total_ves': total_ves
+    }
+    return render(request, 'rastreo.html', contexto)
+
+
+@require_POST
+def responder_presupuesto(request, pk, accion):
+    """Recibe la interacción del cliente desde la web de rastreo"""
+    import decimal
+    from .models import AvanceOrden # Asegúrate de importar tu modelo de avances
+    
+    orden = get_object_or_404(OrdenServicio, pk=pk)
+    
+    if accion == 'aprobar':
+        orden.presupuesto_estado = 'APROBADO'
+        orden.estado = 'EN_REPARACION' # Cambia automáticamente el estado del taller
+        
+        # Guardamos un hito automático en la bitácora de avances
+        AvanceOrden.objects.create(
+            orden=orden,
+            descripcion="🟢 El cliente ha aprobado el presupuesto. Iniciando proceso de reparación técnica."
+        )
+    elif accion == 'rechazar':
+        orden.presupuesto_estado = 'RECHAZADO'
+        orden.estado = 'RETIRADO' # O el estado que manejes si decide no repararlo
+        
+        AvanceOrden.objects.create(
+            orden=orden,
+            descripcion="🔴 Presupuesto rechazado por el cliente. Equipo en espera de retiro."
+        )
+        
+    orden.save()
+    
+    # Redireccionamos al cliente de vuelta a su misma pantalla de rastreo
+    return redirect(f"/rastreo/?codigo={orden.codigo_rastreo}")

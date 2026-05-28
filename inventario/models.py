@@ -40,6 +40,19 @@ class OrdenServicio(models.Model):
         ('CANCELADO', 'No reparable / Cancelado'),
     ]
 
+    ESTADOS_PRESUPUESTO = [
+        ('SIN_PRESUPUESTO', 'Sin Presupuesto'),
+        ('PENDIENTE', 'Pendiente por Aprobar'),
+        ('APROBADO', 'Aprobado por el Cliente'),
+        ('RECHAZADO', 'Rechazado por el Cliente'),
+    ]
+    presupuesto_estado = models.CharField(
+        max_length=20, 
+        choices=ESTADOS_PRESUPUESTO, 
+        default='SIN_PRESUPUESTO',
+        verbose_name="Estado del Presupuesto"
+    )
+
     cliente_nombre = models.CharField(max_length=150)
     cliente_telefono = models.CharField(max_length=20)
     equipo = models.CharField(max_length=200, help_text="Ej. RTX 3060 EVGA XC GAMING, Laptop HP Pavilion 15, etc.")
@@ -117,3 +130,18 @@ class AvanceOrden(models.Model):
 
     def __str__(self):
         return f"Avance del {self.fecha.strftime('%d/%m/%Y')} - Ticket {self.orden.codigo_rastreo}"
+
+class LineaPresupuesto(models.Model):
+    """Líneas manuales para el presupuesto de la reparación"""
+    orden = models.ForeignKey(OrdenServicio, on_delete=models.CASCADE, related_name='lineas_presupuesto')
+    concepto = models.CharField(max_length=255, verbose_name="Repuesto o Concepto")
+    
+    # 🛠️ CORRECCIÓN AQUÍ: max_digits en lugar de max_length
+    monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto ($)")
+
+    class Meta:
+        verbose_name = "Línea de Presupuesto"
+        verbose_name_plural = "Líneas de Presupuesto"
+
+    def __str__(self):
+        return f"{self.concepto} - {self.monto}"
