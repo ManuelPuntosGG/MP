@@ -15,6 +15,7 @@ ALLOWED_HOSTS = ['mp-tech-dl5s.onrender.com', '127.0.0.1', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin', # Dejado solo aquí arriba con su coma
     'django.contrib.auth',
     'django.contrib.contenttypes',
