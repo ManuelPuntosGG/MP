@@ -1,14 +1,37 @@
 import secrets
+import os
 from django.db import models
 from django.utils import timezone
 import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.conf import settings
+from PIL import Image
 
 def generar_codigo_unico():
     # Genera un código de 8 caracteres alfanuméricos
     return secrets.token_hex(4).upper()
+
+def optimizar_imagen(imagen_campo, tamaño_max=(1024, 1024), calidad=75):
+    """Recibe un archivo de imagen, lo redimensiona y lo comprime en JPEG."""
+    img = Image.open(imagen_campo)
+    
+    # Convertir a RGB por si suben un PNG con transparencia (evita errores)
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+        
+    # Redimensionar (Si la imagen es más pequeña que 1024x1024, no la estira)
+    img.thumbnail(tamaño_max, Image.Resampling.LANCZOS)
+    
+    # Guardar en la memoria RAM temporalmente
+    buffer = BytesIO()
+    img.save(buffer, format='JPEG', quality=calidad, optimize=True)
+    
+    # Limpiar el nombre original y forzar la extensión .jpg
+    nombre_base = os.path.basename(os.path.splitext(imagen_campo.name)[0])
+    nuevo_nombre = f"{nombre_base}.jpg"
+    
+    return ContentFile(buffer.getvalue(), name=nuevo_nombre)
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
@@ -25,6 +48,21 @@ class Producto(models.Model):
     stock = models.IntegerField(default=0)
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     disponible = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        # COMPRESIÓN DE PRODUCTO
+        if self.imagen:
+            es_nueva = True
+            if self.pk: # Si ya existe en la base de datos
+                obj_previo = Producto.objects.get(pk=self.pk)
+                # Solo comprimimos si cambiaron la imagen (evita compresión infinita)
+                if obj_previo.imagen == self.imagen:
+                    es_nueva = False
+            
+            if es_nueva:
+                self.imagen = optimizar_imagen(self.imagen)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.nombre} - Stock: {self.stock}"
@@ -66,7 +104,6 @@ class OrdenServicio(models.Model):
         editable=False
     )
 
-    # NUEVO: Campo para guardar la imagen del QR
     qr_code = models.ImageField(upload_to='qrs/', blank=True, null=True)
     
     estado = models.CharField(max_length=20, choices=ESTADOS, default='ESPERANDO')
@@ -77,7 +114,6 @@ class OrdenServicio(models.Model):
 
     def generar_qr(self):
         """Genera el QR y lo guarda en el campo qr_code"""
-        # CAMBIA 'tusitio.com' por el dominio real de tu web
         url_seguimiento = f"https://mp-tech-dl5s.onrender.com/rastrear/{self.codigo_rastreo}"
         
         qr = qrcode.QRCode(version=1, box_size=5, border=1)
@@ -128,6 +164,20 @@ class AvanceOrden(models.Model):
         verbose_name = "Avance de Orden"
         verbose_name_plural = "Avances de Órdenes"
 
+    def save(self, *args, **kwargs):
+        # COMPRESIÓN DE AVANCE
+        if self.imagen:
+            es_nueva = True
+            if self.pk: 
+                obj_previo = AvanceOrden.objects.get(pk=self.pk)
+                if obj_previo.imagen == self.imagen:
+                    es_nueva = False
+            
+            if es_nueva:
+                self.imagen = optimizar_imagen(self.imagen)
+                
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Avance del {self.fecha.strftime('%d/%m/%Y')} - Ticket {self.orden.codigo_rastreo}"
 
@@ -136,7 +186,6 @@ class LineaPresupuesto(models.Model):
     orden = models.ForeignKey(OrdenServicio, on_delete=models.CASCADE, related_name='lineas_presupuesto')
     concepto = models.CharField(max_length=255, verbose_name="Repuesto o Concepto")
     
-    # 🛠️ CORRECCIÓN AQUÍ: max_digits en lugar de max_length
     monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto ($)")
 
     class Meta:

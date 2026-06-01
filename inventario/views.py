@@ -192,7 +192,7 @@ def responder_presupuesto(request, pk, accion):
         # Guardamos un hito automático en la bitácora de avances
         AvanceOrden.objects.create(
             orden=orden,
-            descripcion="🟢 El cliente ha aprobado el presupuesto. Iniciando proceso de reparación técnica."
+            descripcion="✅ Se ha aprobado el presupuesto. Iniciando proceso de reparación técnica."
         )
     elif accion == 'rechazar':
         orden.presupuesto_estado = 'RECHAZADO'
@@ -200,7 +200,7 @@ def responder_presupuesto(request, pk, accion):
         
         AvanceOrden.objects.create(
             orden=orden,
-            descripcion="🔴 Presupuesto rechazado por el cliente. Equipo en espera de retiro."
+            descripcion="❌ Presupuesto rechazado. Equipo en espera de retiro."
         )
         
     orden.save()
