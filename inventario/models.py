@@ -34,7 +34,7 @@ class OrdenServicio(models.Model):
         ('ESPERANDO', 'Esperando Ingreso'),
         ('RECIBIDO', 'Recibido'),
         ('DIAGNOSTICO', 'En Diagnóstico'),
-        ('REPUESTOS', 'Esperando Repuestos'),
+        ('REPUESTOS', 'Reparando / Esperando Repuestos'),
         ('REPARADO', 'Reparado / Listo para entrega'),
         ('ENTREGADO', 'Entregado al cliente'),
         ('CANCELADO', 'No reparable / Cancelado'),

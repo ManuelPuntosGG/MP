@@ -69,11 +69,11 @@ def obtener_tasa_binance():
             if 'rates' in data and 'VES' in data['rates']:
                 tasa_bcv = float(data['rates']['VES'])
                 
-                # 🛠️ TU MASTERSTROKE: Ajuste del 35% para saltar de tasa oficial a tasa P2P real
-                FACTOR_AJUSTE = 1.35
+                # 🛠️ TU MASTERSTROKE: Ajuste del 33% para saltar de tasa oficial a tasa P2P real
+                FACTOR_AJUSTE = 1.33
                 precio = round(tasa_bcv * FACTOR_AJUSTE, 2)
                 
-                print(f"✅ [ÉXITO GLOBAL] Tasa BCV encontrada ({tasa_bcv} Bs) + 35% de ajuste aplicado.")
+                print(f"✅ [ÉXITO GLOBAL] Tasa BCV encontrada ({tasa_bcv} Bs) + 33% de ajuste aplicado.")
                 print(f"📈 Tasa final calculada para el catálogo: {precio} Bs.")
                 
                 cache.set('tasa_usdt_ves', precio, 3600)  # Guardar este resultado optimizado por 1 hora
@@ -84,7 +84,7 @@ def obtener_tasa_binance():
     # -------------------------------------------------------------------------
     # ÚLTIMO RECURSO: Colchón de seguridad estático basado en tu realidad actual
     # -------------------------------------------------------------------------
-    fallback = cache.get('tasa_usdt_ves', 720.00)
+    fallback = cache.get('tasa_usdt_ves', 740.00)
     print(f"ℹ️ [INFO] Entregando tasa de respaldo final de seguridad: {fallback} Bs.")
     return fallback
 
@@ -187,7 +187,7 @@ def responder_presupuesto(request, pk, accion):
     
     if accion == 'aprobar':
         orden.presupuesto_estado = 'APROBADO'
-        orden.estado = 'EN_REPARACION' # Cambia automáticamente el estado del taller
+        orden.estado = 'REPUESTOS' # Cambia automáticamente el estado del taller
         
         # Guardamos un hito automático en la bitácora de avances
         AvanceOrden.objects.create(
@@ -196,7 +196,7 @@ def responder_presupuesto(request, pk, accion):
         )
     elif accion == 'rechazar':
         orden.presupuesto_estado = 'RECHAZADO'
-        orden.estado = 'RETIRADO' # O el estado que manejes si decide no repararlo
+        orden.estado = 'CANCELADO' # O el estado que manejes si decide no repararlo
         
         AvanceOrden.objects.create(
             orden=orden,
