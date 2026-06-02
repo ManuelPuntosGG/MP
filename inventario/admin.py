@@ -102,13 +102,10 @@ class OrdenServicioAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Datos del Cliente', {
-            'fields': ('cliente_nombre', 'cliente_telefono')
-        }),
-        ('Información del Equipo', {
-            'fields': ('codigo_rastreo', 'equipo', 'falla_reportada', 'diagnostico_tecnico')
+            'fields': ('cliente_nombre', 'cliente_telefono','codigo_rastreo', 'equipo', 'falla_reportada',)
         }),
         ('Control de Estado', {
-            'fields': ('estado', 'presupuesto_estado', 'costo_estimado')
+            'fields': ('estado', 'presupuesto_estado')
         }),
         ('Fechas y Sistema', {
             'fields': ('fecha_ingreso', 'fecha_entrega', 'qr_code'),

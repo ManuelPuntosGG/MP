@@ -98,7 +98,6 @@ class OrdenServicio(models.Model):
     cliente_telefono = models.CharField(max_length=20)
     equipo = models.CharField(max_length=200, help_text="Ej. RTX 3060 EVGA XC GAMING, Laptop HP Pavilion 15, etc.")
     falla_reportada = models.TextField()
-    diagnostico_tecnico = models.TextField(blank=True, null=True)
     
     codigo_rastreo = models.CharField(
         max_length=12, 
@@ -110,7 +109,6 @@ class OrdenServicio(models.Model):
     qr_code = models.ImageField(upload_to='qrs/', blank=True, null=True)
     
     estado = models.CharField(max_length=20, choices=ESTADOS, default='ESPERANDO')
-    costo_estimado = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     
     fecha_ingreso = models.DateTimeField(default=timezone.now)
     fecha_entrega = models.DateTimeField(blank=True, null=True)
