@@ -35,6 +35,10 @@ class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
 
+    class Meta:
+        verbose_name = "Categoría"
+        verbose_name_plural = "Categorías"
+
     def __str__(self):
         return self.nombre
 
@@ -113,7 +117,6 @@ class OrdenServicio(models.Model):
 
     def generar_qr(self):
         """Genera el QR y lo guarda en el campo qr_code"""
-        # 🚀 CORRECCIÓN: Alineado con tu views.py (/rastreo/?codigo=)
         url_seguimiento = f"https://mp-tech-dl5s.onrender.com/rastreo/?codigo={self.codigo_rastreo}"
         
         qr = qrcode.QRCode(version=1, box_size=5, border=1)
@@ -137,8 +140,8 @@ class OrdenServicio(models.Model):
             
         super().save(*args, **kwargs)
 
+    @property # 🚀 MEJORA: Ahora puedes usar {{ ticket.enlace_whatsapp }} en tus HTML
     def enlace_whatsapp(self):
-        # 🚀 MEJORA: Formateo inteligente de números locales
         numero_limpio = ''.join(filter(str.isdigit, self.cliente_telefono))
         
         if numero_limpio.startswith('0'):
@@ -188,11 +191,7 @@ class AvanceOrden(models.Model):
 
 class LineaPresupuesto(models.Model):
     orden = models.ForeignKey(OrdenServicio, on_delete=models.CASCADE, related_name='lineas_presupuesto')
-    
-    # 🚀 MEJORA: Enlace directo al catálogo (opcional, no rompe si lo dejas en blanco)
-    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Repuesto del Inventario")
-    
-    concepto = models.CharField(max_length=255, verbose_name="Concepto Manual (Si no usas repuesto)")
+    concepto = models.CharField(max_length=255, verbose_name="Repuesto o Concepto")
     monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto ($)")
 
     class Meta:
@@ -200,6 +199,4 @@ class LineaPresupuesto(models.Model):
         verbose_name_plural = "Líneas de Presupuesto"
 
     def __str__(self):
-        # Muestra el nombre del producto si se seleccionó, si no, muestra el concepto manual
-        nombre = self.producto.nombre if self.producto else self.concepto
-        return f"{nombre} - {self.monto}"
+        return f"{self.concepto} - ${self.monto}"

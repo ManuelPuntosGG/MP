@@ -4,6 +4,7 @@ from django.urls import reverse            # Para resolver las rutas del ticket
 from django.forms import Textarea          # NUEVO: Para compactar cuadros de texto en móvil
 from django.contrib.auth.models import Group # NUEVO: Para limpiar el panel
 from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto
+from inventario import models
 
 # =========================================================
 # 🎛️ FILTRO PERSONALIZADO PARA EL TALLER
