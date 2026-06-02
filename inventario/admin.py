@@ -97,17 +97,19 @@ class OrdenServicioAdmin(admin.ModelAdmin):
     search_fields = ('codigo_rastreo', 'cliente_nombre', 'cliente_telefono', 'equipo')
     ordering = ('-fecha_ingreso',)
     
+    # Los Inlines se renderizan inmediatamente debajo de los fieldsets
     inlines = [AvanceOrdenInline, LineaPresupuestoInline]
     readonly_fields = ('codigo_rastreo', 'fecha_ingreso', 'qr_code')
 
+    # 🚀 ACOMODO VISUAL ESTRATÉGICO
     fieldsets = (
-        ('Datos del Cliente', {
-            'fields': ('cliente_nombre', 'cliente_telefono','codigo_rastreo', 'equipo', 'falla_reportada',)
+        ('📋 Datos del Cliente y Equipo', {
+            'fields': ('cliente_nombre', 'cliente_telefono', 'codigo_rastreo', 'equipo', 'falla_reportada')
         }),
-        ('Control de Estado', {
+        ('📦 Control de Estado y Finanzas', {
             'fields': ('estado', 'presupuesto_estado')
         }),
-        ('Fechas y Sistema', {
+        ('⚙️ Fechas y Sistema', {
             'fields': ('fecha_ingreso', 'fecha_entrega', 'qr_code'),
             'classes': ('collapse',) 
         }),
@@ -127,7 +129,6 @@ class OrdenServicioAdmin(admin.ModelAdmin):
 
     # Botón dinámico de WhatsApp
     def notificar_cliente(self, obj):
-        # 🚀 CORRECCIÓN: Al ser @property en models.py, se llama sin los paréntesis ()
         url = obj.enlace_whatsapp
         return format_html(
             '<a href="{}" target="_blank" style="background-color: #25D366; color: white; '
