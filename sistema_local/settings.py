@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'storages',             # ¡Corregido! Ya no se fusiona con admin
     'inventario',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +125,37 @@ if 'AWS_STORAGE_BUCKET_NAME' in os.environ:
         
         # Seteamos la URL final
         MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+
+# ==============================================================================
+# CONFIGURACIÓN DE LA PWA (PROGRESSIVE WEB APP)
+# ==============================================================================
+PWA_APP_NAME = 'MP Tech Sistema'
+PWA_APP_SHORT_NAME = 'MP Tech'
+PWA_APP_DESCRIPTION = "Sistema de Gestión e Inventario para Taller - MP Tech"
+PWA_APP_THEME_COLOR = '#1e1e2f'  # Color de la barra de estado del tlf
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'  # Hace que se oculte la barra de navegación del navegador
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/admin/'   # 🚀 Te redirige directo al login administrativo al abrir la app
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'es-VE'
+
+# Rutas de los iconos (Debes crear estas imágenes en tu carpeta static)
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/icon-192x192.png',
+        'sizes': '192x192'
+    },
+    {
+        'src': '/static/images/icon-512x512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_ICONS_SPLASH = [
+    {
+        'src': '/static/images/icon-512x512.png',
+        'sizes': '512x512'
+    }
+]

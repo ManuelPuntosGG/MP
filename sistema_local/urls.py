@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from inventario import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -15,6 +15,7 @@ urlpatterns = [
     path('imprimir-ticket/<int:pk>/', views.imprimir_ticket, name='imprimir_ticket'),
     path('manifest.json', TemplateView.as_view(template_name='pwa/manifest.json', content_type='application/json'), name='manifest'),
     path('sw.js', TemplateView.as_view(template_name='pwa/sw.js', content_type='application/javascript'), name='sw'),
+    path('', include('pwa.urls')), # <-- NUEVO: Enlaza el Service Worker de la PWA
 ]
 
 # CORRECCIÓN: Quitamos 'if settings.DEBUG' para que también sirva imágenes en Render
