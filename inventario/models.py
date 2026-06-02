@@ -1,37 +1,35 @@
 import secrets
 import os
+import urllib.parse
+from io import BytesIO
+from PIL import Image
+import qrcode
+
 from django.db import models
 from django.utils import timezone
-import qrcode
-from io import BytesIO
 from django.core.files.base import ContentFile
 from django.conf import settings
-from PIL import Image
 
 def generar_codigo_unico():
-    # Genera un código de 8 caracteres alfanuméricos
     return secrets.token_hex(4).upper()
 
 def optimizar_imagen(imagen_campo, tamaño_max=(1024, 1024), calidad=75):
     """Recibe un archivo de imagen, lo redimensiona y lo comprime en JPEG."""
     img = Image.open(imagen_campo)
     
-    # Convertir a RGB por si suben un PNG con transparencia (evita errores)
     if img.mode in ("RGBA", "P"):
         img = img.convert("RGB")
         
-    # Redimensionar (Si la imagen es más pequeña que 1024x1024, no la estira)
     img.thumbnail(tamaño_max, Image.Resampling.LANCZOS)
     
-    # Guardar en la memoria RAM temporalmente
     buffer = BytesIO()
     img.save(buffer, format='JPEG', quality=calidad, optimize=True)
     
-    # Limpiar el nombre original y forzar la extensión .jpg
     nombre_base = os.path.basename(os.path.splitext(imagen_campo.name)[0])
     nuevo_nombre = f"{nombre_base}.jpg"
     
     return ContentFile(buffer.getvalue(), name=nuevo_nombre)
+
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
@@ -39,6 +37,7 @@ class Categoria(models.Model):
 
     def __str__(self):
         return self.nombre
+
 
 class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
@@ -50,12 +49,10 @@ class Producto(models.Model):
     disponible = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        # COMPRESIÓN DE PRODUCTO
         if self.imagen:
             es_nueva = True
-            if self.pk: # Si ya existe en la base de datos
+            if self.pk: 
                 obj_previo = Producto.objects.get(pk=self.pk)
-                # Solo comprimimos si cambiaron la imagen (evita compresión infinita)
                 if obj_previo.imagen == self.imagen:
                     es_nueva = False
             
@@ -66,6 +63,7 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - Stock: {self.stock}"
+
 
 class OrdenServicio(models.Model):
     ESTADOS = [
@@ -84,6 +82,7 @@ class OrdenServicio(models.Model):
         ('APROBADO', 'Aprobado por el Cliente'),
         ('RECHAZADO', 'Rechazado por el Cliente'),
     ]
+    
     presupuesto_estado = models.CharField(
         max_length=20, 
         choices=ESTADOS_PRESUPUESTO, 
@@ -114,7 +113,8 @@ class OrdenServicio(models.Model):
 
     def generar_qr(self):
         """Genera el QR y lo guarda en el campo qr_code"""
-        url_seguimiento = f"https://mp-tech-dl5s.onrender.com/rastrear/{self.codigo_rastreo}"
+        # 🚀 CORRECCIÓN: Alineado con tu views.py (/rastreo/?codigo=)
+        url_seguimiento = f"https://mp-tech-dl5s.onrender.com/rastreo/?codigo={self.codigo_rastreo}"
         
         qr = qrcode.QRCode(version=1, box_size=5, border=1)
         qr.add_data(url_seguimiento)
@@ -127,31 +127,36 @@ class OrdenServicio(models.Model):
         self.qr_code.save(filename, ContentFile(buffer.getvalue()), save=False)
 
     def save(self, *args, **kwargs):
-        # 1. Lógica de fechas y estado
         if self.estado == 'ENTREGADO' and not self.fecha_entrega:
             self.fecha_entrega = timezone.now()
         elif self.estado != 'ENTREGADO':
             self.fecha_entrega = None
             
-        # 2. Generar QR si no existe
         if not self.qr_code:
             self.generar_qr()
             
         super().save(*args, **kwargs)
 
     def enlace_whatsapp(self):
+        # 🚀 MEJORA: Formateo inteligente de números locales
         numero_limpio = ''.join(filter(str.isdigit, self.cliente_telefono))
+        
+        if numero_limpio.startswith('0'):
+            numero_limpio = '58' + numero_limpio[1:]
+        elif not numero_limpio.startswith('58'):
+            numero_limpio = '58' + numero_limpio
+
         mensaje = (
             f"¡Hola *{self.cliente_nombre}*! Tu equipo (*{self.equipo}*) "
             f"tiene una actualización registrada. "
             f"Consulta los detalles en: https://mp-tech-dl5s.onrender.com/rastreo/?codigo={self.codigo_rastreo}"
         )
-        import urllib.parse
         mensaje_url = urllib.parse.quote(mensaje)
-        return f"https://wa.me/+58{numero_limpio}?text={mensaje_url}"
+        return f"https://wa.me/{numero_limpio}?text={mensaje_url}"
 
     def __str__(self):
         return f"Orden {self.codigo_rastreo} - {self.cliente_nombre} ({self.equipo})"
+
 
 class AvanceOrden(models.Model):
     orden = models.ForeignKey(OrdenServicio, related_name='avances', on_delete=models.CASCADE)
@@ -165,7 +170,6 @@ class AvanceOrden(models.Model):
         verbose_name_plural = "Avances de Órdenes"
 
     def save(self, *args, **kwargs):
-        # COMPRESIÓN DE AVANCE
         if self.imagen:
             es_nueva = True
             if self.pk: 
@@ -181,11 +185,14 @@ class AvanceOrden(models.Model):
     def __str__(self):
         return f"Avance del {self.fecha.strftime('%d/%m/%Y')} - Ticket {self.orden.codigo_rastreo}"
 
+
 class LineaPresupuesto(models.Model):
-    """Líneas manuales para el presupuesto de la reparación"""
     orden = models.ForeignKey(OrdenServicio, on_delete=models.CASCADE, related_name='lineas_presupuesto')
-    concepto = models.CharField(max_length=255, verbose_name="Repuesto o Concepto")
     
+    # 🚀 MEJORA: Enlace directo al catálogo (opcional, no rompe si lo dejas en blanco)
+    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Repuesto del Inventario")
+    
+    concepto = models.CharField(max_length=255, verbose_name="Concepto Manual (Si no usas repuesto)")
     monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto ($)")
 
     class Meta:
@@ -193,4 +200,6 @@ class LineaPresupuesto(models.Model):
         verbose_name_plural = "Líneas de Presupuesto"
 
     def __str__(self):
-        return f"{self.concepto} - {self.monto}"
+        # Muestra el nombre del producto si se seleccionó, si no, muestra el concepto manual
+        nombre = self.producto.nombre if self.producto else self.concepto
+        return f"{nombre} - {self.monto}"

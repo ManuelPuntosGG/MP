@@ -1,37 +1,31 @@
 import decimal
 import requests
 from django.core.cache import cache
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum  # <-- Añadido Sum para optimizar matemáticas
+from django.views.decorators.http import require_POST
+
+# Centralizamos todas las importaciones locales aquí arriba
 from .forms import SolicitudReparacionForm
-from .models import Categoria, Producto, OrdenServicio
-from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_POST # Añade esto para proteger el envío
+from .models import Categoria, Producto, OrdenServicio, AvanceOrden 
 
 
 def imprimir_ticket(request, pk):
-    # Buscamos la orden por su ID (o pk)
     orden = get_object_or_404(OrdenServicio, pk=pk)
-    
-    # Renderizamos la plantilla de 58mm
     return render(request, 'imprimir_ticket.html', {'ticket': orden})
 
 def obtener_tasa_binance():
-
     # 1. Intentar leer desde la caché de Django (1 hora)
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
 
     # -------------------------------------------------------------------------
-    # INTENTO 1: CoinGecko API con Diagnóstico de JSON
+    # INTENTO 1: CoinGecko API
     # -------------------------------------------------------------------------
     try:
-        print("🔄 [INTENTO 1] Consultando CoinGecko...")
         url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
-        
-        # ⚠️ Asegúrate de colocar tu llave real aquí si usas CoinGecko
         COINGECKO_KEY = "CG-ybVxa4i2NXhfgLtKzHa2YPY8" 
         
         headers = {
@@ -43,24 +37,17 @@ def obtener_tasa_binance():
         
         if response.status_code == 200:
             data = response.json()
-            # 👇 ESTE PRINT TE MOSTRARÁ EN RENDER QUÉ ESTÁ LLEGANDO REALMENTE
-            print(f"📊 [DIAGNÓSTICO COINGECKO] JSON recibido: {data}")
-            
             if 'tether' in data and 'ves' in data['tether']:
                 precio = float(data['tether']['ves'])
-                print(f"✅ [ÉXITO] Tasa recuperada de CoinGecko: {precio} Bs.")
                 cache.set('tasa_usdt_ves', precio, 3600)
                 return precio
-                
-        print(f"⚠️ CoinGecko respondió con estatus {response.status_code} pero no pasó la validación. Intentando ExchangeRate...")
     except Exception as error_api:
-        print(f"⚠️ Falló la conexión con CoinGecko: {error_api}. Intentando ExchangeRate...")
+        print(f"⚠️ Falló CoinGecko: {error_api}")
 
     # -------------------------------------------------------------------------
-    # INTENTO 2: ExchangeRate-API (Inmune a bloqueos de Render, libre de llaves, estable)
+    # INTENTO 2: ExchangeRate-API (Respaldo)
     # -------------------------------------------------------------------------
     try:
-        print("🔄 [INTENTO 2] Consultando API de respaldo global (ExchangeRate)...")
         url_exchangerate = "https://open.er-api.com/v6/latest/USD"
         response = requests.get(url_exchangerate, timeout=5)
         
@@ -69,24 +56,21 @@ def obtener_tasa_binance():
             if 'rates' in data and 'VES' in data['rates']:
                 tasa_bcv = float(data['rates']['VES'])
                 
-                # 🛠️ TU MASTERSTROKE: Ajuste del 33% para saltar de tasa oficial a tasa P2P real
+                # Ajuste del 33% para saltar de tasa oficial a tasa P2P
                 FACTOR_AJUSTE = 1.33
                 precio = round(tasa_bcv * FACTOR_AJUSTE, 2)
                 
-                print(f"✅ [ÉXITO GLOBAL] Tasa BCV encontrada ({tasa_bcv} Bs) + 33% de ajuste aplicado.")
-                print(f"📈 Tasa final calculada para el catálogo: {precio} Bs.")
-                
-                cache.set('tasa_usdt_ves', precio, 3600)  # Guardar este resultado optimizado por 1 hora
+                cache.set('tasa_usdt_ves', precio, 3600)
                 return precio
     except Exception as error_global:
-        print(f"⚠️ Falló la conexión con ExchangeRate-API: {error_global}")
+        print(f"⚠️ Falló ExchangeRate-API: {error_global}")
 
     # -------------------------------------------------------------------------
-    # ÚLTIMO RECURSO: Colchón de seguridad estático basado en tu realidad actual
+    # ÚLTIMO RECURSO: Colchón de seguridad
     # -------------------------------------------------------------------------
     fallback = cache.get('tasa_usdt_ves', 740.00)
-    print(f"ℹ️ [INFO] Entregando tasa de respaldo final de seguridad: {fallback} Bs.")
     return fallback
+
 
 def solicitar_reparacion(request):
     if request.method == 'POST':
@@ -123,13 +107,11 @@ def catalogo(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # --- CÁLCULO DE LA TASA EN BOLÍVARES ---
     tasa_usdt = obtener_tasa_binance()
-    tasa_decimal = decimal.Decimal(tasa_usdt)
+    tasa_decimal = decimal.Decimal(str(tasa_usdt)) # Convertir a str primero previene errores de precisión flotante
     
     for producto in page_obj:
         producto.precio_ves = producto.precio * tasa_decimal
-    # ---------------------------------------
 
     categorias = Categoria.objects.all()
     
@@ -138,7 +120,7 @@ def catalogo(request):
         'categorias': categorias,
         'query_busqueda': query_busqueda,
         'categoria_seleccionada': int(categoria_id) if (categoria_id and categoria_id.isdigit()) else None,
-        'tasa_ves': tasa_usdt # Enviamos la tasa al HTML
+        'tasa_ves': tasa_usdt 
     }
     
     return render(request, 'catalogo.html', contexto)
@@ -155,13 +137,13 @@ def rastrear_ticket(request):
         try:
             ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
             
-            # Si la orden ya tiene un presupuesto asignado, sumamos sus líneas manuales
             if ticket.presupuesto_estado != 'SIN_PRESUPUESTO':
-                total_usd = sum(linea.monto for linea in ticket.lineas_presupuesto.all())
+                # 🚀 OPTIMIZACIÓN: Dejamos que la base de datos sume todo de golpe
+                resultado = ticket.lineas_presupuesto.aggregate(total=Sum('monto'))
+                total_usd = resultado['total'] or decimal.Decimal('0.00')
                 
-                # Convertimos a Bolívares usando tu sistema automatizado de tasas
                 tasa_usdt = obtener_tasa_binance()
-                tasa_decimal = decimal.Decimal(tasa_usdt)
+                tasa_decimal = decimal.Decimal(str(tasa_usdt))
                 total_ves = total_usd * tasa_decimal
                 
         except OrdenServicio.DoesNotExist:
@@ -180,23 +162,19 @@ def rastrear_ticket(request):
 @require_POST
 def responder_presupuesto(request, pk, accion):
     """Recibe la interacción del cliente desde la web de rastreo"""
-    import decimal
-    from .models import AvanceOrden # Asegúrate de importar tu modelo de avances
-    
     orden = get_object_or_404(OrdenServicio, pk=pk)
     
     if accion == 'aprobar':
         orden.presupuesto_estado = 'APROBADO'
-        orden.estado = 'REPUESTOS' # Cambia automáticamente el estado del taller
+        orden.estado = 'REPUESTOS' 
         
-        # Guardamos un hito automático en la bitácora de avances
         AvanceOrden.objects.create(
             orden=orden,
             descripcion="✅ Se ha aprobado el presupuesto. Iniciando proceso de reparación técnica."
         )
     elif accion == 'rechazar':
         orden.presupuesto_estado = 'RECHAZADO'
-        orden.estado = 'CANCELADO' # O el estado que manejes si decide no repararlo
+        orden.estado = 'CANCELADO' 
         
         AvanceOrden.objects.create(
             orden=orden,
@@ -204,6 +182,4 @@ def responder_presupuesto(request, pk, accion):
         )
         
     orden.save()
-    
-    # Redireccionamos al cliente de vuelta a su misma pantalla de rastreo
     return redirect(f"/rastreo/?codigo={orden.codigo_rastreo}")
