@@ -1,10 +1,13 @@
 from django.contrib import admin
+from django.db import models  # 🚀 CORRECCIÓN: Traemos el models de Django para el TextField
 from django.utils.html import format_html  # Para renderizar los botones de forma segura
 from django.urls import reverse            # Para resolver las rutas del ticket
-from django.forms import Textarea          # NUEVO: Para compactar cuadros de texto en móvil
-from django.contrib.auth.models import Group # NUEVO: Para limpiar el panel
+from django.forms import Textarea          # Para compactar cuadros de texto en móvil
+from django.contrib.auth.models import Group # Para limpiar el panel
+
+# Importación explícita de tus modelos locales
 from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto
-from inventario import models
+
 
 # =========================================================
 # 🎛️ FILTRO PERSONALIZADO PARA EL TALLER
@@ -51,7 +54,7 @@ class AvanceOrdenInline(admin.TabularInline):
     fields = ('descripcion', 'imagen', 'mostrar_imagen')
     readonly_fields = ('mostrar_imagen',)
     
-    # 🚀 Eficiente: Reduce el tamaño del cuadro de texto para que no ocupe toda la pantalla del teléfono
+    # 🚀 Eficiente: Usa el models de Django correctamente para sobreescribir el widget
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 35, 'style': 'resize:none; font-size: 0.9rem;'})},
     }
@@ -67,6 +70,7 @@ class AvanceOrdenInline(admin.TabularInline):
         return "-"
     mostrar_imagen.short_description = 'Vista'
 
+
 class LineaPresupuestoInline(admin.TabularInline):
     """Permite añadir repuestos, conceptos y montos manuales"""
     model = LineaPresupuesto
@@ -77,22 +81,18 @@ class LineaPresupuestoInline(admin.TabularInline):
 # 3. Configuración Principal del Taller
 # =========================================================
 class OrdenServicioAdmin(admin.ModelAdmin):
-    # Columnas del panel principal
     list_display = (
         'codigo_rastreo', 
         'cliente_nombre', 
         'equipo', 
-        'estado',               # 🚀 editable
-        'presupuesto_estado',   # 🚀 editable
+        'estado',               
+        'presupuesto_estado',   
         'fecha_ingreso', 
         'notificar_cliente', 
         'imprimir_ticket_link'
     )
     
-    # 🚀 SUPER OPTIMIZACIÓN: Te permite cambiar los estados directamente desde la lista sin entrar a la orden
     list_editable = ('estado', 'presupuesto_estado')
-    
-    # Filtros laterales usando nuestro filtro inteligente personalizado
     list_filter = (ReparacionesActivasFilter, 'estado', 'presupuesto_estado', 'fecha_ingreso')
     search_fields = ('codigo_rastreo', 'cliente_nombre', 'cliente_telefono', 'equipo')
     ordering = ('-fecha_ingreso',)
@@ -116,7 +116,6 @@ class OrdenServicioAdmin(admin.ModelAdmin):
         }),
     )
 
-    # Acciones Masivas
     @admin.action(description='🔧 Marcar seleccionados como REPARADOS')
     def marcar_reparados(self, request, queryset):
         actualizados = queryset.update(estado='REPARADO')
@@ -131,7 +130,8 @@ class OrdenServicioAdmin(admin.ModelAdmin):
 
     # Botón dinámico de WhatsApp
     def notificar_cliente(self, obj):
-        url = obj.enlace_whatsapp()
+        # 🚀 CORRECCIÓN: Al ser @property en models.py, se llama sin los paréntesis ()
+        url = obj.enlace_whatsapp
         return format_html(
             '<a href="{}" target="_blank" style="background-color: #25D366; color: white; '
             'padding: 6px 12px; border-radius: 20px; text-decoration: none; '
@@ -159,7 +159,7 @@ admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(OrdenServicio, OrdenServicioAdmin)
 
-# 🚀 LIMPIEZA: Eliminar la gestión de "Grupos de usuarios" de Django que viene por defecto
+# Eliminar la gestión de "Grupos de usuarios" de Django por defecto
 admin.site.unregister(Group)
 
 # Personalización del Panel
