@@ -588,16 +588,14 @@
 
 <script>
     function switchTab(tabId) {
-        // Ocultar todo
-        document.getElementById('content-rastreo').classList.remove('active');
-        document.getElementById('content-ingreso').classList.remove('active');
-        document.getElementById('btn-rastreo').classList.remove('active');
-        document.getElementById('btn-ingreso').classList.remove('active');
+    // Quitamos 'active' de todo (si existe)
+    ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(id => {
+        document.getElementById(id)?.classList.remove('active');
+    });
 
-        // Mostrar lo seleccionado
-        document.getElementById('content-' + tabId).classList.add('active');
-        document.getElementById('btn-' + tabId).classList.add('active');
-    }
-
+    // Agregamos 'active' a los nuevos (si existen)
+    document.getElementById('content-' + tabId)?.classList.add('active');
+    document.getElementById('btn-' + tabId)?.classList.add('active');
+}
 </script>
 {% endblock %}

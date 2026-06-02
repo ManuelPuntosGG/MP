@@ -9,9 +9,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.inicio, name='inicio'),                          # Portada / Landing Page
     path('catalogo/', views.catalogo, name='catalogo'),             # Catálogo de componentes
-    path('rastreo/', views.portal_cliente, name='portal_cliente'),# Rastreador de reparaciones
+    path('rastreo/', views.portal_cliente, name='rastrear_ticket'),
+    path('solicitar/', views.portal_cliente, name='solicitar_reparacion'),
     path('rastreo/presupuesto/<int:pk>/<str:accion>/', views.responder_presupuesto, name='responder_presupuesto'),
-   # path('solicitar/', views.solicitar_reparacion, name='solicitar_reparacion'),
     path('imprimir-ticket/<int:pk>/', views.imprimir_ticket, name='imprimir_ticket'),
     path('manifest.json', TemplateView.as_view(template_name='pwa/manifest.json', content_type='application/json'), name='manifest'),
     path('sw.js', TemplateView.as_view(template_name='pwa/sw.js', content_type='application/javascript'), name='sw'),
