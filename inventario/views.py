@@ -71,8 +71,10 @@ def obtener_tasa_binance():
     fallback = cache.get('tasa_usdt_ves', 740.00)
     return fallback
 
-
-def solicitar_reparacion(request):
+def portal_cliente(request):
+    """Vista unificada que maneja tanto el rastreo como la creación de nuevas órdenes"""
+    
+    # 1. Lógica para procesar una NUEVA solicitud (POST)
     if request.method == 'POST':
         form = SolicitudReparacionForm(request.POST)
         if form.is_valid():
@@ -81,8 +83,37 @@ def solicitar_reparacion(request):
     else:
         form = SolicitudReparacionForm()
 
-    return render(request, 'solicitar_reparacion.html', {'form': form})
+    # 2. Lógica para RASTREAR una orden existente (GET)
+    ticket = None
+    error = None
+    total_usd = decimal.Decimal('0.00')
+    total_ves = decimal.Decimal('0.00')
+    codigo = request.GET.get('codigo', '').strip().upper()
 
+    if codigo:
+        try:
+            ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
+            
+            if ticket.presupuesto_estado != 'SIN_PRESUPUESTO':
+                resultado = ticket.lineas_presupuesto.aggregate(total=Sum('monto'))
+                total_usd = resultado['total'] or decimal.Decimal('0.00')
+                
+                tasa_usdt = obtener_tasa_binance()
+                tasa_decimal = decimal.Decimal(str(tasa_usdt))
+                total_ves = total_usd * tasa_decimal
+                
+        except OrdenServicio.DoesNotExist:
+            error = f"No se encontró ninguna orden con el código {codigo}."
+
+    contexto = {
+        'form': form,
+        'ticket': ticket,
+        'error': error,
+        'codigo': codigo,
+        'total_usd': total_usd,
+        'total_ves': total_ves
+    }
+    return render(request, 'rastreo.html', contexto)
 
 def inicio(request):
     return render(request, 'inicio.html')
@@ -124,39 +155,6 @@ def catalogo(request):
     }
     
     return render(request, 'catalogo.html', contexto)
-
-
-def rastrear_ticket(request):
-    ticket = None
-    error = None
-    total_usd = decimal.Decimal('0.00')
-    total_ves = decimal.Decimal('0.00')
-    codigo = request.GET.get('codigo', '').strip().upper()
-
-    if codigo:
-        try:
-            ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
-            
-            if ticket.presupuesto_estado != 'SIN_PRESUPUESTO':
-                # 🚀 OPTIMIZACIÓN: Dejamos que la base de datos sume todo de golpe
-                resultado = ticket.lineas_presupuesto.aggregate(total=Sum('monto'))
-                total_usd = resultado['total'] or decimal.Decimal('0.00')
-                
-                tasa_usdt = obtener_tasa_binance()
-                tasa_decimal = decimal.Decimal(str(tasa_usdt))
-                total_ves = total_usd * tasa_decimal
-                
-        except OrdenServicio.DoesNotExist:
-            error = f"No se encontró ninguna orden con el código {codigo}."
-
-    contexto = {
-        'ticket': ticket, 
-        'error': error, 
-        'codigo': codigo,
-        'total_usd': total_usd,
-        'total_ves': total_ves
-    }
-    return render(request, 'rastreo.html', contexto)
 
 
 @require_POST
