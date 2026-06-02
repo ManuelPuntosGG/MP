@@ -56,8 +56,8 @@ def obtener_tasa_binance():
             if 'rates' in data and 'VES' in data['rates']:
                 tasa_bcv = float(data['rates']['VES'])
                 
-                # Ajuste del 32% para saltar de tasa oficial a tasa P2P
-                FACTOR_AJUSTE = 1.32
+                # Ajuste del 33% para saltar de tasa oficial a tasa P2P
+                FACTOR_AJUSTE = 1.33
                 precio = round(tasa_bcv * FACTOR_AJUSTE, 2)
                 
                 cache.set('tasa_usdt_ves', precio, 3600)
