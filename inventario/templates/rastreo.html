@@ -580,7 +580,7 @@
 
     <div class="rastreo-box" id="panel-principal" {% if ticket %}style="display:none;"{% endif %}>
         <h2 style="font-size: 1.6rem; color: var(--primario); font-weight: 800; margin-bottom: 20px;">
-            Portal del Cliente
+            🔍 Sistema de Rastreos y Solicitudes de Reparación
         </h2>
 
         <div class="tabs-container">
@@ -610,7 +610,7 @@
         </div>
 
         <div class="tab-content" id="content-ingreso">
-            <p style="color: #71717a; font-size: 0.95rem; margin-bottom: 20px;">Completa los datos para registrar tu equipo en el laboratorio.</p>
+            <p style="color: #71717a; font-size: 0.95rem; margin-bottom: 20px;">Completa los datos para registrar la solicitud de revisión.</p>
 
             <form method="POST">
                 {% csrf_token %}
@@ -653,7 +653,7 @@
                             <i class="bi bi-x-circle-fill"></i>
                         </div>
                         <h4 style="color: #991b1b; font-weight: 800; margin-bottom: 5px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Proceso Finalizado / Cancelado
+                            Cancelado / No Reparado
                         </h4>
                         <p style="color: #b91c1c; font-size: 0.95rem; margin: 0; opacity: 0.9;">
                             Esta orden de servicio ha sido cerrada. Puedes revisar los detalles y motivos en el historial técnico abajo.
