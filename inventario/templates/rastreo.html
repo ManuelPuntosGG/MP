@@ -20,8 +20,8 @@
     }
 
     /* ==========================================
-       🌟 DISEÑO DE LAS PESTAÑAS (TABS)
-       ========================================== */
+       🌟 DISEÑO DE LAS PESTAÑAS (TABS)
+       ========================================== */
     .tabs-container {
         display: flex;
         gap: 10px;
@@ -78,8 +78,8 @@
     }
 
     /* ==========================================
-       FORMULARIOS
-       ========================================== */
+       FORMULARIOS
+       ========================================== */
     .formulario-rastreo {
         display: flex;
         gap: 10px;
@@ -153,8 +153,8 @@
     }
 
     /* ==========================================
-       RESULTADOS (Se mantienen tus estilos intactos)
-       ========================================== */
+       RESULTADOS 
+       ========================================== */
     .resultado-card {
         background: var(--blanco);
         margin-top: 2.5rem;
@@ -198,8 +198,8 @@
     }
 
     /* ==========================================
-       🌟 DISEÑO DEL STEPPER INTERACTIVO (6 PASOS)
-       ========================================== */
+       🌟 DISEÑO DEL STEPPER INTERACTIVO (6 PASOS)
+       ========================================== */
     .stepper-container {
         display: flex;
         justify-content: space-between;
@@ -315,15 +315,14 @@
     }
 
     /* ==========================================
-       🌟 DISEÑO DEL PRESUPUESTO
-       ========================================== */
+       🌟 DISEÑO DEL PRESUPUESTO
+       ========================================== */
     .presupuesto-box {
         margin-bottom: 2.5rem;
         padding: 24px;
         border: 2px dashed var(--acento);
         border-radius: 12px;
         background-color: #fffafaf5;
-        /* Ligeramente tintado para destacar */
     }
 
     .presupuesto-table {
@@ -426,7 +425,6 @@
         border: 1px solid var(--borde);
         font-size: 0.95rem;
         color: var(--primario);
-        /* Ajustado para mejor lectura */
         line-height: 1.5;
     }
 
@@ -513,264 +511,268 @@
 {% block content %}
 <div class="container">
 
-    <div class="rastreo-box" id="panel-principal" {% if ticket %}style="display:none;" {% endif %}>
+        <div class="rastreo-box" id="panel-principal" {% if ticket %}style="display:none;" {% endif %}>
 
-        <h2 style="font-size: 1.6rem; color: var(--primario); font-weight: 800; margin-bottom: 20px;">Portal del Cliente
-        </h2>
+                <h2 style="font-size: 1.6rem; color: var(--primario); font-weight: 800; margin-bottom: 20px;">Portal del
+            Cliente</h2>
 
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('rastreo')" id="btn-rastreo">
-                <i class="bi bi-search"></i> Rastrear Equipo
-            </button>
-            <button class="tab-btn" onclick="switchTab('ingreso')" id="btn-ingreso">
-                <i class="bi bi-tools"></i> Nueva Solicitud
-            </button>
-        </div>
+                <div class="tabs-container">
+                        <button class="tab-btn active" onclick="switchTab('rastreo')" id="btn-rastreo">
+                                <i class="bi bi-search"></i> Rastrear Equipo
+                            </button>
+                        <button class="tab-btn" onclick="switchTab('ingreso')" id="btn-ingreso">
+                                <i class="bi bi-tools"></i> Nueva Solicitud
+                            </button>
+                    </div>
 
-        <div class="tab-content active" id="content-rastreo">
-            <p style="color: #71717a; font-size: 0.95rem;">Ingresa tu código único para ver el estado y presupuesto en
-                vivo.</p>
-            <form class="formulario-rastreo" method="GET">
-                <input type="text" name="codigo" placeholder="Ej: 4F8B2E9X" value="{{ codigo }}" class="input-rastreo"
-                    required>
-                <button type="submit" class="btn-submit" style="width: auto;">
-                    <i class="bi bi-search"></i> Buscar
-                </button>
-            </form>
+                <div class="tab-content active" id="content-rastreo">
+                        <p style="color: #71717a; font-size: 0.95rem;">Ingresa tu código único para ver el estado y
+                presupuesto en vivo.</p>
+                        <form class="formulario-rastreo" method="GET">
+                                <input type="text" name="codigo" placeholder="Ej: 4F8B2E9X" value="{{ codigo }}"
+                    class="input-rastreo" required>
+                                <button type="submit" class="btn-submit" style="width: auto;">
+                                        <i class="bi bi-search"></i> Buscar
+                                    </button>
+                            </form>
 
-            {% if error %}
-            <div
+                        {% if error %}
+                        <div
                 style="background: #fef2f2; border: 1px solid #fee2e2; padding: 15px; border-radius: 8px; color: var(--acento); margin-top: 20px; font-weight: 600;">
-                <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
-            </div>
-            {% endif %}
-        </div>
+                                <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+                            </div>
+                        {% endif %}
+                    </div>
 
-        <div class="tab-content" id="content-ingreso">
-            <p style="color: #71717a; font-size: 0.95rem; margin-bottom: 20px;">Completa los datos para registrar tu
-                equipo en el laboratorio.</p>
+                <div class="tab-content" id="content-ingreso">
+                        <p style="color: #71717a; font-size: 0.95rem; margin-bottom: 20px;">Completa los datos para
+                registrar tu equipo en el laboratorio.</p>
 
-            <form method="POST">
-                {% csrf_token %}
-                {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                    <span
+                        <form method="POST">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                <div class="form-group">
+                                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                        <span
                         style="color: var(--acento); font-size: 0.85rem; margin-top: 5px; display: block; font-weight: 600;">
-                        <i class="bi bi-exclamation-circle"></i> {{ field.errors.0 }}
-                    </span>
-                    {% endif %}
-                </div>
-                {% endfor %}
+                                                <i class="bi bi-exclamation-circle"></i> {{ field.errors.0 }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
 
-                <button type="submit" class="btn-submit">
-                    <i class="bi bi-hdd-network"></i> Registrar Solicitud en Sistema
-                </button>
-            </form>
-        </div>
-    </div>
+                                <button type="submit" class="btn-submit">
+                                        <i class="bi bi-hdd-network"></i> Registrar Solicitud en Sistema
+                                    </button>
+                            </form>
+                    </div>
+            </div>
 
-    {% if ticket %}
+        {% if ticket %}
 
-    <button onclick="document.getElementById('panel-principal').style.display='block'; this.style.display='none';"
+        <button onclick="document.getElementById('panel-principal').style.display='block'; this.style.display='none';"  
+             
         style="background: transparent; color: var(--primario); border: 1px solid var(--borde); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
-        <i class="bi bi-arrow-left"></i> Consultar otro equipo
-    </button>
+                <i class="bi bi-arrow-left"></i> Consultar otro equipo
+            </button>
 
-    <div class="resultado-card">
-        <div class="resultado-header">
-            <h3><i class="bi bi-ticket-perforated"></i> Orden {{ ticket.codigo_rastreo }}</h3>
-            <span class="badge-estado">
-                {{ ticket.get_estado_display }}
-            </span>
-        </div>
-        <div class="resultado-body">
+        <div class="resultado-card">
+                <div class="resultado-header">
+                        <h3><i class="bi bi-ticket-perforated"></i> Orden {{ ticket.codigo_rastreo }}</h3>
+                        <span class="badge-estado">
+                                {{ ticket.get_estado_display }}
+                            </span>
+                    </div>
+                <div class="resultado-body">
 
-            {% if ticket.estado == 'CANCELADO' %}
-            <div
+                        {% if ticket.estado == 'CANCELADO' %}
+                        <div
                 style="background: #fff5f5; border: 1px solid #feb2b2; padding: 1.5rem; border-radius: 12px; margin-bottom: 3rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.05);">
-                <div
+                                <div
                     style="width: 50px; height: 50px; background: #dc2626; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.5rem;">
-                    <i class="bi bi-x-circle-fill"></i>
-                </div>
-                <h4
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </div>
+                                <h4
                     style="color: #991b1b; font-weight: 800; margin-bottom: 5px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.5px;">
                     Proceso Finalizado / Cancelado</h4>
-                <p style="color: #b91c1c; font-size: 0.95rem; margin: 0; opacity: 0.9;">
-                    Esta orden de servicio ha sido cerrada. Puedes revisar los detalles y motivos en el
-                    historial técnico abajo.
-                </p>
-            </div>
-            {% else %}
-            <div class="stepper-container">
+                                <p style="color: #b91c1c; font-size: 0.95rem; margin: 0; opacity: 0.9;">
+                                        Esta orden de servicio ha sido cerrada. Puedes revisar los detalles y motivos en
+                    el historial técnico abajo.
+                                    </p>
+                            </div>
+                        {% else %}
+                        <div class="stepper-container">
 
-                <div
-                    class="step-item 
-                        {% if ticket.estado == 'ESPERANDO' %}active
-                        {% elif ticket.estado in 'RECIBIDO DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
-                    <div class="step-icon"><i class="bi bi-hourglass"></i></div>
-                    <div class="step-label">Esperando Ingreso</div>
-                </div>
+                                <div
+                    class="step-item {% if ticket.estado == 'ESPERANDO' %}active{% elif ticket.estado in 'RECIBIDO DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
+                                        <div class="step-icon"><i class="bi bi-hourglass"></i></div>
+                                        <div class="step-label">Esperando Ingreso</div>
+                                    </div>
 
-                <div class="step-item 
-                        {% if ticket.estado == 'RECIBIDO' %}active
-                        {% elif ticket.estado in 'DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
-                    <div class="step-icon"><i class="bi bi-box-seam"></i></div>
-                    <div class="step-label">Recibido</div>
-                </div>
+                                <div
+                    class="step-item {% if ticket.estado == 'RECIBIDO' %}active{% elif ticket.estado in 'DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
+                                        <div class="step-icon"><i class="bi bi-box-seam"></i></div>
+                                        <div class="step-label">Recibido</div>
+                                    </div>
 
-                <div class="step-item 
-                        {% if ticket.estado == 'DIAGNOSTICO' %}active
-                        {% elif ticket.estado in 'REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
-                    <div class="step-icon"><i class="bi bi-cpu"></i></div>
-                    <div class="step-label">En Diagnóstico</div>
-                </div>
+                                <div
+                    class="step-item {% if ticket.estado == 'DIAGNOSTICO' %}active{% elif ticket.estado in 'REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
+                                        <div class="step-icon"><i class="bi bi-cpu"></i></div>
+                                        <div class="step-label">En Diagnóstico</div>
+                                    </div>
 
-                <div class="step-item 
-                        {% if ticket.estado == 'REPUESTOS' %}active
-                        {% elif ticket.estado in 'REPARADO ENTREGADO' %}completed{% endif %}">
-                    <div class="step-icon"><i class="bi bi-tools"></i></div>
-                    <div class="step-label">Reparando</div>
-                </div>
+                                <div
+                    class="step-item {% if ticket.estado == 'REPUESTOS' %}active{% elif ticket.estado in 'REPARADO ENTREGADO' %}completed{% endif %}">
+                                        <div class="step-icon"><i class="bi bi-tools"></i></div>
+                                        <div class="step-label">Reparando</div>
+                                    </div>
 
-                <div class="step-item 
-                        {% if ticket.estado == 'REPARADO' %}active
-                        {% elif ticket.estado in 'ENTREGADO' %}completed{% endif %}">
-                    <div class="step-icon"><i class="bi bi-check-circle"></i></div>
-                    <div class="step-label">Listo para Entrega</div>
-                </div>
+                                <div
+                    class="step-item {% if ticket.estado == 'REPARADO' %}active{% elif ticket.estado in 'ENTREGADO' %}completed{% endif %}">
+                                        <div class="step-icon"><i class="bi bi-check-circle"></i></div>
+                                        <div class="step-label">Listo para Entrega</div>
+                                    </div>
 
-                <div class="step-item {% if ticket.estado == 'ENTREGADO' %}active{% endif %}">
-                    <div class="step-icon"><i class="bi bi-hand-thumbs-up"></i></div>
-                    <div class="step-label">Entregado</div>
-                </div>
+                                <div class="step-item {% if ticket.estado == 'ENTREGADO' %}active{% endif %}">
+                                        <div class="step-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+                                        <div class="step-label">Entregado</div>
+                                    </div>
 
-            </div>
-            {% endif %}
+                            </div>
+                        {% endif %}
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Cliente</label>
-                    <p><strong>{{ ticket.cliente_nombre }}</strong></p>
-                </div>
-                <div class="info-item">
-                    <label>Equipo Técnico</label>
-                    <p><strong>{{ ticket.equipo }}</strong></p>
-                </div>
-                <div class="info-item"
+                        <div class="info-grid">
+                                <div class="info-item">
+                                        <label>Cliente</label>
+                                        <p><strong>{{ ticket.cliente_nombre }}</strong></p>
+                                    </div>
+                                <div class="info-item">
+                                        <label>Equipo Técnico</label>
+                                        <p><strong>{{ ticket.equipo }}</strong></p>
+                                    </div>
+                                <div class="info-item"
                     style="grid-column: 1 / -1; border-top: 1px solid var(--borde); padding-top: 12px; margin-top: 4px;">
-                    <label>Falla Reportada</label>
-                    <p style="opacity: 0.9;">{{ ticket.falla_reportada }}</p>
-                </div>
-            </div>
+                                        <label>Falla Reportada</label>
+                                        <p style="opacity: 0.9;">{{ ticket.falla_reportada }}</p>
+                                    </div>
+                            </div>
 
-            {% if ticket.presupuesto_estado != 'SIN_PRESUPUESTO' %}
-            <div class="presupuesto-box">
-                <h3
+                        {% if ticket.presupuesto_estado != 'SIN_PRESUPUESTO' %}
+                        <div class="presupuesto-box">
+                                <h3
                     style="margin-top: 0; margin-bottom: 15px; color: var(--primario); display: flex; align-items: center; gap: 8px;">
-                    <i class="bi bi-calculator" style="color: var(--acento);"></i> Presupuesto de Reparación
-                </h3>
+                                        <i class="bi bi-calculator" style="color: var(--acento);"></i> Presupuesto de
+                    Reparación
+                                    </h3>
 
-                <table class="presupuesto-table">
-                    <thead>
-                        <tr>
-                            <th>Descripción / Repuesto</th>
-                            <th style="text-align: right;">Costo ($)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for linea in ticket.lineas_presupuesto.all %}
-                        <tr>
-                            <td>{{ linea.concepto }}</td>
-                            <td style="text-align: right; font-weight: 600;">${{ linea.monto }}</td>
-                        </tr>
-                        {% endfor %}
-                        <tr style="border-top: 2px solid var(--borde); font-weight: bold; font-size: 1.1rem;">
-                            <td style="padding-top: 15px;">Total Estimado:</td>
-                            <td style="padding-top: 15px; text-align: right; color: var(--acento);">
-                                ${{ total_usd }}
-                                <span
+                                <table class="presupuesto-table">
+                                        <thead>
+                                                <tr>
+                                                        <th>Descripción / Repuesto</th>
+                                                        <th style="text-align: right;">Costo ($)</th>
+                                                    </tr>
+                                            </thead>
+                                        <tbody>
+                                                {% for linea in ticket.lineas_presupuesto.all %}
+                                                <tr>
+                                                        <td>{{ linea.concepto }}</td>
+                                                        <td style="text-align: right; font-weight: 600;">${{ linea.monto
+                                }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                <tr
+                            style="border-top: 2px solid var(--borde); font-weight: bold; font-size: 1.1rem;">
+                                                        <td style="padding-top: 15px;">Total Estimado:</td>
+                                                        <td
+                                style="padding-top: 15px; text-align: right; color: var(--acento);">
+                                                                ${{ total_usd }}
+                                                                <span
                                     style="display: block; font-size: 0.8rem; color: #71717a; font-weight: normal; margin-top: 4px;">
-                                    Aprox: {{ total_ves|floatformat:2 }} Bs.
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                                                        Aprox: {{ total_ves|floatformat:2 }} Bs.
+                                                                    </span>
+                                                            </td>
+                                                    </tr>
+                                            </tbody>
+                                    </table>
 
-                {% if ticket.presupuesto_estado == 'PENDIENTE' %}
-                <p style="color: #71717a; font-size: 0.9rem; margin-bottom: 15px; text-align: center;">Por
-                    favor, revise los conceptos y elija una acción para proceder.</p>
+                                {% if ticket.presupuesto_estado == 'PENDIENTE' %}
+                                <p style="color: #71717a; font-size: 0.9rem; margin-bottom: 15px; text-align: center;">
+                    Por favor, revise los conceptos y elija una acción para proceder.</p>
 
-                <div class="acciones-presupuesto" style="display: flex; gap: 10px;">
-                    <form action="{% url 'responder_presupuesto' ticket.pk 'aprobar' %}" method="POST" style="flex: 1;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-aprobar">
-                            <i class="bi bi-check-circle-fill"></i> Aprobar Presupuesto
-                        </button>
-                    </form>
+                                <div class="acciones-presupuesto" style="display: flex; gap: 10px;">
+                                        <form action="{% url 'responder_presupuesto' ticket.pk 'aprobar' %}"
+                        method="POST" style="flex: 1;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-aprobar">
+                                                        <i class="bi bi-check-circle-fill"></i> Aprobar Presupuesto
+                                                    </button>
+                                            </form>
 
-                    <form action="{% url 'responder_presupuesto' ticket.pk 'rechazar' %}" method="POST"
-                        style="flex: 1;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-rechazar"
+                                        <form action="{% url 'responder_presupuesto' ticket.pk 'rechazar' %}"
+                        method="POST" style="flex: 1;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-rechazar"
                             onclick="return confirm('¿Está seguro de que desea rechazar el presupuesto? Esto detendrá el proceso de reparación.')">
-                            <i class="bi bi-x-circle-fill"></i> Rechazar
-                        </button>
-                    </form>
-                </div>
-                {% elif ticket.presupuesto_estado == 'APROBADO' %}
-                <div
+                                                        <i class="bi bi-x-circle-fill"></i> Rechazar
+                                                    </button>
+                                            </form>
+                                    </div>
+                                {% elif ticket.presupuesto_estado == 'APROBADO' %}
+                                <div
                     style="background-color: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.95rem; border: 1px solid #a7f3d0;">
-                    <i class="bi bi-check-all"></i> Has aprobado este presupuesto. El equipo técnico está
-                    trabajando en tu orden.
-                </div>
-                {% elif ticket.presupuesto_estado == 'RECHAZADO' %}
-                <div
+                                        <i class="bi bi-check-all"></i> Has aprobado este presupuesto. El equipo técnico
+                    está trabajando en tu orden.
+                                    </div>
+                                {% elif ticket.presupuesto_estado == 'RECHAZADO' %}
+                                <div
                     style="background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.95rem; border: 1px solid #fecaca;">
-                    <i class="bi bi-exclamation-octagon"></i> Presupuesto rechazado. Contacta con nosotros si
-                    deseas realizar alguna consulta.
-                </div>
-                {% endif %}
-                <h4
-                    style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
-                    <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
-                </h4>
+                                        <i class="bi bi-exclamation-octagon"></i> Presupuesto rechazado. Contacta con
+                    nosotros si deseas realizar alguna consulta.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}             <h4
+                style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances
+                Técnicos
+                            </h4>
 
-                <h4
-                    style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
-                    <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
-                </h4>
+                        <div class="timeline">
+                                {% for avance in ticket.avances.all %}
+                                <div class="timeline-item">
+                                        <div class="timeline-fecha">
+                                                <i class="bi bi-clock"></i> {{ avance.fecha|date:"d/m/Y - H:i" }}
+                                            </div>
+                                        <div class="timeline-desc">{{ avance.descripcion }}</div>
+                                        {% if avance.imagen %}
+                                        <img src="{{ avance.imagen.url }}" class="timeline-img">
+                                        {% endif %}
+                                    </div>
+                                {% empty %}
+                                <div
+                    style="padding: 10px 0; color: #71717a; font-style: italic; display: flex; align-items: center; gap: 8px;">
+                                        <i class="bi bi-info-circle"></i> Tu equipo ha sido registrado. Se añadirán
+                    avances pronto.
+                                    </div>
+                                {% endfor %}
+                            </div>
 
-                <div class="timeline">
-                    {% for avance in ticket.avances.all %}
-                    <div class="timeline-item">
-                        <div class="timeline-fecha">
-                            <i class="bi bi-clock"></i> {{ avance.fecha|date:"d/m/Y - H:i" }}
-                        </div>
-                        <div class="timeline-desc">{{ avance.descripcion }}</div>
+                    </div>     </div>     {% elif error %}
+        <div
+        style="text-align: center; background: #fef2f2; border: 1px solid #fee2e2; padding: 15px; border-radius: 8px; color: var(--acento); margin-top: 25px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+            </div>
+        {% endif %} </div>
+<script>
+    function switchTab(tabId) {
+        ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(id => {
+            document.getElementById(id)?.classList.remove('active');
+        });
 
-                        {% if avance.imagen %}
-                        <img src="{{ avance.imagen.url }}" class="timeline-img">
-                        {% endif %}
-                    </div> {% empty %}
-                    <p style="color: #71717a; font-size: 0.95rem;">No hay actualizaciones registradas para esta orden
-                        todavía.</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div> {% endif %}
-    </div>
-    <script>
-        function switchTab(tabId) {
-            ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(id => {
-                document.getElementById(id)?.classList.remove('active');
-            });
-
-            document.getElementById('content-' + tabId)?.classList.add('active');
-            document.getElementById('btn-' + tabId)?.classList.add('active');
-        }
-    </script>
-    {% endblock %}
+        document.getElementById('content-' + tabId)?.classList.add('active');
+        document.getElementById('btn-' + tabId)?.classList.add('active');
+    }
+</script>
+{% endblock %}
