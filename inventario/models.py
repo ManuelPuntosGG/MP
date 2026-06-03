@@ -94,8 +94,8 @@ class OrdenServicio(models.Model):
         verbose_name="Estado del Presupuesto"
     )
 
-    cliente_nombre = models.CharField(max_length=150)
-    cliente_telefono = models.CharField(max_length=20)
+    cliente_nombre = models.CharField(max_length=150, verbose_name="Nombre")
+    cliente_telefono = models.CharField(max_length=20, verbose_name="Teléfono")
     equipo = models.CharField(max_length=200, help_text="Ej. RTX 3060 EVGA XC GAMING, Laptop HP Pavilion 15, etc.")
     falla_reportada = models.TextField()
     

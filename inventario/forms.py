@@ -11,7 +11,7 @@ class SolicitudReparacionForm(forms.ModelForm):
         widgets = {
             'cliente_nombre': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej. Juan Perez'}),
             'cliente_telefono': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej. 04241234567'}),
-            'equipo': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej. Laptop HP Pavilion / iPhone 12'}),
+            'equipo': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ej. Laptop HP Pavilion / RTX 3060 EVGA XC GAMING'}),
             'falla_reportada': forms.Textarea(attrs={'class': 'form-input', 'rows': 4, 'placeholder': 'Describe detalladamente el problema...'}),
         }
 

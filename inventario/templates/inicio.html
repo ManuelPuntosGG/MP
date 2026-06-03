@@ -354,10 +354,10 @@
 {% block content %}
 <section class="hero fade-in">
     <h1>Soluciones Tecnológicas</h1>
-    <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de alta gama. Transparencia digital en cada ticket.</p>
+    <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de todas las gamas. Transparencia y confiabilidad en cada uno de nuestros trabajos.</p>
     <div class="botones-hero">
         <a href="{% url 'catalogo' %}" class="btn btn-primario"><i class="bi bi-cpu"></i> Catálogo de Hardware</a>
-        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Rastrear Mi Reparación</a>
+        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Gestionar Mi Reparación</a>
     </div>
 </section>
 
@@ -365,15 +365,15 @@
     <div class="card-servicio">
         <span class="card-servicio-icono"><i class="bi bi-tools"></i></span>
         <h3>Servicio Técnico Especializado</h3>
-        <p>Diagnóstico avanzado y reparación de equipos electrónicos.</p>
+        <p>Diagnóstico y reparación de equipos electrónicos (PCs, Laptops, Tarjetas Madre, Tarjetas de Video, Impresoras, entre otros).</p>
         <a href="{% url 'solicitar_reparacion' %}" class="btn btn-primario" style="font-size: 0.9rem; padding: 10px 20px;">
-            <i class="bi bi-file-earmark-plus"></i> Solicitar Reparación
+            <i class="bi bi-file-earmark-plus"></i> Solicitar/Rastrear Reparación
         </a>
     </div>
     <div class="card-servicio">
         <span class="card-servicio-icono"><i class="bi bi-gpu-card"></i></span>
         <h3>Tienda de Hardware</h3>
-        <p>Disponemos de un amplio inventario verificado de procesadores, tarjetas de video, memorias modulares y refacciones certificadas.</p>
+        <p>Disponibilidad de diversidad de productos, componentes y accesorios de todas las gamas al mejor precio.</p>
         <a href="{% url 'catalogo' %}" class="btn btn-secundario" style="font-size: 0.9rem; padding: 10px 20px; color: var(--primario); border-color: var(--borde);">
             <i class="bi bi-arrow-right"></i> Explorar Tienda
         </a>
