@@ -734,35 +734,43 @@
                     deseas realizar alguna consulta.
                 </div>
                 {% endif %}
-            <h4 style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
-                <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
-            </h4>
+                <h4
+                    style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
+                </h4>
 
-            <div class="timeline">
-                {% for avance in ticket.avances.all %}
-                <div class="timeline-item">
-                    <div class="timeline-fecha">
-                        <i class="bi bi-clock"></i> {{ avance.fecha|date:"d/m/Y - H:i" }}
-                    </div>
-                    <div class="timeline-desc">{{ avance.descripcion }}</div>
-                    {% if avance.imagen %}
-                    <img src="{{ avance.imagen.url }}" class="timeline-img">
+                <h4
+                    style="color: var(--primario); font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--borde); padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-journal-text" style="color: var(--acento);"></i> Historial de Avances Técnicos
+                </h4>
+
+                <div class="timeline">
+                    {% for avance in ticket.avances.all %}
+                    <div class="timeline-item">
+                        <div class="timeline-fecha">
+                            <i class="bi bi-clock"></i> {{ avance.fecha|date:"d/m/Y - H:i" }}
+                        </div>
+                        <div class="timeline-desc">{{ avance.descripcion }}</div>
+
+                        {% if avance.imagen %}
+                        <img src="{{ avance.imagen.url }}" class="timeline-img">
+                        {% endif %}
+                    </div> {% empty %}
+                    <p style="color: #71717a; font-size: 0.95rem;">No hay actualizaciones registradas para esta orden
+                        todavía.</p>
+                    {% endfor %}
+                </div>
             </div>
-            {% endif %}
-        </div>
-        {% endif %}
+        </div> {% endif %}
+    </div>
+    <script>
+        function switchTab(tabId) {
+            ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(id => {
+                document.getElementById(id)?.classList.remove('active');
+            });
 
-
-        <script>
-            function switchTab(tabId) {
-                // Quitamos 'active' de todo (si existe)
-                ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(id => {
-                    document.getElementById(id)?.classList.remove('active');
-                });
-
-                // Agregamos 'active' a los nuevos (si existen)
-                document.getElementById('content-' + tabId)?.classList.add('active');
-                document.getElementById('btn-' + tabId)?.classList.add('active');
-            }
-        </script>
-        {% endblock %}
+            document.getElementById('content-' + tabId)?.classList.add('active');
+            document.getElementById('btn-' + tabId)?.classList.add('active');
+        }
+    </script>
+    {% endblock %}
