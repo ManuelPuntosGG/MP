@@ -56,8 +56,8 @@ def obtener_tasa_binance():
             if 'rates' in data and 'VES' in data['rates']:
                 tasa_bcv = float(data['rates']['VES'])
                 
-                # Ajuste del 32% para saltar de tasa oficial a tasa P2P
-                FACTOR_AJUSTE = 1.32
+                # Ajuste del 32.5% para saltar de tasa oficial a tasa P2P
+                FACTOR_AJUSTE = 1.325
                 precio = round(tasa_bcv * FACTOR_AJUSTE, 2)
                 
                 cache.set('tasa_usdt_ves', precio, 3600)
@@ -68,7 +68,7 @@ def obtener_tasa_binance():
     # -------------------------------------------------------------------------
     # ÚLTIMO RECURSO: Colchón de seguridad
     # -------------------------------------------------------------------------
-    fallback = cache.get('tasa_usdt_ves', 740.00)
+    fallback = cache.get('tasa_usdt_ves', 760.00)
     return fallback
 
 def portal_cliente(request):
