@@ -176,7 +176,7 @@
     .alert-error {
         background: #fef2f2;
         border: 1px solid #fee2e2;
-        color: #ef4444; /* Rojo para errores */
+        color: #ef4444;
         justify-content: center;
     }
 
@@ -349,7 +349,7 @@
         background: var(--primario);
         border-color: var(--acento);
         color: white;
-        box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.15); /* Ajustar el color de sombra si tu acento no es rojo */
+        box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.15);
     }
 
     .step-item.active .step-label {
@@ -784,13 +784,13 @@
                         </div>
                     {% endfor %}
                 </div>
-            </div> </div> {% elif error %}
-        <div class="alert-box alert-error">
-            <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
-        </div>
+            </div> 
+        </div> 
     {% endif %}
 
-</div> <script>
+</div> 
+
+<script>
     function switchTab(tabId) {
         ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(id => {
             const el = document.getElementById(id);
