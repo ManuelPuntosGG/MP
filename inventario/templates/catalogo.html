@@ -370,7 +370,7 @@
             <select name="categoria" class="select-filtro">
                 <option value="">Todas las categorías</option>
                 {% for cat in categorias %}
-                <option value="{{ cat.id }}" {% if cat.id==categoria_seleccionada %}selected{% endif %}>
+                <option value="{{ cat.id }}" {% if cat.id == categoria_seleccionada %}selected{% endif %}>
                     {{ cat.nombre }}
                 </option>
                 {% endfor %}
