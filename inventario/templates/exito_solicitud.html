@@ -14,10 +14,18 @@
     /* Nuevos estilos para la sección del próximo paso y mapas */
     .caja-siguiente-paso { background: var(--fondo); border: 1px solid var(--borde); padding: 1.5rem; border-radius: 8px; margin: 25px 0; text-align: left; border-left: 4px solid var(--primario); }
     .paso-titulo { font-weight: 700; color: var(--primario); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    .btn-mapa { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--primario); border: 1px solid var(--borde); padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; margin-top: 12px; transition: all 0.2s; }
+    
+    /* Contenedor para alinear los botones de acción secundarios */
+    .acciones-paso { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    
+    .btn-mapa { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--primario); border: 1px solid var(--borde); padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
     .btn-mapa:hover { background: var(--borde); transform: translateY(-1px); }
     
-    .btn-volver { display: inline-flex; align-items: center; gap: 8px; background: var(--primario); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px; transition: all 0.2s; font-size: 0.95rem; border: 1px solid var(--primario); }
+    /* Estilo del nuevo botón de WhatsApp */
+    .btn-whatsapp { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: white; border: 1px solid #25D366; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
+    .btn-whatsapp:hover { background: #20ba56; border-color: #20ba56; color: white; transform: translateY(-1px); }
+    
+    .btn-volver { display: inline-flex; align-items: center; gap: 8px; background: var(--primario); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px; transition: all 0.2s; font-size: 0.95rem; border: 1px solid var(--primario); width: 100%; justify-content: center; box-sizing: border-box; }
     .btn-volver:hover { background: #27272a; border-color: #27272a; transform: translateY(-1px); }
 </style>
 {% endblock %}
@@ -43,11 +51,18 @@
                 <i class="bi bi-geo-alt-fill"></i> Siguiente Paso Requerido
             </div>
             <p style="font-size: 0.9rem; color: var(--texto); margin: 0; line-height: 1.5;">
-                Para iniciar la revisión física y el proceso de diagnóstico de su componente, por favor proceda a entregar el equipo en la siguiente ubicación:
+                Para iniciar la revisión física y el proceso de diagnóstico de su componente, por favor proceda a entregar el equipo en nuestra ubicación o notifíquenos el envío de su ticket por WhatsApp:
             </p>
-            <a href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" target="_blank" class="btn-mapa">
-                <i class="bi bi-map-fill"></i> Ver Ubicación en Google Maps
-            </a>
+            
+            <div class="acciones-paso">
+                <a href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" target="_blank" class="btn-mapa">
+                    <i class="bi bi-map-fill"></i> Ver Ubicación
+                </a>
+                
+                <a href="#" id="btn-whatsapp-ticket" target="_blank" class="btn-whatsapp">
+                    <i class="bi bi-whatsapp"></i> Enviar Ticket por WhatsApp
+                </a>
+            </div>
         </div>
         
         <a href="{% url 'inicio' %}" class="btn-volver">
@@ -55,4 +70,28 @@
         </a>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Configura tu número de WhatsApp aquí (con el código de país, ej: 58 para Venezuela)
+        const telefonoMTech = "584245022292"; 
+        
+        // 2. Extracción de datos desde el contexto de Django
+        const codigoRastreo = "{{ orden.codigo_rastreo }}";
+        const clienteNombre = "{{ orden.cliente_nombre }}";
+        const equipoNombre = "{{ orden.equipo }}";
+        
+        // 3. Construcción del mensaje preestablecido con formato atractivo
+        const mensaje = `¡Hola *MP Tech*! 👋%0A%0A` +
+                        `Acabo de registrar una solicitud de soporte técnico. Aquí están los detalles de mi ticket:%0A%0A` +
+                        `📌 *Código de Rastreo:* ${codigoRastreo}%0A` +
+                        `👤 *Cliente:* ${clienteNombre}%0A` +
+                        `💻 *Equipo:* ${equipoNombre}%0A%0A` +
+                        `Quedo atento(a) para proceder con la entrega. ¡Muchas gracias!`;
+        
+        // 4. Asignación del enlace al botón
+        const urlWhatsapp = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
+        document.getElementById("btn-whatsapp-ticket").href = urlWhatsapp;
+    });
+</script>
 {% endblock %}
