@@ -4,29 +4,183 @@
 
 {% block extra_css %}
 <style>
-    .container-exito { max-width: 550px; margin: 4rem auto; padding: 0 5%; }
-    .exito-box { background: var(--blanco); padding: 3rem 2rem; border-radius: 12px; border: 1px solid var(--borde); border-top: 4px solid var(--verde-precio); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.03); text-align: center; }
+    .container-exito { 
+        max-width: 550px; 
+        margin: 4rem auto; 
+        padding: 0 5%; 
+    }
     
-    .icono-check { font-size: 3.5rem; color: var(--verde-precio); margin-bottom: 15px; display: block; }
+    .exito-box { 
+        background: var(--blanco); 
+        padding: 3rem 2rem; 
+        border-radius: 12px; 
+        border: 1px solid var(--borde); 
+        border-top: 4px solid var(--verde-precio); 
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); 
+        text-align: center; 
+    }
     
-    .codigo-destacado { font-size: 2.2rem; font-weight: 800; color: var(--primario); background: var(--fondo); padding: 12px 24px; border-radius: 8px; display: inline-block; margin: 20px 0; letter-spacing: 3px; border: 1px solid var(--borde); font-family: 'Courier New', Courier, monospace; }
+    /* Animación para el icono de éxito */
+    @keyframes popIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        70% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .icono-check { 
+        font-size: 3.8rem; 
+        color: var(--verde-precio); 
+        margin-bottom: 15px; 
+        display: inline-block;
+        animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
     
-    /* Nuevos estilos para la sección del próximo paso y mapas */
-    .caja-siguiente-paso { background: var(--fondo); border: 1px solid var(--borde); padding: 1.5rem; border-radius: 8px; margin: 25px 0; text-align: left; border-left: 4px solid var(--primario); }
-    .paso-titulo { font-weight: 700; color: var(--primario); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* Contenedor del código para alinear el botón de copiar */
+    .contenedor-codigo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .codigo-destacado { 
+        font-size: 2rem; 
+        font-weight: 800; 
+        color: var(--primario); 
+        background: var(--fondo); 
+        padding: 12px 24px; 
+        border-radius: 8px; 
+        letter-spacing: 3px; 
+        border: 1px solid var(--borde); 
+        font-family: 'Courier New', Courier, monospace; 
+        margin: 0;
+    }
+
+    .btn-copiar {
+        background: transparent;
+        color: #71717a;
+        border: 1px solid var(--borde);
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .btn-copiar:hover {
+        background: var(--fondo);
+        color: var(--primario);
+        transform: translateY(-2px);
+    }
     
-    /* Contenedor para alinear los botones de acción secundarios */
-    .acciones-paso { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .caja-siguiente-paso { 
+        background: var(--fondo); 
+        border: 1px solid var(--borde); 
+        padding: 1.5rem; 
+        border-radius: 8px; 
+        margin: 25px 0; 
+        text-align: left; 
+        border-left: 4px solid var(--primario); 
+    }
     
-    .btn-mapa { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--primario); border: 1px solid var(--borde); padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
-    .btn-mapa:hover { background: var(--borde); transform: translateY(-1px); }
+    .paso-titulo { 
+        font-weight: 700; 
+        color: var(--primario); 
+        margin-bottom: 8px; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        font-size: 0.95rem; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+    }
     
-    /* Estilo del nuevo botón de WhatsApp */
-    .btn-whatsapp { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: white; border: 1px solid #25D366; padding: 10px 14px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
-    .btn-whatsapp:hover { background: #20ba56; border-color: #20ba56; color: white; transform: translateY(-1px); }
+    .acciones-paso { 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 10px; 
+        margin-top: 15px; 
+    }
     
-    .btn-volver { display: inline-flex; align-items: center; gap: 8px; background: var(--primario); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 10px; transition: all 0.2s; font-size: 0.95rem; border: 1px solid var(--primario); width: 100%; justify-content: center; box-sizing: border-box; }
-    .btn-volver:hover { background: #27272a; border-color: #27272a; transform: translateY(-1px); }
+    .btn-mapa { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 6px; 
+        background: var(--blanco); 
+        color: var(--primario); 
+        border: 1px solid var(--borde); 
+        padding: 10px 16px; 
+        border-radius: 6px; 
+        text-decoration: none; 
+        font-weight: 600; 
+        font-size: 0.85rem; 
+        transition: all 0.2s; 
+    }
+    
+    .btn-mapa:hover { 
+        background: var(--fondo); 
+        border-color: var(--primario);
+        transform: translateY(-1px); 
+    }
+    
+    .btn-whatsapp { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 6px; 
+        background: #25D366; 
+        color: white; 
+        border: 1px solid #25D366; 
+        padding: 10px 16px; 
+        border-radius: 6px; 
+        text-decoration: none; 
+        font-weight: 600; 
+        font-size: 0.85rem; 
+        transition: all 0.2s; 
+    }
+    
+    .btn-whatsapp:hover { 
+        background: #20ba56; 
+        border-color: #20ba56; 
+        color: white; 
+        transform: translateY(-1px); 
+        box-shadow: 0 4px 6px -1px rgba(37, 211, 102, 0.2);
+    }
+    
+    .btn-volver { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 8px; 
+        background: var(--primario); 
+        color: white; 
+        padding: 12px 24px; 
+        border-radius: 8px; 
+        text-decoration: none; 
+        font-weight: 600; 
+        margin-top: 10px; 
+        transition: all 0.2s; 
+        font-size: 0.95rem; 
+        border: 1px solid var(--primario); 
+        width: 100%; 
+        justify-content: center; 
+        box-sizing: border-box; 
+    }
+    
+    .btn-volver:hover { 
+        background: #27272a; 
+        border-color: #27272a; 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 480px) {
+        .acciones-paso { flex-direction: column; }
+        .btn-mapa, .btn-whatsapp { width: 100%; justify-content: center; }
+        .codigo-destacado { font-size: 1.5rem; padding: 10px 15px; }
+    }
 </style>
 {% endblock %}
 
@@ -37,8 +191,14 @@
         <h1 style="color: var(--primario); margin-bottom: 10px; font-weight: 800; font-size: 1.75rem; letter-spacing: -0.5px;">¡Ingreso Registrado con Éxito!</h1>
         <p style="font-size: 1rem; color: var(--texto); line-height: 1.5;">Estimado(a) <strong>{{ orden.cliente_nombre }}</strong>, los parámetros técnicos de su equipo (<strong>{{ orden.equipo }}</strong>) han sido cargados al sistema.</p>
         
-        <p style="margin-top: 25px; color: #71717a; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Código Único de Rastreo:</p>
-        <div class="codigo-destacado">{{ orden.codigo_rastreo }}</div>
+        <p style="margin-top: 25px; margin-bottom: 10px; color: #71717a; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Código Único de Rastreo:</p>
+        
+        <div class="contenedor-codigo">
+            <div class="codigo-destacado" id="codigo-texto">{{ orden.codigo_rastreo }}</div>
+            <button class="btn-copiar" onclick="copiarCodigo()" title="Copiar código">
+                <i class="bi bi-clipboard" id="icono-copiar"></i>
+            </button>
+        </div>
         
         <div style="background: rgba(220, 38, 38, 0.03); border: 1px solid rgba(220, 38, 38, 0.15); padding: 12px; border-radius: 8px; margin-top: 10px;">
             <p style="font-size: 0.88rem; color: var(--acento); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0;">
@@ -51,7 +211,7 @@
                 <i class="bi bi-geo-alt-fill"></i> Siguiente Paso Requerido
             </div>
             <p style="font-size: 0.9rem; color: var(--texto); margin: 0; line-height: 1.5;">
-                Para iniciar la revisión física y el proceso de diagnóstico de su componente, por favor proceda a entregar el equipo en nuestra ubicación o notifíquenos el envío de su ticket por WhatsApp:
+                Para iniciar la revisión física y el proceso de diagnóstico, por favor proceda a entregar el equipo en nuestra ubicación o notifíquenos el envío de su ticket por WhatsApp:
             </p>
             
             <div class="acciones-paso">
@@ -72,16 +232,33 @@
 </div>
 
 <script>
+    // Lógica para copiar el código al portapapeles
+    function copiarCodigo() {
+        const codigo = document.getElementById("codigo-texto").innerText;
+        const icono = document.getElementById("icono-copiar");
+        
+        navigator.clipboard.writeText(codigo).then(() => {
+            // Cambiar icono a check temporalmente
+            icono.classList.remove("bi-clipboard");
+            icono.classList.add("bi-check2");
+            icono.style.color = "var(--verde-precio)";
+            
+            setTimeout(() => {
+                icono.classList.remove("bi-check2");
+                icono.classList.add("bi-clipboard");
+                icono.style.color = "";
+            }, 2000);
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
-        // 1. Configura tu número de WhatsApp aquí (con el código de país, ej: 58 para Venezuela)
+        // Configuración de WhatsApp
         const telefonoMTech = "584245022292"; 
         
-        // 2. Extracción de datos desde el contexto de Django
-        const codigoRastreo = "{{ orden.codigo_rastreo }}";
-        const clienteNombre = "{{ orden.cliente_nombre }}";
-        const equipoNombre = "{{ orden.equipo }}";
+        const codigoRastreo = "{{ orden.codigo_rastreo|escapejs }}";
+        const clienteNombre = "{{ orden.cliente_nombre|escapejs }}";
+        const equipoNombre = "{{ orden.equipo|escapejs }}";
         
-        // 3. Construcción del mensaje preestablecido con formato atractivo
         const mensaje = `¡Hola *MP Tech*! 👋%0A%0A` +
                         `Acabo de registrar una solicitud de soporte técnico. Aquí están los detalles de mi ticket:%0A%0A` +
                         `📌 *Código de Rastreo:* ${codigoRastreo}%0A` +
@@ -89,7 +266,6 @@
                         `💻 *Equipo:* ${equipoNombre}%0A%0A` +
                         `Quedo atento(a) para proceder con la entrega. ¡Muchas gracias!`;
         
-        // 4. Asignación del enlace al botón
         const urlWhatsapp = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
         document.getElementById("btn-whatsapp-ticket").href = urlWhatsapp;
     });

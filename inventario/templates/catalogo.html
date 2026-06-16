@@ -154,6 +154,7 @@
         display: flex;
         flex-direction: column;
         border: 1px solid var(--borde);
+        animation: entradaSuave 0.4s ease-out forwards;
     }
 
     .tarjeta:hover {
@@ -328,45 +329,61 @@
             padding: 8px 10px;
             font-size: 0.85rem;
         }
+
+        @keyframes entradaSuave {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 2rem; border-bottom: 3px solid var(--acento); padding-bottom: 8px;">
-        <h2 class="titulo-seccion" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Componentes y Repuestos</h2>
-        <span style="font-size: 0.85rem; background: #eff6ff; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 6px;">
+
+    <div
+        style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 2rem; border-bottom: 3px solid var(--acento); padding-bottom: 8px;">
+        <h2 class="titulo-seccion" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Componentes y
+            Repuestos</h2>
+        <span
+            style="font-size: 0.85rem; background: #eff6ff; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 6px;">
             <i class="bi bi-currency-exchange"></i> Tasa Binance: {{ tasa_ves|floatformat:2 }} Bs/USDT
         </span>
     </div>
 
     <div class="barra-filtros">
         <form method="GET" action="{% url 'catalogo' %}" class="form-filters form-filtros">
-            
+
             <div class="grupo-busqueda">
                 <i class="bi bi-search"></i>
-                <input type="text" name="q" placeholder="Buscar componente (ej: Intel, pantalla, RAM)..." value="{{ query_busqueda }}">
+                <input type="text" name="q" placeholder="Buscar componente (ej: Intel, pantalla, RAM)..."
+                    value="{{ query_busqueda }}">
             </div>
-            
+
             <select name="categoria" class="select-filtro">
                 <option value="">Todas las categorías</option>
                 {% for cat in categorias %}
-                    <option value="{{ cat.id }}" {% if cat.id == categoria_seleccionada %}selected{% endif %}>
-                        {{ cat.nombre }}
-                    </option>
+                <option value="{{ cat.id }}" {% if cat.id==categoria_seleccionada %}selected{% endif %}>
+                    {{ cat.nombre }}
+                </option>
                 {% endfor %}
             </select>
-            
+
             <button type="submit" class="btn-filtrar">
                 Filtrar
             </button>
-            
+
             {% if query_busqueda or categoria_seleccionada %}
-                <a href="{% url 'catalogo' %}" class="btn-limpiar">
-                    <i class="bi bi-x-circle" style="margin-right: 5px;"></i> Limpiar
-                </a>
+            <a href="{% url 'catalogo' %}" class="btn-limpiar">
+                <i class="bi bi-x-circle" style="margin-right: 5px;"></i> Limpiar
+            </a>
             {% endif %}
         </form>
     </div>
@@ -400,7 +417,7 @@
                         </div>
                         <span class="stock">Stock: {{ producto.stock }}</span>
                     </div>
-                    
+
                     <a href="https://wa.me/584245022292?text=Hola,%20me%20interesa%20el%20producto:%20{{ producto.nombre|urlencode }}"
                         target="_blank" class="btn-comprar">
                         <i class="bi bi-whatsapp"></i> Me interesa
@@ -413,6 +430,12 @@
             <i class="bi bi-box-seam"
                 style="font-size: 3rem; color: var(--borde); display: block; margin-bottom: 15px;"></i>
             <h3>No hay componentes que coincidan con tu búsqueda.</h3>
+            {% if query_busqueda or categoria_seleccionada %}
+            <a href="{% url 'catalogo' %}" class="btn-limpiar"
+                style="margin-top: 20px; border-color: var(--primario); color: var(--primario);">
+                <i class="bi bi-arrow-counterclockwise" style="margin-right: 5px;"></i> Ver todo el catálogo
+            </a>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -422,31 +445,35 @@
         <ul style="list-style: none; display: inline-flex; gap: 8px; padding: 0; align-items: center;">
             {% if page_obj.has_previous %}
             <li>
-                <a href="?page={{ page_obj.previous_page_number }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" class="paginacion-link">
+                <a href="?page={{ page_obj.previous_page_number }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}"
+                    class="paginacion-link">
                     <i class="bi bi-chevron-left"></i> Anterior
                 </a>
             </li>
             {% endif %}
 
             {% for num in page_obj.paginator.page_range %}
-                {% if num == page_obj.number %}
-                <li>
-                    <strong style="padding: 8px 14px; background: var(--acento); color: white; border-radius: 8px; font-size: 0.9rem; font-weight: 700;">
-                        {{ num }}
-                    </strong>
-                </li>
-                {% else %}
-                <li>
-                    <a href="?page={{ num }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" class="paginacion-link">
-                        {{ num }}
-                    </a>
-                </li>
-                {% endif %}
+            {% if num == page_obj.number %}
+            <li>
+                <strong
+                    style="padding: 8px 14px; background: var(--acento); color: white; border-radius: 8px; font-size: 0.9rem; font-weight: 700;">
+                    {{ num }}
+                </strong>
+            </li>
+            {% else %}
+            <li>
+                <a href="?page={{ num }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}"
+                    class="paginacion-link">
+                    {{ num }}
+                </a>
+            </li>
+            {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
             <li>
-                <a href="?page={{ page_obj.next_page_number }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" class="paginacion-link">
+                <a href="?page={{ page_obj.next_page_number }}{% if query_busqueda %}&q={{ query_busqueda }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}"
+                    class="paginacion-link">
                     Siguiente <i class="bi bi-chevron-right"></i>
                 </a>
             </li>
