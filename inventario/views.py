@@ -190,19 +190,18 @@ def responder_presupuesto(request, pk, accion):
 
 
 def cotizador_auto(request):
-    """
-    Vista que maneja el cotizador e importaciones de productos.
-    Si la solicitud es AJAX (POST), extrae el precio del enlace.
-    Si es una carga normal (GET), renderiza el cotizador con la tasa actual.
-    """
     if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.method == 'POST':
         url = request.POST.get('url', '').strip()
         if not url:
             return JsonResponse({'status': 'error', 'message': 'Enlace vacío'}, status=400)
         
+        # Simulamos ser un navegador real con más detalle
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept-Language": "es-ES,es;q=0.9"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1"
         }
         
         try:
@@ -214,40 +213,68 @@ def cotizador_auto(request):
             elif "ebay" in url.lower():
                 tienda = "eBay"
 
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers, timeout=15)
             precio = 0.0
+            peso_detectado = 1.0 # Peso por defecto en libras si no se encuentra
             
             if response.status_code == 200:
-                soup = BeautifulSoup(response.content, 'html.parser')
+                html_content = response.text
+                soup = BeautifulSoup(html_content, 'html.parser')
                 
                 if tienda == "Amazon":
+                    # Extraer Precio
                     elemento_precio = soup.select_one('span.a-price-whole')
                     if elemento_precio:
                         precio_texto = elemento_precio.get_text(strip=True).replace(',', '.')
                         precio = float(re.sub(r'[^\d.]', '', precio_texto))
-                
+                    else:
+                        # Fallback Amazon: buscar en metadata
+                        match = re.search(r'"price":\s*"(\d+\.\d+)"', html_content)
+                        if match: precio = float(match.group(1))
+
+                    # Intentar extraer peso (es muy inestable, pero lo intenta)
+                    match_peso = re.search(r'(\d+[\.]?\d*)\s*(pounds|lbs|ounces|oz)', html_content, re.IGNORECASE)
+                    if match_peso:
+                        valor = float(match_peso.group(1))
+                        unidad = match_peso.group(2).lower()
+                        if 'oz' in unidad or 'ounce' in unidad:
+                            peso_detectado = round(valor / 16, 2) # Convertir onzas a libras
+                        else:
+                            peso_detectado = valor
+
                 elif tienda == "eBay":
-                    elemento_precio = soup.select_one('.x-price-primary, [itemprop="price"]')
+                    # Extraer Precio
+                    elemento_precio = soup.select_one('.x-price-primary, [itemprop="price"], .prc-display')
                     if elemento_precio:
                         precio_texto = elemento_precio.get_text(strip=True).replace(',', '.')
                         precio = float(re.sub(r'[^\d.]', '', precio_texto))
                 
                 elif tienda == "AliExpress":
-                    elemento_precio = soup.select_one('[class*="price--current"], .product-price-value')
-                    if elemento_precio:
-                        precio_texto = elemento_precio.get_text(strip=True).replace(',', '.')
-                        precio = float(re.sub(r'[^\d.]', '', precio_texto))
+                    # Extraer Precio buscando en el JSON oculto dentro de las etiquetas <script>
+                    # Buscamos patrones comunes que usa AliExpress para declarar el precio en USD
+                    patrones = [
+                        r'"actMinPrice":"([\d.]+)"',
+                        r'"minActivityAmount":\{"currency":"USD","value":([\d.]+)\}',
+                        r'"formatedActivityPrice":"US\s*\$([\d.]+)"',
+                        r'"price":"([\d.]+)"'
+                    ]
+                    
+                    for patron in patrones:
+                        match = re.search(patron, html_content)
+                        if match:
+                            precio = float(match.group(1))
+                            break # Si encuentra el precio, deja de buscar
 
             return JsonResponse({
                 'status': 'success',
                 'tienda': tienda,
                 'precio': precio,
+                'peso_estimado': peso_detectado, # Enviamos el peso al frontend
                 'url': url
             })
             
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-    # Si es GET, cargamos la interfaz web usando la tasa en tiempo real
     tasa_actual = obtener_tasa_binance()
     return render(request, 'importaciones.html', {'tasa_ves': tasa_actual})

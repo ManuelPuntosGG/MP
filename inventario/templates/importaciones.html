@@ -153,7 +153,7 @@
                     tienda: data.tienda,
                     url: data.url,
                     precio: precioFinal,
-                    peso: 1.0 // Peso base asignado por defecto (1 libra)
+                    peso: data.peso_estimado || 1.0 // Usa el detectado o 1 libra por defecto
                 };
 
                 carritoProductos.push(nuevoItem);
