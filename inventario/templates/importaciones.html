@@ -7,29 +7,36 @@
     .import-container { max-width: 900px; margin: 3rem auto; padding: 0 5%; }
     .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 1.5rem; font-weight: 800; }
     
-    .input-link-box { background: var(--blanco); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-bottom: 1.5rem; }
-    .flex-input { display: flex; gap: 10px; margin-top: 8px; }
-    .flex-input input { flex: 1; padding: 12px 15px; border: 1px solid var(--borde); border-radius: 8px; font-size: 0.95rem; background: var(--fondo); transition: all 0.3s; }
-    .flex-input input:focus { outline: none; border-color: var(--acento); background: var(--blanco); }
+    /* Formulario de Entrada Intuitivo */
+    .formulario-adicion { background: var(--blanco); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-bottom: 1.5rem; }
+    .grid-inputs { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: flex-end; }
+    @media (max-width: 768px) { .grid-inputs { grid-template-columns: 1fr; } }
     
-    .btn-agregar { background: var(--primario); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .grupo-campo { display: flex; flex-direction: column; gap: 6px; }
+    .grupo-campo label { font-weight: 700; color: var(--primario); font-size: 0.85rem; }
+    .grupo-campo input { padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; font-size: 0.95rem; background: var(--fondo); transition: all 0.3s; }
+    .grupo-campo input:focus { outline: none; border-color: var(--acento); background: var(--blanco); }
+    
+    .btn-agregar { background: var(--primario); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 43px; }
     .btn-agregar:hover { background: #27272a; }
-    .btn-agregar:disabled { background: #a1a1aa; cursor: not-allowed; }
 
-    /* Cuadro de Advertencias y Políticas comerciales */
+    /* Tasa de cambio info flotante */
+    .tasa-badge-info { background: var(--fondo); border: 1px solid var(--borde); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--texto); display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1rem; }
+
+    /* Cuadro de Advertencias y Políticas */
     .politicas-box { background: #fffbeb; border: 1px solid #fef08a; color: #854d0e; padding: 1.2rem; border-radius: 10px; margin-bottom: 2rem; font-size: 0.9rem; display: flex; gap: 12px; align-items: flex-start; }
     .politicas-box i { font-size: 1.3rem; color: #ca8a04; margin-top: 2px; }
     .politicas-box ul { margin: 8px 0 0 18px; padding: 0; }
     .politicas-box li { margin-bottom: 4px; }
 
-    /* Tabla de productos añadidos */
+    /* Tabla de productos */
     .tabla-productos-wrapper { background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; overflow-x: auto; margin-bottom: 2rem; }
     .tabla-productos { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
     .tabla-productos th { background: var(--fondo); padding: 12px 16px; font-weight: 700; color: var(--primario); border-bottom: 1px solid var(--borde); }
     .tabla-productos td { padding: 14px 16px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
     .tabla-productos tr:last-child td { border-bottom: none; }
     
-    .input-tabla { width: 70px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px; font-weight: 600; background: var(--fondo); }
+    .input-tabla { width: 80px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px; font-weight: 600; background: var(--fondo); }
     .btn-eliminar { background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; border-radius: 4px; transition: all 0.2s; }
     .btn-eliminar:hover { background: #fef2f2; }
 
@@ -39,29 +46,50 @@
     .bg-ebay { background: #0064d220; color: #0064d2; }
     .bg-otro { background: #71717a20; color: #71717a; }
 
+    /* Resumen de costos */
     .resumen-importacion { background: var(--primario); color: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-    .resumen-linea { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; opacity: 0.9; }
-    .resumen-total { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; border-top: 2px dashed rgba(255,255,255,0.15); padding-top: 15px; margin-top: 15px; color: var(--verde-precio); }
+    .resumen-linea { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 1rem; opacity: 0.9; }
+    .resumen-linea .monto-desglose { text-align: right; }
+    .resumen-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; font-weight: 800; border-top: 2px dashed rgba(255,255,255,0.15); padding-top: 15px; margin-top: 15px; color: var(--verde-precio); }
+    .resumen-total .monto-desglose { text-align: right; }
+
+    .bs-subtexto { display: block; font-size: 0.8rem; opacity: 0.75; font-weight: 500; margin-top: 2px; }
+    .bs-subtexto-total { display: block; font-size: 1rem; color: #fff; opacity: 0.9; font-weight: 600; margin-top: 4px; }
 
     .btn-whatsapp-import { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: white; text-decoration: none; padding: 14px; border-radius: 8px; font-weight: 700; margin-top: 1.5rem; transition: all 0.2s; text-align: center; }
     .btn-whatsapp-import:hover { background: #20ba56; transform: translateY(-1px); }
-    
-    .loading-spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid white; border-radius: 50%; border-top-color: transparent; animation: spin 0.6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="import-container">
-    <h2 class="titulo-seccion">Importaciones Directas</h2>
-    <p style="color: var(--texto); margin-bottom: 1.5rem;">Pega los enlaces de los productos que deseas traer de Amazon, AliExpress o eBay. El sistema intentará procesar la información básica del artículo de manera automatizada.</p>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+        <div>
+            <h2 class="titulo-seccion">Importaciones Directas</h2>
+        </div>
+        <div class="tasa-badge-info">
+            <i class="bi bi-currency-exchange"></i> Tasa de cambio: <strong>{{ tasa_ves }} Bs/$</strong>
+        </div>
+    </div>
+    
+    <p style="color: var(--texto); margin-bottom: 1.5rem;">Introduce los datos del artículo que deseas traer de Amazon, AliExpress o eBay para calcular los costos logísticos estimados hasta tus manos.</p>
 
-    <div class="input-link-box">
-        <label style="font-weight: 700; color: var(--primario); font-size: 0.95rem;">Pegar enlace del producto:</label>
-        <div class="flex-input">
-            <input type="url" id="url-producto" placeholder="https://www.amazon.com/dp/... o artículo de AliExpress/eBay">
-            <button type="button" class="btn-agregar" id="btn-add" onclick="procesarEnlace()">
-                <i class="bi bi-plus-circle-fill"></i> Agregar
+    <div class="formulario-adicion">
+        <div class="grid-inputs">
+            <div class="grupo-campo">
+                <label for="url-producto">Enlace del producto:</label>
+                <input type="url" id="url-producto" placeholder="https://www.amazon.com/dp/...">
+            </div>
+            <div class="grupo-campo">
+                <label for="precio-producto">Precio en Tienda ($):</label>
+                <input type="number" id="precio-producto" step="0.01" min="0" placeholder="0.00">
+            </div>
+            <div class="grupo-campo">
+                <label for="peso-producto">Peso Estimado (Lbs):</label>
+                <input type="number" id="peso-producto" step="0.1" min="0.1" value="1.0">
+            </div>
+            <button type="button" class="btn-agregar" onclick="agregarProducto()">
+                <i class="bi bi-plus-circle-fill"></i> Añadir
             </button>
         </div>
     </div>
@@ -71,8 +99,8 @@
         <div>
             <strong>Información importante para tu cotización:</strong>
             <ul>
-                <li><strong>Valores estimados:</strong> Asegúrate de verificar y ajustar los precios o pesos si el sistema automatizado no los detecta con precisión. El flete y costo final se reajustarán con las medidas reales del paquete en almacén.</li>
-                <li><strong>Modalidad de pago:</strong> Para procesar y congelar la compra de tus productos, se debe abonar el <strong>50% por adelantado</strong>. El 50% restante se cancela al momento de retirar el pedido.</li>
+                <li><strong>Valores estimados:</strong> Por favor, ingresa los datos lo más cercanos a la realidad posibles. El costo final del flete se reajustará en base a las medidas y peso físico real del paquete cuando sea recibido en nuestro almacén de Miami.</li>
+                <li><strong>Modalidad de pago obligatorio:</strong> Para procesar y realizar la compra segura de tus artículos, se requiere un pago por adelantado del <strong>50% del total</strong>. El 50% restante se cancela estrictamente al momento de retirar tu pedido.</li>
             </ul>
         </div>
     </div>
@@ -82,18 +110,18 @@
             <thead>
                 <tr>
                     <th>Tienda</th>
-                    <th>Enlace / Producto</th>
-                    <th style="width: 100px;">Precio ($)</th>
-                    <th style="width: 90px;">Peso (Lbs)</th>
-                    <th style="text-align: right;">Total Item</th>
+                    <th>Enlace del Artículo</th>
+                    <th style="width: 110px;">Precio ($)</th>
+                    <th style="width: 100px;">Peso (Lbs)</th>
+                    <th style="text-align: right; width: 140px;">Flete Est. ($ / Bs)</th>
                     <th style="text-align: center; width: 50px;"><i class="bi bi-trash"></i></th>
                 </tr>
             </thead>
             <tbody id="items-carrito">
                 <tr id="fila-vacia">
                     <td colspan="6" style="text-align: center; color: #a1a1aa; padding: 40px 20px;">
-                        <i class="bi bi-link-45deg" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
-                        No has añadido ningún enlace todavía.
+                        <i class="bi bi-cart-plus" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                        No has añadido ningún producto a la lista todavía.
                     </td>
                 </tr>
             </tbody>
@@ -102,103 +130,110 @@
 
     <div class="resumen-importacion">
         <h3 style="margin-top: 0; color: var(--acento); font-weight: 800; margin-bottom: 1.5rem;">Resumen Estimado de Importación</h3>
+        
         <div class="resumen-linea">
-            <span>Total FOB (Valor de productos):</span>
-            <span id="resumen-fob">$0.00</span>
+            <span>Total Mercancía (Valor FOB):</span>
+            <div class="monto-desglose" id="resumen-fob">
+                <span>$0.00</span>
+                <span class="bs-subtexto">0.00 Bs</span>
+            </div>
         </div>
         <div class="resumen-linea">
-            <span>Total Flete Aéreo Estimado (Consolidado):</span>
-            <span id="resumen-flete">$0.00</span>
+            <span>Flete Aéreo Consolidado (Total Libras):</span>
+            <div class="monto-desglose" id="resumen-flete">
+                <span>$0.00</span>
+                <span class="bs-subtexto">0.00 Bs</span>
+            </div>
         </div>
         <div class="resumen-linea">
-            <span>Gestión Administrativa y Seguro:</span>
-            <span id="resumen-comision">$0.00</span>
+            <span>Gestión Administrativa y Seguro (10% o Min $5):</span>
+            <div class="monto-desglose" id="resumen-comision">
+                <span>$0.00</span>
+                <span class="bs-subtexto">0.00 Bs</span>
+            </div>
         </div>
         <div class="resumen-total">
             <span>Total General Estimado:</span>
-            <span id="resumen-total-usd">$0.00</span>
+            <div class="monto-desglose" id="resumen-total-usd">
+                <span>$0.00</span>
+                <span class="bs-subtexto-total">0.00 Bs</span>
+            </div>
         </div>
         
-        <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.4;">
-            📌 <strong>Plan de pagos requerido:</strong> Inicial del 50% para procesar: <strong id="pago-inicial">$0.00</strong> | Restante del 50% contra entrega: <strong id="pago-final-entrega">$0.00</strong>
+        <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 14px; border-radius: 8px; font-size: 0.85rem; line-height: 1.6;">
+            📌 <strong>Plan de Financiamiento Obligatorio (Tasa del día):</strong><br>
+            • Inicial del 50% para ordenar los productos: <strong id="pago-inicial">$0.00 (0.00 Bs)</strong><br>
+            • Saldo del 50% restante a pagar contra entrega: <strong id="pago-final-entrega">$0.00 (0.00 Bs)</strong>
         </div>
         
         <a href="#" id="btn-ws-import" target="_blank" class="btn-whatsapp-import" onclick="return validarEnvio(event)">
-            <i class="bi bi-whatsapp"></i> Enviar Lista de Importación por WhatsApp
+            <i class="bi bi-whatsapp"></i> Enviar Solicitud de Pedido por WhatsApp
         </a>
     </div>
 </div>
 
 <script>
-    // Parámetros de tarifas comerciales
     const TARIFA_LIBRA = 5.00;       
     const PORCENTAJE_COMISION = 0.10; 
     const COMISION_MINIMA = 5.00;     
+    
+    // Captura de la tasa de cambio desde el contexto de Django
+    const TASA_VES = parseFloat("{{ tasa_ves }}") || 0;
 
     let carritoProductos = [];
 
-    function procesarEnlace() {
-        const urlInput = document.getElementById('url-producto');
-        const btnAdd = document.getElementById('btn-add');
-        const urlValue = urlInput.value.trim();
+    function detectarTienda(url) {
+        let urlLower = url.toLowerCase();
+        if (urlLower.includes("amazon")) return "Amazon";
+        if (urlLower.includes("aliexpress")) return "AliExpress";
+        if (urlLower.includes("ebay")) return "eBay";
+        return "Otro";
+    }
 
-        if (!urlValue) return;
+    function agregarProducto() {
+        const inputUrl = document.getElementById('url-producto');
+        const inputPrecio = document.getElementById('precio-producto');
+        const inputPeso = document.getElementById('peso-producto');
 
-        btnAdd.disabled = true;
-        btnAdd.innerHTML = `<span class="loading-spinner"></span> Buscando...`;
+        const url = inputUrl.value.trim();
+        const precio = parseFloat(inputPrecio.value) || 0;
+        const peso = parseFloat(inputPeso.value) || 1.0;
 
-        const formData = new FormData();
-        formData.append('url', urlValue);
-        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        if (!url) {
+            alert("Por favor, ingresa un enlace de producto válido.");
+            return;
+        }
+        if (precio <= 0) {
+            alert("Por favor, ingresa un precio mayor a 0.");
+            return;
+        }
 
-        fetch('', {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                let precioFinal = data.precio;
-                // Si el scraping falla y devuelve 0, solicita el valor mediante prompt manual
-                if (precioFinal <= 0) {
-                    const inputManual = prompt("Debido a políticas de seguridad o renderizado dinámico de la tienda, no logramos extraer el precio de forma automatizada.\n\nPor favor, introduce el precio del producto manualmente ($):");
-                    precioFinal = parseFloat(inputManual) || 0;
-                }
+        const nuevoItem = {
+            id: Date.now(),
+            tienda: detectarTienda(url),
+            url: url,
+            precio: precio,
+            peso: peso
+        };
 
-                const nuevoItem = {
-                    id: Date.now(),
-                    tienda: data.tienda,
-                    url: data.url,
-                    precio: precioFinal,
-                    peso: data.peso_estimado || 1.0 
-                };
+        carritoProductos.push(nuevoItem);
+        renderizarTabla();
 
-                carritoProductos.push(nuevoItem);
-                renderizarTabla();
-                urlInput.value = '';
-            } else {
-                alert("Error al procesar el enlace. Asegúrate de que sea una URL directa y válida.");
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Error en la comunicación con el backend.");
-        })
-        .finally(() => {
-            btnAdd.disabled = false;
-            btnAdd.innerHTML = `<i class="bi bi-plus-circle-fill"></i> Agregar`;
-        });
+        // Limpiar formulario para el siguiente artículo
+        inputUrl.value = '';
+        inputPrecio.value = '';
+        inputPeso.value = '1.0';
     }
 
     function renderizarTabla() {
         const tbody = document.getElementById('items-carrito');
+        
         if (carritoProductos.length === 0) {
             tbody.innerHTML = `
                 <tr id="fila-vacia">
                     <td colspan="6" style="text-align: center; color: #a1a1aa; padding: 40px 20px;">
-                        <i class="bi bi-link-45deg" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
-                        No has añadido ningún enlace todavía.
+                        <i class="bi bi-cart-plus" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                        No has añadido ningún producto a la lista todavía.
                     </td>
                 </tr>`;
             actualizarTotales();
@@ -207,18 +242,16 @@
 
         tbody.innerHTML = '';
         carritoProductos.forEach((item) => {
-            let fleteItem = item.peso * TARIFA_LIBRA;
-            let comisionItem = Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
-            let totalItem = item.precio + fleteItem + comisionItem;
-
+            let fleteItem = item.weight = item.peso * TARIFA_LIBRA;
+            let fleteItemBs = fleteItem * TASA_VES;
             let badgeClass = `bg-${item.tienda.toLowerCase()}`;
 
             let fila = document.createElement('tr');
             fila.innerHTML = `
                 <td><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
                 <td>
-                    <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; display: block; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
-                        <i class="bi bi-box-arrow-up-right"></i> Ver Enlace
+                    <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; display: block; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
+                        <i class="bi bi-box-arrow-up-right"></i> Abrir Enlace
                     </a>
                 </td>
                 <td>
@@ -227,7 +260,10 @@
                 <td>
                     <input type="number" step="0.1" class="input-tabla" value="${item.peso.toFixed(1)}" onchange="modificarItem(${item.id}, 'peso', this.value)">
                 </td>
-                <td style="text-align: right; font-weight: 700; color: var(--primario);">$${totalItem.toFixed(2)}</td>
+                <td style="text-align: right; font-weight: 600; color: var(--texto);">
+                    $${fleteItem.toFixed(2)}
+                    <span style="display: block; font-size: 0.75rem; color: #71717a; font-weight: 500;">${fleteItemBs.toFixed(2)} Bs</span>
+                </td>
                 <td style="text-align: center;">
                     <button class="btn-eliminar" onclick="eliminarItem(${item.id})" title="Remover"><i class="bi bi-trash3-fill"></i></button>
                 </td>
@@ -255,26 +291,38 @@
     function actualizarTotales() {
         let totalFob = 0;
         let totalFlete = 0;
-        let totalComision = 0;
 
         carritoProductos.forEach(item => {
             totalFob += item.precio;
             totalFlete += (item.peso * TARIFA_LIBRA);
-            totalComision += Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
         });
+
+        // Recálculo global de gestión administrativa sobre el coste FOB total
+        let totalComision = 0;
+        if (carritoProductos.length > 0) {
+            totalComision = Math.max(totalFob * PORCENTAJE_COMISION, COMISION_MINIMA);
+        }
 
         let totalGeneral = totalFob + totalFlete + totalComision;
         let inicial50 = totalGeneral / 2;
 
-        document.getElementById('resumen-fob').innerText = `$${totalFob.toFixed(2)}`;
-        document.getElementById('resumen-flete').innerText = `$${totalFlete.toFixed(2)}`;
-        document.getElementById('resumen-comision').innerText = `$${totalComision.toFixed(2)}`;
-        document.getElementById('resumen-total-usd').innerText = `$${totalGeneral.toFixed(2)}`;
-        
-        document.getElementById('pago-inicial').innerText = `$${inicial50.toFixed(2)}`;
-        document.getElementById('pago-final-entrega').innerText = `$${inicial50.toFixed(2)}`;
+        // Conversiones de totales a Bolívares
+        let totalFobBs = totalFob * TASA_VES;
+        let totalFleteBs = totalFlete * TASA_VES;
+        let totalComisionBs = totalComision * TASA_VES;
+        let totalGeneralBs = totalGeneral * TASA_VES;
+        let inicial50Bs = inicial50 * TASA_VES;
 
-        // Construcción segura del mensaje de WhatsApp usando arreglos
+        // Renderizado en la interfaz con dobles monedas
+        document.getElementById('resumen-fob').innerHTML = `<span>$${totalFob.toFixed(2)}</span><span class="bs-subtexto">${totalFobBs.toFixed(2)} Bs</span>`;
+        document.getElementById('resumen-flete').innerHTML = `<span>$${totalFlete.toFixed(2)}</span><span class="bs-subtexto">${totalFleteBs.toFixed(2)} Bs</span>`;
+        document.getElementById('resumen-comision').innerHTML = `<span>$${totalComision.toFixed(2)}</span><span class="bs-subtexto">${totalComisionBs.toFixed(2)} Bs</span>`;
+        document.getElementById('resumen-total-usd').innerHTML = `<span>$${totalGeneral.toFixed(2)}</span><span class="bs-subtexto-total">${totalGeneralBs.toFixed(2)} Bs</span>`;
+        
+        document.getElementById('pago-inicial').innerText = `$${inicial50.toFixed(2)} (${inicial50Bs.toFixed(2)} Bs)`;
+        document.getElementById('pago-final-entrega').innerText = `$${inicial50.toFixed(2)} (${inicial50Bs.toFixed(2)} Bs)`;
+
+        // Creación del mensaje estructurado para WhatsApp incluyendo precios duales
         const telefonoMTech = "584245022292";
         let lineasMensaje = [
             "¡Hola *MP Tech*! 👋",
@@ -284,25 +332,27 @@
         ];
         
         carritoProductos.forEach((item, i) => {
-            let totalIndividual = item.precio + (item.peso * TARIFA_LIBRA) + Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
+            let itemPrecioBs = item.precio * TASA_VES;
             lineasMensaje.push(`📦 *Artículo #${i+1}* (${item.tienda})`);
             lineasMensaje.push(`🔗 *Link:* ${item.url}`);
-            lineasMensaje.push(`💵 *Precio:* $${item.precio.toFixed(2)} | ⚖️ *Peso:* ${item.peso.toFixed(1)} Lbs`);
-            lineasMensaje.push(`💰 *Subtotal Estimado:* $${totalIndividual.toFixed(2)}`);
+            lineasMensaje.push(`💵 *Precio:* $${item.precio.toFixed(2)} (~${itemPrecioBs.toFixed(2)} Bs) | ⚖️ *Peso:* ${item.weight.toFixed(1)} Lbs`);
             lineasMensaje.push("");
         });
 
         lineasMensaje.push("----------------------------------");
-        lineasMensaje.push("📊 *RESUMEN DE SOLICITUD:*");
-        lineasMensaje.push(`🔹 *Valor total mercancía:* $${totalFob.toFixed(2)}`);
-        lineasMensaje.push(`🔹 *Total General Estimado:* *$${totalGeneral.toFixed(2)}*`);
+        lineasMensaje.push("📊 *DESGLOSE ESTIMADO DEL PEDIDO:*");
+        lineasMensaje.push(`🔹 *Valor total productos:* $${totalFob.toFixed(2)} (${totalFobBs.toFixed(2)} Bs)`);
+        lineasMensaje.push(`🔹 *Flete aéreo consolidado:* $${totalFlete.toFixed(2)} (${totalFleteBs.toFixed(2)} Bs)`);
+        lineasMensaje.push(`🔹 *Gestión y seguro corporativo:* $${totalComision.toFixed(2)} (${totalComisionBs.toFixed(2)} Bs)`);
+        lineasMensaje.push(`💰 *TOTAL GENERAL ESTIMADO:* *$${totalGeneral.toFixed(2)}* (*${totalGeneralBs.toFixed(2)} Bs*)`);
         lineasMensaje.push("");
-        lineasMensaje.push(`📌 *Inicial para pedido (50%):* $${inicial50.toFixed(2)}`);
-        lineasMensaje.push(`📌 *Monto restante al retirar (50%):* $${inicial50.toFixed(2)}`);
+        lineasMensaje.push(`💵 *Abono inicial (50% para comprar):* $${inicial50.toFixed(2)} (*${inicial50Bs.toFixed(2)} Bs*)`);
+        lineasMensaje.push(`💵 *Monto al retirar (50% restante):* $${inicial50.toFixed(2)} (*${inicial50Bs.toFixed(2)} Bs*)`);
         lineasMensaje.push("");
-        lineasMensaje.push("⚠️ _Entiendo que los valores de peso son estimados y el total definitivo puede variar ligeramente según las medidas finales en origen._");
+        lineasMensaje.push(`📈 _Tarifa de cálculo aplicada: ${TASA_VES.toFixed(2)} Bs/$_`);
+        lineasMensaje.push("");
+        lineasMensaje.push("⚠️ _Acepto que los valores son estimados y la cotización final puede variar de acuerdo al pesaje y cubicaje definitivo medido en el almacén de origen._");
 
-        // Unimos el arreglo con saltos de línea estándar y codificamos de golpe de forma segura
         let mensajeCodificado = encodeURIComponent(lineasMensaje.join("\n"));
         document.getElementById('btn-ws-import').href = `https://wa.me/${telefonoMTech}?text=${mensajeCodificado}`;
     }
@@ -310,7 +360,7 @@
     function validarEnvio(e) {
         if (carritoProductos.length === 0) {
             e.preventDefault();
-            alert("Por favor, agrega al menos un enlace válido antes de proceder al envío.");
+            alert("Agrega por lo menos un artículo con sus datos antes de enviar la lista.");
             return false;
         }
         return true;
