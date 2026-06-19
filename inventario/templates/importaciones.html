@@ -7,7 +7,7 @@
     .import-container { max-width: 900px; margin: 3rem auto; padding: 0 5%; }
     .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 1.5rem; font-weight: 800; }
     
-    .input-link-box { background: var(--blanco); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-bottom: 2rem; }
+    .input-link-box { background: var(--blanco); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-bottom: 1.5rem; }
     .flex-input { display: flex; gap: 10px; margin-top: 8px; }
     .flex-input input { flex: 1; padding: 12px 15px; border: 1px solid var(--borde); border-radius: 8px; font-size: 0.95rem; background: var(--fondo); transition: all 0.3s; }
     .flex-input input:focus { outline: none; border-color: var(--acento); background: var(--blanco); }
@@ -15,6 +15,12 @@
     .btn-agregar { background: var(--primario); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
     .btn-agregar:hover { background: #27272a; }
     .btn-agregar:disabled { background: #a1a1aa; cursor: not-allowed; }
+
+    /* Cuadro de Advertencias y Políticas comerciales */
+    .politicas-box { background: #fffbeb; border: 1px solid #fef08a; color: #854d0e; padding: 1.2rem; border-radius: 10px; margin-bottom: 2rem; font-size: 0.9rem; display: flex; gap: 12px; align-items: flex-start; }
+    .politicas-box i { font-size: 1.3rem; color: #ca8a04; margin-top: 2px; }
+    .politicas-box ul { margin: 8px 0 0 18px; padding: 0; }
+    .politicas-box li { margin-bottom: 4px; }
 
     /* Tabla de productos añadidos */
     .tabla-productos-wrapper { background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; overflow-x: auto; margin-bottom: 2rem; }
@@ -48,7 +54,7 @@
 {% block content %}
 <div class="import-container">
     <h2 class="titulo-seccion">Importaciones Directas</h2>
-    <p style="color: var(--texto); margin-bottom: 2rem;">Pega los enlaces de los productos que deseas de Amazon, AliExpress o eBay. Nuestro sistema intentará cotizarlos al instante.</p>
+    <p style="color: var(--texto); margin-bottom: 1.5rem;">Pega los enlaces de los productos que deseas traer de Amazon, AliExpress o eBay. El sistema intentará procesar la información básica del artículo de manera automatizada.</p>
 
     <div class="input-link-box">
         <label style="font-weight: 700; color: var(--primario); font-size: 0.95rem;">Pegar enlace del producto:</label>
@@ -57,6 +63,17 @@
             <button type="button" class="btn-agregar" id="btn-add" onclick="procesarEnlace()">
                 <i class="bi bi-plus-circle-fill"></i> Agregar
             </button>
+        </div>
+    </div>
+
+    <div class="politicas-box">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+            <strong>Información importante para tu cotización:</strong>
+            <ul>
+                <li><strong>Valores estimados:</strong> Asegúrate de verificar y ajustar los precios o pesos si el sistema automatizado no los detecta con precisión. El flete y costo final se reajustarán con las medidas reales del paquete en almacén.</li>
+                <li><strong>Modalidad de pago:</strong> Para procesar y congelar la compra de tus productos, se debe abonar el <strong>50% por adelantado</strong>. El 50% restante se cancela al momento de retirar el pedido.</li>
+            </ul>
         </div>
     </div>
 
@@ -98,8 +115,12 @@
             <span id="resumen-comision">$0.00</span>
         </div>
         <div class="resumen-total">
-            <span>Total General Puesto en Valencia:</span>
+            <span>Total General Estimado:</span>
             <span id="resumen-total-usd">$0.00</span>
+        </div>
+        
+        <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.4;">
+            📌 <strong>Plan de pagos requerido:</strong> Inicial del 50% para procesar: <strong id="pago-inicial">$0.00</strong> | Restante del 50% contra entrega: <strong id="pago-final-entrega">$0.00</strong>
         </div>
         
         <a href="#" id="btn-ws-import" target="_blank" class="btn-whatsapp-import" onclick="return validarEnvio(event)">
@@ -109,10 +130,10 @@
 </div>
 
 <script>
-    // Variables de configuración de tarifas comerciales de MP Tech
-    const TARIFA_LIBRA = 5.00;       // Costo por libra aérea
-    const PORCENTAJE_COMISION = 0.10; // 10% de comisión de gestión sobre valor de producto
-    const COMISION_MINIMA = 5.00;     // Comisión mínima por artículo si el 10% no llega
+    // Parámetros de tarifas comerciales
+    const TARIFA_LIBRA = 5.00;       
+    const PORCENTAJE_COMISION = 0.10; 
+    const COMISION_MINIMA = 5.00;     
 
     let carritoProductos = [];
 
@@ -123,11 +144,9 @@
 
         if (!urlValue) return;
 
-        // Visual feedback de carga
         btnAdd.disabled = true;
         btnAdd.innerHTML = `<span class="loading-spinner"></span> Buscando...`;
 
-        // Petición AJAX nativa a Django
         const formData = new FormData();
         formData.append('url', urlValue);
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
@@ -140,32 +159,31 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Si el scraper no pudo recuperar el precio automático, solicitamos fallback manual
                 let precioFinal = data.precio;
+                // Si el scraping falla y devuelve 0, solicita el valor mediante prompt manual
                 if (precioFinal <= 0) {
-                    const inputManual = prompt("No pudimos extraer el precio de forma automática por políticas de seguridad de la tienda. \n\nPor favor, ingresa el precio del producto en dólares ($):");
+                    const inputManual = prompt("Debido a políticas de seguridad o renderizado dinámico de la tienda, no logramos extraer el precio de forma automatizada.\n\nPor favor, introduce el precio del producto manualmente ($):");
                     precioFinal = parseFloat(inputManual) || 0;
                 }
 
-                // Generar estructura de ítem interno
                 const nuevoItem = {
                     id: Date.now(),
                     tienda: data.tienda,
                     url: data.url,
                     precio: precioFinal,
-                    peso: data.peso_estimado || 1.0 // Usa el detectado o 1 libra por defecto
+                    peso: data.peso_estimado || 1.0 
                 };
 
                 carritoProductos.push(nuevoItem);
                 renderizarTabla();
                 urlInput.value = '';
             } else {
-                alert("Error al procesar el enlace. Por favor verifica que sea correcto.");
+                alert("Error al procesar el enlace. Asegúrate de que sea una URL directa y válida.");
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Ocurrió un error de comunicación con el servidor.");
+            alert("Error en la comunicación con el backend.");
         })
         .finally(() => {
             btnAdd.disabled = false;
@@ -188,8 +206,7 @@
         }
 
         tbody.innerHTML = '';
-        carritoProductos.forEach((item, index) => {
-            // Calcular el coste total individual de este artículo basado en las reglas de negocio
+        carritoProductos.forEach((item) => {
             let fleteItem = item.peso * TARIFA_LIBRA;
             let comisionItem = Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
             let totalItem = item.precio + fleteItem + comisionItem;
@@ -201,7 +218,7 @@
                 <td><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
                 <td>
                     <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; display: block; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
-                        <i class="bi bi-box-arrow-up-right"></i> Ver Artículo Link
+                        <i class="bi bi-box-arrow-up-right"></i> Ver Enlace
                     </a>
                 </td>
                 <td>
@@ -247,37 +264,53 @@
         });
 
         let totalGeneral = totalFob + totalFlete + totalComision;
+        let inicial50 = totalGeneral / 2;
 
         document.getElementById('resumen-fob').innerText = `$${totalFob.toFixed(2)}`;
         document.getElementById('resumen-flete').innerText = `$${totalFlete.toFixed(2)}`;
         document.getElementById('resumen-comision').innerText = `$${totalComision.toFixed(2)}`;
         document.getElementById('resumen-total-usd').innerText = `$${totalGeneral.toFixed(2)}`;
+        
+        document.getElementById('pago-inicial').innerText = `$${inicial50.toFixed(2)}`;
+        document.getElementById('pago-final-entrega').innerText = `$${inicial50.toFixed(2)}`;
 
-        // Construir el enlace dinámico de WhatsApp estructurado para MP Tech
+        // Construcción segura del mensaje de WhatsApp usando arreglos
         const telefonoMTech = "584245022292";
-        let mensaje = `¡Hola *MP Tech*! 👋%0A%0AMe gustaría solicitar la cotización formal e importación de los siguientes artículos:%0A%0|`;
+        let lineasMensaje = [
+            "¡Hola *MP Tech*! 👋",
+            "",
+            "Me gustaría solicitar la cotización formal e importación de los siguientes artículos:",
+            ""
+        ];
         
         carritoProductos.forEach((item, i) => {
             let totalIndividual = item.precio + (item.peso * TARIFA_LIBRA) + Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
-            mensaje += `📦 *Artículo #${i+1}* (${item.tienda})%0A`;
-            mensaje += `🔗 *Link:* ${encodeURIComponent(item.url)}%0A`;
-            mensaje += `💵 *Precio:* $${item.precio.toFixed(2)} | ⚖️ *Peso:* ${item.peso.toFixed(1)} Lbs%0A`;
-            mensaje += `💰 *Subtotal Estimado:* $${totalIndividual.toFixed(2)}%0A%0A`;
+            lineasMensaje.push(`📦 *Artículo #${i+1}* (${item.tienda})`);
+            lineasMensaje.push(`🔗 *Link:* ${item.url}`);
+            lineasMensaje.push(`💵 *Precio:* $${item.precio.toFixed(2)} | ⚖️ *Peso:* ${item.peso.toFixed(1)} Lbs`);
+            lineasMensaje.push(`💰 *Subtotal Estimado:* $${totalIndividual.toFixed(2)}`);
+            lineasMensaje.push("");
         });
 
-        mensaje += `--------------------------%0A`;
-        mensaje += `📊 *RESUMEN TOTAL ESTIMADO:*%0A`;
-        mensaje += `🔹 *Valor total mercancía:* $${totalFob.toFixed(2)}%0A`;
-        mensaje += `🔹 *Total General (con flete y gestión):* *$${totalGeneral.toFixed(2)}*%0A%0A`;
-        mensaje += `Quedo a la espera de sus comentarios para verificar disponibilidad y proceder con el abono. ¡Muchas gracias!`;
+        lineasMensaje.push("----------------------------------");
+        lineasMensaje.push("📊 *RESUMEN DE SOLICITUD:*");
+        lineasMensaje.push(`🔹 *Valor total mercancía:* $${totalFob.toFixed(2)}`);
+        lineasMensaje.push(`🔹 *Total General Estimado:* *$${totalGeneral.toFixed(2)}*`);
+        lineasMensaje.push("");
+        lineasMensaje.push(`📌 *Inicial para pedido (50%):* $${inicial50.toFixed(2)}`);
+        lineasMensaje.push(`📌 *Monto restante al retirar (50%):* $${inicial50.toFixed(2)}`);
+        lineasMensaje.push("");
+        lineasMensaje.push("⚠️ _Entiendo que los valores de peso son estimados y el total definitivo puede variar ligeramente según las medidas finales en origen._");
 
-        document.getElementById('btn-ws-import').href = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
+        // Unimos el arreglo con saltos de línea estándar y codificamos de golpe de forma segura
+        let mensajeCodificado = encodeURIComponent(lineasMensaje.join("\n"));
+        document.getElementById('btn-ws-import').href = `https://wa.me/${telefonoMTech}?text=${mensajeCodificado}`;
     }
 
     function validarEnvio(e) {
         if (carritoProductos.length === 0) {
             e.preventDefault();
-            alert("Por favor, añade al menos un enlace válido antes de generar la orden de WhatsApp.");
+            alert("Por favor, agrega al menos un enlace válido antes de proceder al envío.");
             return false;
         }
         return true;
