@@ -157,6 +157,14 @@
         font-size: 0.88rem;
     }
 
+    /* Feedback visual para errores en inputs */
+    .form-group.has-error input,
+    .form-group.has-error textarea,
+    .form-group.has-error select {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+    }
+
     .error-msg {
         color: #ef4444;
         font-size: 0.85rem;
@@ -399,7 +407,7 @@
         margin-bottom: 2.5rem;
         padding: 24px;
         border: 1px solid var(--borde);
-        border-top: 4px solid #10b981; /* Borde verde superior elegante */
+        border-top: 4px solid #10b981;
         border-radius: 12px;
         background-color: var(--fondo);
         text-align: left;
@@ -479,7 +487,7 @@
     .timeline-item::before {
         content: '';
         position: absolute;
-        left: -31px; /* Centrado perfecto sobre el eje izquierdo de 24px + margen */
+        left: -31px;
         top: 4px;
         width: 12px;
         height: 12px;
@@ -509,12 +517,21 @@
         line-height: 1.5;
     }
 
+    /* Imagen optimizada */
     .timeline-img {
         margin-top: 12px;
-        max-width: 100%;
+        max-height: 200px;
+        width: auto;
+        object-fit: cover;
         border-radius: 8px;
         border: 1px solid var(--borde);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .timeline-img:hover {
+        transform: scale(1.02);
     }
 
     /* Responsive Queries */
@@ -629,7 +646,7 @@
             <form method="POST">
                 {% csrf_token %}
                 {% for field in form %}
-                <div class="form-group">
+                <div class="form-group {% if field.errors %}has-error{% endif %}">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}
@@ -793,8 +810,9 @@
                             {% endif %}
                         </div>
                     {% empty %}
-                        <div style="padding: 10px 0; color: #71717a; font-style: italic; display: flex; align-items: center; gap: 8px;">
-                            <i class="bi bi-info-circle"></i> Tu equipo ha sido registrado. Se añadirán avances pronto.
+                        <div style="background: var(--fondo); padding: 20px; border-radius: 8px; border: 1px dashed var(--borde); text-align: center; color: #71717a;">
+                            <i class="bi bi-info-circle" style="font-size: 1.5rem; display: block; margin-bottom: 8px; color: var(--primario);"></i>
+                            Equipo en cola de revisión. ¡Pronto verás novedades aquí!
                         </div>
                     {% endfor %}
                 </div>
@@ -817,5 +835,26 @@
         if (contentEl) contentEl.classList.add('active');
         if (btnEl) btnEl.classList.add('active');
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Manejo automático de errores: cambia a la pestaña del formulario si Django reporta errores
+        {% if form.errors %}
+            switchTab('ingreso');
+        {% endif %}
+
+        // 2. Prevención de doble envío y loading state
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const btn = this.querySelector('.btn-submit');
+                if(btn) {
+                    // Mantenemos el ancho para evitar que el botón se reduzca al cambiar el texto
+                    btn.style.width = btn.offsetWidth + 'px'; 
+                    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+                    btn.style.opacity = '0.7';
+                    btn.style.pointerEvents = 'none'; // Bloquea clics adicionales
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}
