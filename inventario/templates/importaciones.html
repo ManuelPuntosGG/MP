@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block title %}Importaciones | MP Tech{% endblock %}
+
+{% block extra_css %}
+<style>
+    .import-container { max-width: 900px; margin: 3rem auto; padding: 0 5%; }
+    .titulo-seccion { font-size: 2rem; color: var(--primario); border-bottom: 3px solid var(--acento); display: inline-block; padding-bottom: 5px; margin-bottom: 1.5rem; font-weight: 800; }
+    
+    .input-link-box { background: var(--blanco); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--borde); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-bottom: 2rem; }
+    .flex-input { display: flex; gap: 10px; margin-top: 8px; }
+    .flex-input input { flex: 1; padding: 12px 15px; border: 1px solid var(--borde); border-radius: 8px; font-size: 0.95rem; background: var(--fondo); transition: all 0.3s; }
+    .flex-input input:focus { outline: none; border-color: var(--acento); background: var(--blanco); }
+    
+    .btn-agregar { background: var(--primario); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-agregar:hover { background: #27272a; }
+    .btn-agregar:disabled { background: #a1a1aa; cursor: not-allowed; }
+
+    /* Tabla de productos añadidos */
+    .tabla-productos-wrapper { background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; overflow-x: auto; margin-bottom: 2rem; }
+    .tabla-productos { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+    .tabla-productos th { background: var(--fondo); padding: 12px 16px; font-weight: 700; color: var(--primario); border-bottom: 1px solid var(--borde); }
+    .tabla-productos td { padding: 14px 16px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+    .tabla-productos tr:last-child td { border-bottom: none; }
+    
+    .input-tabla { width: 70px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px; font-weight: 600; background: var(--fondo); }
+    .btn-eliminar { background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; border-radius: 4px; transition: all 0.2s; }
+    .btn-eliminar:hover { background: #fef2f2; }
+
+    .badge-tienda { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .bg-amazon { background: #ff990020; color: #ff9900; }
+    .bg-aliexpress { background: #e62e0420; color: #e62e04; }
+    .bg-ebay { background: #0064d220; color: #0064d2; }
+    .bg-otro { background: #71717a20; color: #71717a; }
+
+    .resumen-importacion { background: var(--primario); color: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+    .resumen-linea { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; opacity: 0.9; }
+    .resumen-total { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; border-top: 2px dashed rgba(255,255,255,0.15); padding-top: 15px; margin-top: 15px; color: var(--verde-precio); }
+
+    .btn-whatsapp-import { display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: white; text-decoration: none; padding: 14px; border-radius: 8px; font-weight: 700; margin-top: 1.5rem; transition: all 0.2s; text-align: center; }
+    .btn-whatsapp-import:hover { background: #20ba56; transform: translateY(-1px); }
+    
+    .loading-spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid white; border-radius: 50%; border-top-color: transparent; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="import-container">
+    <h2 class="titulo-seccion">Importaciones Directas</h2>
+    <p style="color: var(--texto); margin-bottom: 2rem;">Pega los enlaces de los productos que deseas de Amazon, AliExpress o eBay. Nuestro sistema intentará cotizarlos al instante.</p>
+
+    <div class="input-link-box">
+        <label style="font-weight: 700; color: var(--primario); font-size: 0.95rem;">Pegar enlace del producto:</label>
+        <div class="flex-input">
+            <input type="url" id="url-producto" placeholder="https://www.amazon.com/dp/... o artículo de AliExpress/eBay">
+            <button type="button" class="btn-agregar" id="btn-add" onclick="procesarEnlace()">
+                <i class="bi bi-plus-circle-fill"></i> Agregar
+            </button>
+        </div>
+    </div>
+
+    <div class="tabla-productos-wrapper">
+        <table class="tabla-productos">
+            <thead>
+                <tr>
+                    <th>Tienda</th>
+                    <th>Enlace / Producto</th>
+                    <th style="width: 100px;">Precio ($)</th>
+                    <th style="width: 90px;">Peso (Lbs)</th>
+                    <th style="text-align: right;">Total Item</th>
+                    <th style="text-align: center; width: 50px;"><i class="bi bi-trash"></i></th>
+                </tr>
+            </thead>
+            <tbody id="items-carrito">
+                <tr id="fila-vacia">
+                    <td colspan="6" style="text-align: center; color: #a1a1aa; padding: 40px 20px;">
+                        <i class="bi bi-link-45deg" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                        No has añadido ningún enlace todavía.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="resumen-importacion">
+        <h3 style="margin-top: 0; color: var(--acento); font-weight: 800; margin-bottom: 1.5rem;">Resumen Estimado de Importación</h3>
+        <div class="resumen-linea">
+            <span>Total FOB (Valor de productos):</span>
+            <span id="resumen-fob">$0.00</span>
+        </div>
+        <div class="resumen-linea">
+            <span>Total Flete Aéreo Estimado (Consolidado):</span>
+            <span id="resumen-flete">$0.00</span>
+        </div>
+        <div class="resumen-linea">
+            <span>Gestión Administrativa y Seguro:</span>
+            <span id="resumen-comision">$0.00</span>
+        </div>
+        <div class="resumen-total">
+            <span>Total General Puesto en Valencia:</span>
+            <span id="resumen-total-usd">$0.00</span>
+        </div>
+        
+        <a href="#" id="btn-ws-import" target="_blank" class="btn-whatsapp-import" onclick="return validarEnvio(event)">
+            <i class="bi bi-whatsapp"></i> Enviar Lista de Importación por WhatsApp
+        </a>
+    </div>
+</div>
+
+<script>
+    // Variables de configuración de tarifas comerciales de MP Tech
+    const TARIFA_LIBRA = 5.00;       // Costo por libra aérea
+    const PORCENTAJE_COMISION = 0.10; // 10% de comisión de gestión sobre valor de producto
+    const COMISION_MINIMA = 5.00;     // Comisión mínima por artículo si el 10% no llega
+
+    let carritoProductos = [];
+
+    function procesarEnlace() {
+        const urlInput = document.getElementById('url-producto');
+        const btnAdd = document.getElementById('btn-add');
+        const urlValue = urlInput.value.trim();
+
+        if (!urlValue) return;
+
+        // Visual feedback de carga
+        btnAdd.disabled = true;
+        btnAdd.innerHTML = `<span class="loading-spinner"></span> Buscando...`;
+
+        // Petición AJAX nativa a Django
+        const formData = new FormData();
+        formData.append('url', urlValue);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch('', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Si el scraper no pudo recuperar el precio automático, solicitamos fallback manual
+                let precioFinal = data.precio;
+                if (precioFinal <= 0) {
+                    const inputManual = prompt("No pudimos extraer el precio de forma automática por políticas de seguridad de la tienda. \n\nPor favor, ingresa el precio del producto en dólares ($):");
+                    precioFinal = parseFloat(inputManual) || 0;
+                }
+
+                // Generar estructura de ítem interno
+                const nuevoItem = {
+                    id: Date.now(),
+                    tienda: data.tienda,
+                    url: data.url,
+                    precio: precioFinal,
+                    peso: 1.0 // Peso base asignado por defecto (1 libra)
+                };
+
+                carritoProductos.push(nuevoItem);
+                renderizarTabla();
+                urlInput.value = '';
+            } else {
+                alert("Error al procesar el enlace. Por favor verifica que sea correcto.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Ocurrió un error de comunicación con el servidor.");
+        })
+        .finally(() => {
+            btnAdd.disabled = false;
+            btnAdd.innerHTML = `<i class="bi bi-plus-circle-fill"></i> Agregar`;
+        });
+    }
+
+    function renderizarTabla() {
+        const tbody = document.getElementById('items-carrito');
+        if (carritoProductos.length === 0) {
+            tbody.innerHTML = `
+                <tr id="fila-vacia">
+                    <td colspan="6" style="text-align: center; color: #a1a1aa; padding: 40px 20px;">
+                        <i class="bi bi-link-45deg" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                        No has añadido ningún enlace todavía.
+                    </td>
+                </tr>`;
+            actualizarTotales();
+            return;
+        }
+
+        tbody.innerHTML = '';
+        carritoProductos.forEach((item, index) => {
+            // Calcular el coste total individual de este artículo basado en las reglas de negocio
+            let fleteItem = item.peso * TARIFA_LIBRA;
+            let comisionItem = Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
+            let totalItem = item.precio + fleteItem + comisionItem;
+
+            let badgeClass = `bg-${item.tienda.toLowerCase()}`;
+
+            let fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
+                <td>
+                    <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; display: block; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
+                        <i class="bi bi-box-arrow-up-right"></i> Ver Artículo Link
+                    </a>
+                </td>
+                <td>
+                    <input type="number" step="0.01" class="input-tabla" value="${item.precio.toFixed(2)}" onchange="modificarItem(${item.id}, 'precio', this.value)">
+                </td>
+                <td>
+                    <input type="number" step="0.1" class="input-tabla" value="${item.peso.toFixed(1)}" onchange="modificarItem(${item.id}, 'peso', this.value)">
+                </td>
+                <td style="text-align: right; font-weight: 700; color: var(--primario);">$${totalItem.toFixed(2)}</td>
+                <td style="text-align: center;">
+                    <button class="btn-eliminar" onclick="eliminarItem(${item.id})" title="Remover"><i class="bi bi-trash3-fill"></i></button>
+                </td>
+            `;
+            tbody.appendChild(fila);
+        });
+
+        actualizarTotales();
+    }
+
+    function modificarItem(id, propiedad, valor) {
+        let numValue = parseFloat(valor) || 0;
+        let item = carritoProductos.find(p => p.id === id);
+        if (item) {
+            item[propiedad] = numValue;
+            renderizarTabla();
+        }
+    }
+
+    function eliminarItem(id) {
+        carritoProductos = carritoProductos.filter(p => p.id !== id);
+        renderizarTabla();
+    }
+
+    function actualizarTotales() {
+        let totalFob = 0;
+        let totalFlete = 0;
+        let totalComision = 0;
+
+        carritoProductos.forEach(item => {
+            totalFob += item.precio;
+            totalFlete += (item.peso * TARIFA_LIBRA);
+            totalComision += Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
+        });
+
+        let totalGeneral = totalFob + totalFlete + totalComision;
+
+        document.getElementById('resumen-fob').innerText = `$${totalFob.toFixed(2)}`;
+        document.getElementById('resumen-flete').innerText = `$${totalFlete.toFixed(2)}`;
+        document.getElementById('resumen-comision').innerText = `$${totalComision.toFixed(2)}`;
+        document.getElementById('resumen-total-usd').innerText = `$${totalGeneral.toFixed(2)}`;
+
+        // Construir el enlace dinámico de WhatsApp estructurado para MP Tech
+        const telefonoMTech = "584245022292";
+        let mensaje = `¡Hola *MP Tech*! 👋%0A%0AMe gustaría solicitar la cotización formal e importación de los siguientes artículos:%0A%0|`;
+        
+        carritoProductos.forEach((item, i) => {
+            let totalIndividual = item.precio + (item.peso * TARIFA_LIBRA) + Math.max(item.precio * PORCENTAJE_COMISION, COMISION_MINIMA);
+            mensaje += `📦 *Artículo #${i+1}* (${item.tienda})%0A`;
+            mensaje += `🔗 *Link:* ${encodeURIComponent(item.url)}%0A`;
+            mensaje += `💵 *Precio:* $${item.precio.toFixed(2)} | ⚖️ *Peso:* ${item.peso.toFixed(1)} Lbs%0A`;
+            mensaje += `💰 *Subtotal Estimado:* $${totalIndividual.toFixed(2)}%0A%0A`;
+        });
+
+        mensaje += `--------------------------%0A`;
+        mensaje += `📊 *RESUMEN TOTAL ESTIMADO:*%0A`;
+        mensaje += `🔹 *Valor total mercancía:* $${totalFob.toFixed(2)}%0A`;
+        mensaje += `🔹 *Total General (con flete y gestión):* *$${totalGeneral.toFixed(2)}*%0A%0A`;
+        mensaje += `Quedo a la espera de sus comentarios para verificar disponibilidad y proceder con el abono. ¡Muchas gracias!`;
+
+        document.getElementById('btn-ws-import').href = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
+    }
+
+    function validarEnvio(e) {
+        if (carritoProductos.length === 0) {
+            e.preventDefault();
+            alert("Por favor, añade al menos un enlace válido antes de generar la orden de WhatsApp.");
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

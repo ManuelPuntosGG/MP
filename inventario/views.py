@@ -1,19 +1,27 @@
 import decimal
+import re
 import requests
+from bs4 import BeautifulSoup
 from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q, Sum  # <-- Añadido Sum para optimizar matemáticas
+from django.db.models import Q, Sum  # <-- Sum optimiza matemáticas de presupuestos
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 # Centralizamos todas las importaciones locales aquí arriba
 from .forms import SolicitudReparacionForm
 from .models import Categoria, Producto, OrdenServicio, AvanceOrden 
 
 
+def inicio(request):
+    return render(request, 'inicio.html')
+
+
 def imprimir_ticket(request, pk):
     orden = get_object_or_404(OrdenServicio, pk=pk)
     return render(request, 'imprimir_ticket.html', {'ticket': orden})
+
 
 def obtener_tasa_binance():
     # 1. Intentar leer desde la caché de Django (1 hora)
@@ -71,6 +79,7 @@ def obtener_tasa_binance():
     fallback = cache.get('tasa_usdt_ves', 760.00)
     return fallback
 
+
 def portal_cliente(request):
     """Vista unificada que maneja tanto el rastreo como la creación de nuevas órdenes"""
     
@@ -114,9 +123,6 @@ def portal_cliente(request):
         'total_ves': total_ves
     }
     return render(request, 'rastreo.html', contexto)
-
-def inicio(request):
-    return render(request, 'inicio.html')
 
 
 def catalogo(request):
@@ -181,3 +187,67 @@ def responder_presupuesto(request, pk, accion):
         
     orden.save()
     return redirect(f"/rastreo/?codigo={orden.codigo_rastreo}")
+
+
+def cotizador_auto(request):
+    """
+    Vista que maneja el cotizador e importaciones de productos.
+    Si la solicitud es AJAX (POST), extrae el precio del enlace.
+    Si es una carga normal (GET), renderiza el cotizador con la tasa actual.
+    """
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' and request.method == 'POST':
+        url = request.POST.get('url', '').strip()
+        if not url:
+            return JsonResponse({'status': 'error', 'message': 'Enlace vacío'}, status=400)
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept-Language": "es-ES,es;q=0.9"
+        }
+        
+        try:
+            tienda = "Otro"
+            if "amazon" in url.lower():
+                tienda = "Amazon"
+            elif "aliexpress" in url.lower():
+                tienda = "AliExpress"
+            elif "ebay" in url.lower():
+                tienda = "eBay"
+
+            response = requests.get(url, headers=headers, timeout=10)
+            precio = 0.0
+            
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                
+                if tienda == "Amazon":
+                    elemento_precio = soup.select_one('span.a-price-whole')
+                    if elemento_precio:
+                        precio_texto = elemento_precio.get_text(strip=True).replace(',', '.')
+                        precio = float(re.sub(r'[^\d.]', '', precio_texto))
+                
+                elif tienda == "eBay":
+                    elemento_precio = soup.select_one('.x-price-primary, [itemprop="price"]')
+                    if elemento_precio:
+                        precio_texto = elemento_precio.get_text(strip=True).replace(',', '.')
+                        precio = float(re.sub(r'[^\d.]', '', precio_texto))
+                
+                elif tienda == "AliExpress":
+                    elemento_precio = soup.select_one('[class*="price--current"], .product-price-value')
+                    if elemento_precio:
+                        precio_texto = elemento_precio.get_text(strip=True).replace(',', '.')
+                        precio = float(re.sub(r'[^\d.]', '', precio_texto))
+
+            return JsonResponse({
+                'status': 'success',
+                'tienda': tienda,
+                'precio': precio,
+                'url': url
+            })
+            
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    # Si es GET, cargamos la interfaz web usando la tasa en tiempo real
+    tasa_actual = obtener_tasa_binance()
+    return render(request, 'importaciones.html', {'tasa_ves': tasa_actual})

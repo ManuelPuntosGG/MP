@@ -16,6 +16,7 @@ urlpatterns = [
     path('manifest.json', TemplateView.as_view(template_name='pwa/manifest.json', content_type='application/json'), name='manifest'),
     path('sw.js', TemplateView.as_view(template_name='pwa/sw.js', content_type='application/javascript'), name='sw'),
     path('', include('pwa.urls')), # <-- NUEVO: Enlaza el Service Worker de la PWA
+    path('importaciones/', views.cotizador_auto, name='cotizador_auto'),
 ]
 
 # CORRECCIÓN: Quitamos 'if settings.DEBUG' para que también sirva imágenes en Render
