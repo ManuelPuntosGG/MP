@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.forms import Textarea 
 from django.contrib.auth.models import Group 
 
-# 🔧 CORRECCIÓN AQUÍ: SimpleListFilter se importa desde django.contrib.admin
+# SimpleListFilter se importa desde django.contrib.admin
 from django.contrib.admin import SimpleListFilter 
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action
@@ -96,6 +96,12 @@ class OrdenServicioAdmin(ModelAdmin):
         'imprimir_ticket_link'
     )
     
+    # 🎨 CONFIGURACIÓN DE MEDIOS PARA INYECTAR EL CONTRASTE MÓVIL
+    class Media:
+        css = {
+            'all': ('inventario/css/custom_admin.css',)
+        }
+        
     list_editable = ('estado', 'presupuesto_estado')
     list_filter = (ReparacionesActivasFilter, 'estado', 'presupuesto_estado', 'fecha_ingreso')
     search_fields = ('codigo_rastreo', 'cliente_nombre', 'cliente_telefono', 'equipo')
@@ -104,16 +110,25 @@ class OrdenServicioAdmin(ModelAdmin):
     inlines = [AvanceOrdenInline, LineaPresupuestoInline]
     readonly_fields = ('codigo_rastreo', 'fecha_ingreso', 'qr_code')
 
-    # Unfold aprovecha de forma espectacular los fieldsets separándolos visualmente en tarjetas impecables
+    # 🚀 CONFIGURACIÓN DE DISEÑO EN REJILLA (Campos emparejados lado a lado)
     fieldsets = (
         ('Datos del Cliente', {
-            'fields': ('cliente_nombre', 'cliente_telefono', 'codigo_rastreo', 'equipo', 'falla_reportada',)
+            'fields': (
+                ('cliente_nombre', 'cliente_telefono'),  # Fila 1: Nombre y Teléfono en PC
+                ('codigo_rastreo', 'equipo'),           # Fila 2: Código y Equipo en PC
+                'falla_reportada',                      # Fila 3: Ocupa todo el ancho
+            )
         }),
         ('Control de Estado', {
-            'fields': ('estado', 'presupuesto_estado')
+            'fields': (
+                ('estado', 'presupuesto_estado'),       # Fila 1: Los dos estados juntos
+            )
         }),
         ('Fechas y Sistema', {
-            'fields': ('fecha_ingreso', 'fecha_entrega', 'qr_code'),
+            'fields': (
+                ('fecha_ingreso', 'fecha_entrega'),     # Fila 1: Fechas organizadas
+                'qr_code',                              # Fila 2: Código QR completo
+            ),
             'classes': ('collapse',) 
         }),
     )
