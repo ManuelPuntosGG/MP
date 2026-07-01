@@ -4,85 +4,136 @@
 
 {% block extra_css %}
 <style>
+    /* Contenedor Principal Calibrado */
     .container-exito { 
-        max-width: 550px; 
+        max-width: 580px; 
         margin: 4rem auto; 
-        padding: 0 5%; 
+        padding: 0 1.25rem;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
     
+    /* Tarjeta de Éxito Principal */
     .exito-box { 
         background: var(--blanco); 
-        padding: 3rem 2rem; 
-        border-radius: 12px; 
+        padding: 3rem 2.25rem; 
+        border-radius: 16px; 
         border: 1px solid var(--borde); 
-        border-top: 4px solid var(--verde-precio); 
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); 
+        border-top: 5px solid var(--verde-precio); 
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04); 
         text-align: center; 
     }
     
-    /* Animación para el icono de éxito */
+    /* Animación del Icono Principal */
     @keyframes popIn {
-        0% { transform: scale(0.5); opacity: 0; }
-        70% { transform: scale(1.1); }
+        0% { transform: scale(0.6); opacity: 0; }
+        70% { transform: scale(1.08); }
         100% { transform: scale(1); opacity: 1; }
     }
 
     .icono-check { 
-        font-size: 3.8rem; 
+        font-size: 4rem; 
         color: var(--verde-precio); 
-        margin-bottom: 15px; 
+        margin-bottom: 1rem; 
         display: inline-block;
-        animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .titulo-exito {
+        color: var(--primario); 
+        margin: 0 0 0.75rem 0; 
+        font-weight: 800; 
+        font-size: 1.85rem; 
+        letter-spacing: -0.025em;
+    }
+
+    .descripcion-exito {
+        font-size: 1rem; 
+        color: var(--texto); 
+        line-height: 1.6;
+        margin: 0 0 1.5rem 0;
     }
     
-    /* Contenedor del código para alinear el botón de copiar */
+    /* Sección del Código de Rastreo */
+    .subtitulo-codigo {
+        margin: 2rem 0 0.5rem 0; 
+        color: var(--texto-secundario, #71717a); 
+        font-size: 0.8rem; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: 0.05em;
+    }
+
     .contenedor-codigo {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        margin: 20px 0;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
     }
 
     .codigo-destacado { 
-        font-size: 2rem; 
+        font-size: 1.85rem; 
         font-weight: 800; 
         color: var(--primario); 
         background: var(--fondo); 
-        padding: 12px 24px; 
-        border-radius: 8px; 
-        letter-spacing: 3px; 
+        padding: 10px 20px; 
+        border-radius: 10px; 
+        letter-spacing: 2px; 
         border: 1px solid var(--borde); 
-        font-family: 'Courier New', Courier, monospace; 
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; 
         margin: 0;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .btn-copiar {
-        background: transparent;
+        background: var(--blanco);
         color: #71717a;
         border: 1px solid var(--borde);
         padding: 12px;
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.25rem;
+        height: 56px;
+        width: 52px;
+        box-sizing: border-box;
     }
-
     .btn-copiar:hover {
         background: var(--fondo);
         color: var(--primario);
-        transform: translateY(-2px);
+        border-color: var(--primario);
+        transform: translateY(-1px);
+    }
+
+    /* Banner de Advertencia de Seguridad */
+    .banner-seguridad {
+        background: rgba(239, 68, 68, 0.03); 
+        border: 1px solid rgba(239, 68, 68, 0.15); 
+        padding: 0.75rem 1rem; 
+        border-radius: 10px; 
+        margin-bottom: 2.25rem;
+    }
+    .texto-seguridad {
+        font-size: 0.85rem; 
+        color: var(--acento); 
+        font-weight: 600; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 0.5rem; 
+        margin: 0;
     }
     
+    /* Caja de Próximos Pasos & Instrucciones */
     .caja-siguiente-paso { 
         background: var(--fondo); 
         border: 1px solid var(--borde); 
-        padding: 1.5rem; 
-        border-radius: 8px; 
-        margin: 25px 0; 
+        padding: 1.75rem; 
+        border-radius: 14px; 
+        margin-bottom: 1.5rem; 
         text-align: left; 
         border-left: 4px solid var(--primario); 
     }
@@ -90,40 +141,44 @@
     .paso-titulo { 
         font-weight: 700; 
         color: var(--primario); 
-        margin-bottom: 12px; 
+        margin-bottom: 0.75rem; 
         display: flex; 
         align-items: center; 
-        gap: 8px; 
+        gap: 0.5rem; 
         font-size: 0.95rem; 
         text-transform: uppercase; 
-        letter-spacing: 0.5px; 
+        letter-spacing: 0.05em; 
     }
-
-    /* ==========================================
-       ⚖️ UI ARMONIZADA DE MÉTODOS DE ENTREGA
-       ========================================== */
+    .paso-instruccion {
+        font-size: 0.925rem; 
+        color: var(--texto); 
+        margin-bottom: 1.25rem; 
+        line-height: 1.5;
+    }
+    
+    /* Acordeones de Métodos de Entrega */
     .grupo-opciones-entrega {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        margin: 20px 0;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
     }
 
     .acordeon-entrega {
         border: 1px solid var(--borde);
-        border-radius: 8px;
+        border-radius: 10px;
         overflow: hidden;
         background: var(--blanco);
-        transition: border-color 0.2s;
+        transition: all 0.2s ease;
     }
-
     .acordeon-entrega:has(.acordeon-header.active) {
         border-color: var(--primario);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
 
     .acordeon-header {
         width: 100%;
-        padding: 14px 16px;
+        padding: 1rem 1.25rem;
         background: var(--blanco);
         border: none;
         display: flex;
@@ -132,14 +187,13 @@
         cursor: pointer;
         font-weight: 700;
         color: var(--texto);
-        font-size: 0.9rem;
-        transition: background 0.2s, color 0.2s;
+        font-size: 0.925rem;
+        transition: all 0.2s;
     }
-
     .acordeon-header:hover {
-        background: rgba(0, 0, 0, 0.01);
+        background: var(--fondo);
+        color: var(--primario);
     }
-
     .acordeon-header.active {
         background: var(--fondo);
         color: var(--primario);
@@ -148,24 +202,21 @@
     .acordeon-header .titulo-trigger {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 0.75rem;
     }
-
     .acordeon-header .titulo-trigger i {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         color: #71717a;
     }
-
     .acordeon-header.active .titulo-trigger i {
         color: var(--primario);
     }
 
     .acordeon-header .flecha-icon {
-        font-size: 0.9rem;
-        transition: transform 0.3s ease;
+        font-size: 0.85rem;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         color: #a1a1aa;
     }
-
     .acordeon-header.active .flecha-icon {
         transform: rotate(180deg);
         color: var(--primario);
@@ -176,52 +227,61 @@
         overflow: hidden;
         transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .acordeon-body {
-        padding: 16px;
+        padding: 1.25rem;
         border-top: 1px solid var(--borde);
         font-size: 0.9rem;
         background: var(--blanco);
     }
 
-    /* Contenido interno: Taller */
+    /* Elementos Internos: Taller Local */
+    .texto-ubicacion {
+        margin: 0 0 1rem 0; 
+        color: var(--texto); 
+        line-height: 1.5;
+    }
     .btn-mapa-link {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 0.5rem;
         background: var(--primario);
         color: white;
-        border: 1px solid var(--primario);
-        padding: 10px 16px;
-        border-radius: 6px;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
         text-decoration: none;
         font-weight: 600;
-        font-size: 0.85rem;
-        margin-top: 10px;
+        font-size: 0.875rem;
         width: 100%;
         box-sizing: border-box;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
     }
-
     .btn-mapa-link:hover {
         background: #27272a;
         transform: translateY(-1px);
     }
 
-    /* Contenido interno: Encomiendas */
+    /* Elementos Internos: Encomiendas Nacionales */
     .bloque-receptor {
-        background: rgba(59, 130, 246, 0.03);
+        background: rgba(59, 130, 246, 0.02);
         border: 1px dashed rgba(59, 130, 246, 0.25);
-        padding: 12px 14px;
-        border-radius: 6px;
-        margin-bottom: 14px;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.25rem;
         position: relative;
     }
-
     .bloque-receptor p {
-        margin: 4px 0;
+        margin: 0.35rem 0;
         color: var(--texto);
+    }
+    .subtitulo-receptor {
+        font-weight: 800; 
+        font-size: 0.75rem; 
+        color: #71717a; 
+        text-transform: uppercase; 
+        display: block; 
+        margin-bottom: 0.25rem;
     }
 
     .btn-copiar-datos {
@@ -230,8 +290,8 @@
         right: 12px;
         background: var(--blanco);
         border: 1px solid var(--borde);
-        padding: 4px 8px;
-        border-radius: 4px;
+        padding: 4px 10px;
+        border-radius: 6px;
         font-size: 0.75rem;
         font-weight: 600;
         color: #71717a;
@@ -241,83 +301,89 @@
         gap: 4px;
         transition: all 0.2s;
     }
-
     .btn-copiar-datos:hover {
         border-color: var(--primario);
         color: var(--primario);
+        background: var(--fondo);
     }
 
+    .titulo-agencias {
+        font-weight: 800; 
+        font-size: 0.75rem; 
+        color: #71717a; 
+        text-transform: uppercase; 
+        display: block; 
+        margin-bottom: 0.75rem;
+    }
     .lista-agencias {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 0.75rem;
     }
-
     .agencia-item {
         display: flex;
         align-items: flex-start;
-        gap: 10px;
-        padding-bottom: 6px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
     }
-
     .agencia-item:last-child {
         border-bottom: none;
         padding-bottom: 0;
+    }
+    .agencia-detalle p {
+        margin: 2px 0 0 0; 
+        color: #52525b; 
+        font-size: 0.825rem;
     }
 
     .badge-recomendado {
         background: #d1fae5;
         color: #065f46;
         font-size: 0.7rem;
-        padding: 1px 6px;
+        padding: 2px 6px;
         border-radius: 4px;
         font-weight: 700;
         margin-left: 6px;
         display: inline-block;
     }
 
-    /* Botón WhatsApp unificado al pie del contenedor */
+    /* CTAs de salida y contacto unificados */
     .btn-whatsapp-unificado { 
         display: inline-flex; 
         align-items: center; 
         justify-content: center;
-        gap: 8px; 
+        gap: 0.5rem; 
         background: #25D366; 
         color: white; 
-        border: 1px solid #25D366; 
-        padding: 14px 20px; 
-        border-radius: 8px; 
+        border: none;
+        padding: 1rem 1.5rem; 
+        border-radius: 10px; 
         text-decoration: none; 
         font-weight: 700; 
-        font-size: 0.95rem; 
-        transition: all 0.2s; 
+        font-size: 0.975rem; 
+        transition: all 0.23s ease; 
         width: 100%;
         box-sizing: border-box;
-        margin-top: 5px;
-        box-shadow: 0 4px 10px -2px rgba(37, 211, 102, 0.15);
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15);
     }
-    
     .btn-whatsapp-unificado:hover { 
         background: #20ba56; 
-        border-color: #20ba56; 
-        color: white; 
         transform: translateY(-2px); 
-        box-shadow: 0 6px 12px -1px rgba(37, 211, 102, 0.3);
+        box-shadow: 0 6px 16px rgba(37, 211, 102, 0.25);
     }
-    /* ========================================== */
     
     .btn-volver { 
         display: inline-flex; 
         align-items: center; 
-        gap: 8px; 
+        gap: 0.5rem; 
         background: transparent; 
         color: #71717a; 
-        padding: 12px 24px; 
-        border-radius: 8px; 
+        padding: 0.875rem 1.5rem; 
+        border-radius: 10px; 
         text-decoration: none; 
         font-weight: 600; 
-        margin-top: 15px; 
+        margin-top: 1rem; 
         transition: all 0.2s; 
         font-size: 0.95rem; 
         border: 1px solid var(--borde); 
@@ -325,7 +391,6 @@
         justify-content: center; 
         box-sizing: border-box; 
     }
-    
     .btn-volver:hover { 
         background: var(--fondo); 
         color: var(--primario);
@@ -333,7 +398,10 @@
     }
 
     @media (max-width: 480px) {
-        .codigo-destacado { font-size: 1.5rem; padding: 10px 15px; }
+        .exito-box { padding: 2.25rem 1.25rem; }
+        .codigo-destacado { font-size: 1.4rem; padding: 10px 14px; }
+        .btn-copiar { height: 49px; width: 46px; }
+        .titulo-exito { font-size: 1.6rem; }
     }
 </style>
 {% endblock %}
@@ -341,37 +409,38 @@
 {% block content %}
 <div class="container-exito">
     <div class="exito-box">
+        <!-- Encabezado de confirmación -->
         <span class="icono-check"><i class="bi bi-check-circle-fill"></i></span>
-        <h1 style="color: var(--primario); margin-bottom: 10px; font-weight: 800; font-size: 1.75rem; letter-spacing: -0.5px;">¡Ingreso Registrado con Éxito!</h1>
-        <p style="font-size: 1rem; color: var(--texto); line-height: 1.5;">Estimado(a) <strong>{{ orden.cliente_nombre }}</strong>, los parámetros técnicos de su equipo (<strong>{{ orden.equipo }}</strong>) han sido cargados al sistema.</p>
+        <h1 class="titulo-exito">¡Ingreso Registrado con Éxito!</h1>
+        <p class="descripcion-exito">Estimado(a) <strong>{{ orden.cliente_nombre }}</strong>, los parámetros técnicos de su equipo (<strong>{{ orden.equipo }}</strong>) han sido cargados correctamente al ecosistema operativo de soporte.</p>
         
-        <p style="margin-top: 25px; margin-bottom: 10px; color: #71717a; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Código Único de Rastreo:</p>
-        
+        <!-- Identificador del Ticket -->
+        <p class="subtitulo-codigo">Código Único de Rastreo</p>
         <div class="contenedor-codigo">
             <div class="codigo-destacado" id="codigo-texto">{{ orden.codigo_rastreo }}</div>
-            <button class="btn-copiar" onclick="copiarCodigo()" title="Copiar código">
+            <button class="btn-copiar" onclick="copiarCodigo()" title="Copiar código al portapapeles">
                 <i class="bi bi-clipboard" id="icono-copiar"></i>
             </button>
         </div>
         
-        <div style="background: rgba(220, 38, 38, 0.03); border: 1px solid rgba(220, 38, 38, 0.15); padding: 12px; border-radius: 8px; margin-top: 10px;">
-            <p style="font-size: 0.88rem; color: var(--acento); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0;">
+        <div class="banner-seguridad">
+            <p class="texto-seguridad">
                 <i class="bi bi-shield-exclamation"></i> Guarde este código para monitorear el diagnóstico técnico en vivo.
             </p>
         </div>
         
+        <!-- Instrucciones Logísticas de Entrega -->
         <div class="caja-siguiente-paso">
             <div class="paso-titulo">
                 <i class="bi bi-gear-fill"></i> ¿Cómo vas a entregar tu equipo?
             </div>
-            <p style="font-size: 0.9rem; color: var(--texto); margin: 0; line-height: 1.5;">
-                Selecciona la modalidad que más te convenga para el ingreso físico y posterior procesamiento de tu orden:
+            <p class="paso-instruccion">
+                Selecciona la modalidad que más te convenga para gestionar la consignación física de tu hardware en nuestro laboratorio central:
             </p>
             
-            <!-- 📦 GRUPO DE OPCIONES ARMONIZADAS -->
             <div class="grupo-opciones-entrega">
                 
-                <!-- Opción A: Entrega en Taller -->
+                <!-- Modalidad A: Taller Físico -->
                 <div class="acordeon-entrega">
                     <button type="button" class="acordeon-header">
                         <span class="titulo-trigger">
@@ -381,7 +450,7 @@
                     </button>
                     <div class="acordeon-content">
                         <div class="acordeon-body">
-                            <p style="margin: 0 0 8px 0; color: var(--texto); line-height: 1.4;">
+                            <p class="texto-ubicacion">
                                 Nos encontramos ubicados en el Estado Carabobo, municipio Naguanagua, Sector Tazajal.
                             </p>
                             <a href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" target="_blank" class="btn-mapa-link">
@@ -391,7 +460,7 @@
                     </div>
                 </div>
 
-                <!-- Opción B: Envío Nacional -->
+                <!-- Modalidad B: Encomiendas -->
                 <div class="acordeon-entrega">
                     <button type="button" class="acordeon-header">
                         <span class="titulo-trigger">
@@ -402,7 +471,7 @@
                     <div class="acordeon-content">
                         <div class="acordeon-body">
                             <div class="bloque-receptor">
-                                <span style="font-weight: 800; font-size: 0.75rem; color: #71717a; text-transform: uppercase; display:block; margin-bottom: 4px;">Datos del Receptor</span>
+                                <span class="subtitulo-receptor">Datos del Receptor</span>
                                 <button type="button" class="btn-copiar-datos" onclick="copiarDatosReor(this)">
                                     <i class="bi bi-files"></i> Copiar
                                 </button>
@@ -411,27 +480,27 @@
                                 <p><strong>Teléfono:</strong> 04245022292</p>
                             </div>
 
-                            <span style="font-weight: 800; font-size: 0.75rem; color: #71717a; text-transform: uppercase; display:block; margin-bottom: 8px;">Agencias de Envío (Destino Valencia)</span>
+                            <span class="titulo-agencias">Agencias de Envío (Destino Valencia)</span>
                             <div class="lista-agencias">
                                 <div class="agencia-item">
                                     <i class="bi bi-caret-right-fill" style="color: #10b981; margin-top:3px;"></i>
-                                    <div>
+                                    <div class="agencia-detail">
                                         <strong>MRW</strong><span class="badge-recomendado">Recomendada</span>
-                                        <p style="margin:1px 0 0; color:#52525b; font-size:0.82rem;">Cód: 0816000 - Av. Bolivar Norte, Valencia</p>
+                                        <p>Cód: 0816000 - Av. Bolivar Norte, Valencia</p>
                                     </div>
                                 </div>
                                 <div class="agencia-item">
                                     <i class="bi bi-caret-right-fill" style="color: #71717a; margin-top:3px;"></i>
-                                    <div>
+                                    <div class="agencia-detail">
                                         <strong>Tealca</strong>
-                                        <p style="margin:1px 0 0; color:#52525b; font-size:0.82rem;">Zona Industrial Norte 5208, Valencia</p>
+                                        <p>Zona Industrial Norte 5208, Valencia</p>
                                     </div>
                                 </div>
                                 <div class="agencia-item">
                                     <i class="bi bi-caret-right-fill" style="color: #71717a; margin-top:3px;"></i>
-                                    <div>
+                                    <div class="agencia-detail">
                                         <strong>Zoom</strong>
-                                        <p style="margin:1px 0 0; color:#52525b; font-size:0.82rem;">Aliado ZOOM Omega Colors, Valencia</p>
+                                        <p>Aliado ZOOM Omega Colors, Valencia</p>
                                     </div>
                                 </div>
                             </div>
@@ -441,12 +510,13 @@
 
             </div>
 
-            <!-- CTA PRINCIPAL: Enviar Ticket por WhatsApp -->
+            <!-- Canal Unificado de Confirmación -->
             <a href="#" id="btn-whatsapp-ticket" target="_blank" class="btn-whatsapp-unificado">
                 <i class="bi bi-whatsapp"></i> Notificar Entrega por WhatsApp
             </a>
         </div>
         
+        <!-- Retorno Seguro -->
         <a href="{% url 'inicio' %}" class="btn-volver">
             <i class="bi bi-arrow-left"></i> Volver al Inicio
         </a>
@@ -454,7 +524,7 @@
 </div>
 
 <script>
-    // Lógica para copiar el código al portapapeles
+    // Copiar código identificador
     function copiarCodigo() {
         const codigo = document.getElementById("codigo-texto").innerText;
         const icono = document.getElementById("icono-copiar");
@@ -472,7 +542,7 @@
         });
     }
 
-    // Copiar de manera limpia los datos del receptor de encomiendas
+    // Copiar metadatos del receptor de forma estructurada
     function copiarDatosReor(btn) {
         const datosTexto = "Receptor: Manuel García\nCédula: V-29685051\nTeléfono: 04245022292\nDestino: Valencia";
         navigator.clipboard.writeText(datosTexto).then(() => {
@@ -490,7 +560,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // API Setup para WhatsApp
+        // Inicialización y empaquetado del mensaje API de WhatsApp
         const telefonoMTech = "584245022292"; 
         
         const codigoRastreo = "{{ orden.codigo_rastreo|escapejs }}";
@@ -504,10 +574,9 @@
                         `💻 *Equipo:* ${equipoNombre}%0A%0A` +
                         `Quedo atento(a) para proceder con la entrega. ¡Muchas gracias!`;
         
-        const urlWhatsapp = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
-        document.getElementById("btn-whatsapp-ticket").href = urlWhatsapp;
+        document.getElementById("btn-whatsapp-ticket").href = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
 
-        // 🧠 Lógica Avanzada del Acordeón Exclusivo (Comportamiento Mutuo)
+        // Lógica de Mutuo Exclusión para el acordeón
         const headers = document.querySelectorAll(".grupo-opciones-entrega .acordeon-header");
         
         headers.forEach(header => {
@@ -515,15 +584,14 @@
                 const currentContent = this.nextElementSibling;
                 const isCurrentlyActive = this.classList.contains("active");
 
-                // Cerrar todos los páneles activos del grupo para balancear la UI
                 headers.forEach(h => {
                     h.classList.remove("active");
                     h.nextElementSibling.style.maxHeight = null;
                 });
 
-                // Si no estaba activo el clickeado, lo expandimos dinámicamente
                 if (!isCurrentlyActive) {
                     this.classList.add("active");
+                    this.currentContent = currentContent;
                     currentContent.style.maxHeight = currentContent.scrollHeight + "px";
                 }
             });
