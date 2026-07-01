@@ -8,14 +8,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-sb3r5629a&^gu_hq19ue=@#laytjq@b!@2f_^1_tf2ul48u9^y')
 
-# DEBUG: False en producción, True solo si la variable ENV es 'development'
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# DEBUG: True por defecto localmente. Se vuelve False en Render si configuras la variable de entorno.
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['mp-tech-dl5s.onrender.com', '127.0.0.1', 'localhost']
 
+# 🔒 CRÍTICO PARA RENDER: Evita que Django bloquee los formularios (Admin login, solicitudes, etc.)
+CSRF_TRUSTED_ORIGINS = [
+    'https://mp-tech-dl5s.onrender.com',
+]
+
 # Application definition
 INSTALLED_APPS = [
-    'jazzmin',
+    'unfold',             # 🎨 Admin con estilo moderno
     'django.contrib.admin', # Dejado solo aquí arriba con su coma
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -159,3 +164,32 @@ PWA_APP_ICONS_SPLASH = [
         'sizes': '512x512'
     }
 ]
+
+# ==============================================================================
+# 🎨 CONFIGURACIÓN AVANZADA DE DJANGO UNFOLD (ESTÉTICA MP TECH)
+# ==============================================================================
+UNFOLD = {
+    "SITE_HEADER": "MP Tech • Panel de Control",
+    "SITE_TITLE": "MP Tech Taller",
+    "INDEX_TITLE": "Gestión Interna de Reparaciones",
+    "SITE_SYMBOL": "🔧", # Icono de la pestaña del navegador
+    "SHOW_HISTORY": True, # Muestra historial de cambios rápidos
+    "SHOW_VIEW_ON_SITE": True, # Enlace rápido para ver el producto en el catálogo
+    
+    # Paleta de colores para botones y acentos (Usamos zinc/rojo oscuro)
+    "COLORS": {
+        "primary": {
+            "50": "250, 250, 250",
+            "100": "244, 244, 245",
+            "200": "228, 228, 231",
+            "300": "212, 212, 216",
+            "400": "161, 161, 170",
+            "500": "113, 113, 122",
+            "600": "82, 82, 91",
+            "700": "63, 63, 70",
+            "800": "39, 39, 42",
+            "900": "24, 24, 27",
+            "950": "9, 9, 11",
+        },
+    },
+}

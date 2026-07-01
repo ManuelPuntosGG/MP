@@ -1,18 +1,23 @@
 from django.contrib import admin
-from django.db import models  # 🚀 CORRECCIÓN: Traemos el models de Django para el TextField
-from django.utils.html import format_html  # Para renderizar los botones de forma segura
-from django.urls import reverse            # Para resolver las rutas del ticket
-from django.forms import Textarea          # Para compactar cuadros de texto en móvil
-from django.contrib.auth.models import Group # Para limpiar el panel
+from django.db import models 
+from django.utils.html import format_html 
+from django.urls import reverse 
+from django.forms import Textarea 
+from django.contrib.auth.models import Group 
 
-# Importación explícita de tus modelos locales
+# 🔧 CORRECCIÓN AQUÍ: SimpleListFilter se importa desde django.contrib.admin
+from django.contrib.admin import SimpleListFilter 
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import action
+
+# Importación de tus modelos locales
 from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto
 
 
 # =========================================================
-# 🎛️ FILTRO PERSONALIZADO PARA EL TALLER
+# 🎛️ FILTRO PERSONALIZADO ADAPTADO A UNFOLD
 # =========================================================
-class ReparacionesActivasFilter(admin.SimpleListFilter):
+class ReparacionesActivasFilter(SimpleListFilter):
     title = 'Filtro de Trabajo'
     parameter_name = 'filtro_taller'
 
@@ -33,11 +38,11 @@ class ReparacionesActivasFilter(admin.SimpleListFilter):
 # =========================================================
 # 1. Configuración de Categorías y Productos
 # =========================================================
-class CategoriaAdmin(admin.ModelAdmin):
+class CategoriaAdmin(ModelAdmin):
     list_display = ('nombre', 'descripcion')
     search_fields = ('nombre',)
 
-class ProductoAdmin(admin.ModelAdmin):
+class ProductoAdmin(ModelAdmin):
     list_display = ('nombre', 'categoria', 'precio', 'stock', 'disponible')
     list_filter = ('categoria', 'disponible')
     search_fields = ('nombre', 'descripcion')
@@ -45,25 +50,24 @@ class ProductoAdmin(admin.ModelAdmin):
 
 
 # =========================================================
-# 2. Inlines Optimizados para Móvil (PWA)
+# 2. Inlines Optimizados con Estilo Unfold
 # =========================================================
-class AvanceOrdenInline(admin.TabularInline):
+class AvanceOrdenInline(TabularInline):
     """Permite gestionar la bitácora de avances de reparación"""
     model = AvanceOrden
-    extra = 0  # 🚀 Limpio: No genera filas vacías innecesarias
+    extra = 0 
     fields = ('descripcion', 'imagen', 'mostrar_imagen')
     readonly_fields = ('mostrar_imagen',)
     
-    # 🚀 Eficiente: Usa el models de Django correctamente para sobreescribir el widget
     formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 35, 'style': 'resize:none; font-size: 0.9rem;'})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 35, 'style': 'resize:none; font-size: 0.9rem; border-radius: 6px;'})},
     }
 
     def mostrar_imagen(self, obj):
         if obj.imagen:
             return format_html(
                 '<a href="{0}" target="_blank">'
-                '<img src="{0}" style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;" />'
+                '<img src="{0}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;" />'
                 '</a>', 
                 obj.imagen.url
             )
@@ -71,21 +75,21 @@ class AvanceOrdenInline(admin.TabularInline):
     mostrar_imagen.short_description = 'Vista'
 
 
-class LineaPresupuestoInline(admin.TabularInline):
+class LineaPresupuestoInline(TabularInline):
     """Permite añadir repuestos, conceptos y montos manuales"""
     model = LineaPresupuesto
-    extra = 0  # 🚀 Limpio: Añades filas solo cuando lo necesitas
+    extra = 0 
 
 
 # =========================================================
 # 3. Configuración Principal del Taller
 # =========================================================
-class OrdenServicioAdmin(admin.ModelAdmin):
+class OrdenServicioAdmin(ModelAdmin):
     list_display = (
         'codigo_rastreo', 
         'cliente_nombre', 
         'equipo', 
-        'estado',               
+        'estado',              
         'presupuesto_estado',   
         'fecha_ingreso', 
         'notificar_cliente', 
@@ -100,9 +104,10 @@ class OrdenServicioAdmin(admin.ModelAdmin):
     inlines = [AvanceOrdenInline, LineaPresupuestoInline]
     readonly_fields = ('codigo_rastreo', 'fecha_ingreso', 'qr_code')
 
+    # Unfold aprovecha de forma espectacular los fieldsets separándolos visualmente en tarjetas impecables
     fieldsets = (
         ('Datos del Cliente', {
-            'fields': ('cliente_nombre', 'cliente_telefono','codigo_rastreo', 'equipo', 'falla_reportada',)
+            'fields': ('cliente_nombre', 'cliente_telefono', 'codigo_rastreo', 'equipo', 'falla_reportada',)
         }),
         ('Control de Estado', {
             'fields': ('estado', 'presupuesto_estado')
@@ -113,37 +118,39 @@ class OrdenServicioAdmin(admin.ModelAdmin):
         }),
     )
 
-    @admin.action(description='🔧 Marcar seleccionados como REPARADOS')
+    # Decoradores de acción propios de Unfold
+    @action(description='🔧 Marcar seleccionados como REPARADOS')
     def marcar_reparados(self, request, queryset):
         actualizados = queryset.update(estado='REPARADO')
         self.message_user(request, f"{actualizados} órdenes actualizadas a REPARADO.")
 
-    @admin.action(description='📦 Marcar seleccionados como ENTREGADOS')
+    @action(description='📦 Marcar seleccionados como ENTREGADOS')
     def marcar_entregados(self, request, queryset):
         actualizados = queryset.update(estado='ENTREGADO')
         self.message_user(request, f"{actualizados} órdenes actualizadas a ENTREGADO.")
 
     actions = [marcar_reparados, marcar_entregados]
 
-    # Botón dinámico de WhatsApp
+    # Botón de WhatsApp estilizado para la paleta de Unfold
     def notificar_cliente(self, obj):
-        # 🚀 CORRECCIÓN: Al ser @property en models.py, se llama sin los paréntesis ()
         url = obj.enlace_whatsapp
         return format_html(
-            '<a href="{}" target="_blank" style="background-color: #25D366; color: white; '
-            'padding: 6px 12px; border-radius: 20px; text-decoration: none; '
-            'font-weight: bold; font-size: 0.75rem; display: inline-block; text-align: center;">💬 Enviar</a>',
+            '<a href="{}" target="_blank" style="background-color: #10b981; color: white; '
+            'padding: 4px 10px; border-radius: 6px; text-decoration: none; '
+            'font-weight: 600; font-size: 0.75rem; display: inline-block; text-align: center; '
+            'box-shadow: 0 1px 2px rgba(0,0,0,0.05);">💬 Enviar</a>',
             url
         )
     notificar_cliente.short_description = 'Aviso'
 
-    # Botón para abrir la vista de impresión térmica
+    # Botón de Ticket estilizado en sintonía con Tailwind (Azul moderno)
     def imprimir_ticket_link(self, obj):
         url = reverse('imprimir_ticket', args=[obj.pk])
         return format_html(
             '<a href="{}" target="_blank" style="background-color: #3b82f6; color: white; '
-            'padding: 6px 12px; border-radius: 20px; text-decoration: none; '
-            'font-weight: bold; font-size: 0.75rem; display: inline-block; text-align: center;">🖨️ Ticket</a>',
+            'padding: 4px 10px; border-radius: 6px; text-decoration: none; '
+            'font-weight: 600; font-size: 0.75rem; display: inline-block; text-align: center; '
+            'box-shadow: 0 1px 2px rgba(0,0,0,0.05);">🖨️ Ticket</a>',
             url
         )
     imprimir_ticket_link.short_description = 'Imprimir'
@@ -159,7 +166,7 @@ admin.site.register(OrdenServicio, OrdenServicioAdmin)
 # Eliminar la gestión de "Grupos de usuarios" de Django por defecto
 admin.site.unregister(Group)
 
-# Personalización del Panel
+# Personalización del Panel (Unfold lo hereda y estiliza en la barra superior)
 admin.site.site_header = "MP Tech • Panel de Control"
 admin.site.site_title = "MP Tech Taller"
 admin.site.index_title = "Gestión Interna de Reparaciones"

@@ -394,7 +394,7 @@
                     <input type="number" step="0.01" class="input-tabla" value="${item.precio.toFixed(2)}" onchange="modificarItem(${item.id}, 'precio', this.value)">
                 </td>
                 <td data-label="Peso (Lbs)" style="text-align: center;">
-                    <input type="number" step="0.1" class="input-tabla" value="${item.peso.toFixed(1)}" onchange="modificarItem(${item.id}, 'peso', this.value)">
+                    <input type="number" step="1" class="input-tabla" value="${item.peso.toFixed(1)}" onchange="modificarItem(${item.id}, 'peso', this.value)">
                 </td>
                 <td data-label="Flete Est. ($ / Bs)" style="text-align: right; font-weight: 600; color: var(--primario);">
                     $${fleteItem.toFixed(2)}
