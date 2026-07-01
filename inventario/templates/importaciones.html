@@ -7,7 +7,7 @@
     .import-container { 
         max-width: 1000px; 
         margin: 2.5rem auto; 
-        padding: 0 1.5rem; 
+        padding: 0 1.25rem; 
         font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
     
@@ -68,15 +68,11 @@
         gap: 1rem; 
         align-items: flex-end; 
     }
-    @media (max-width: 768px) { 
-        .grid-inputs { grid-template-columns: 1fr; } 
-        .btn-agregar { width: 100%; height: 46px; }
-    }
     
     .grupo-campo { display: flex; flex-direction: column; gap: 0.5rem; }
     .grupo-campo label { font-weight: 600; color: var(--primario); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .grupo-campo input { padding: 0.75rem 1rem; border: 1px solid var(--borde); border-radius: 10px; font-size: 0.95rem; background: var(--fondo); transition: all 0.2s ease; color: var(--primario); }
-    .grupo-campo input:focus { outline: none; border-color: var(--acento); background: var(--blanco); box-shadow: 0 0 0 3px rgba(var(--acento-rgb, 59, 130, 246), 0.15); }
+    .grupo-campo input { padding: 0.75rem 1rem; border: 1px solid var(--borde); border-radius: 10px; font-size: 0.95rem; background: var(--fondo); transition: all 0.2s ease; color: var(--primario); width: 100%; box-sizing: border-box; }
+    .grupo-campo input:focus { outline: none; border-color: var(--acento); background: var(--blanco); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15); }
     
     .btn-agregar { background: var(--primario); color: white; border: none; padding: 0 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 46px; }
     .btn-agregar:hover { background: #27272a; transform: translateY(-1px); }
@@ -88,7 +84,7 @@
     .politicas-box li { margin-bottom: 0.5rem; }
     .politicas-box li:last-child { margin-bottom: 0; }
 
-    /* Tabla de productos */
+    /* Tabla de productos (Diseño Base Desktop) */
     .tabla-productos-wrapper { background: var(--blanco); border: 1px solid var(--borde); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02); margin-bottom: 2.5rem; }
     .tabla-productos { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.925rem; }
     .tabla-productos th { background: var(--fondo); padding: 1rem 1.25rem; font-weight: 700; color: var(--primario); border-bottom: 1px solid var(--borde); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
@@ -110,11 +106,11 @@
     /* Resumen de costos */
     .resumen-importacion { background: var(--primario); color: white; padding: 2.25rem; border-radius: 18px; box-shadow: 0 12px 24px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
     .resumen-importacion::before { content: ''; position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%); pointer-events: none; }
-    .resumen-linea { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.975rem; opacity: 0.9; }
-    .resumen-linea .monto-desglose { text-align: right; }
+    .resumen-linea { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.975rem; opacity: 0.9; gap: 15px; }
+    .resumen-linea .monto-desglose { text-align: right; flex-shrink: 0; }
     
-    .resumen-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.75rem; font-weight: 800; border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 1.25rem; margin-top: 1.25rem; color: var(--verde-precio); }
-    .resumen-total .monto-desglose { text-align: right; }
+    .resumen-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.75rem; font-weight: 800; border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 1.25rem; margin-top: 1.25rem; color: var(--verde-precio); gap: 15px; }
+    .resumen-total .monto-desglose { text-align: right; flex-shrink: 0; }
 
     .bs-subtexto { display: block; font-size: 0.8rem; opacity: 0.75; font-weight: 500; margin-top: 2px; }
     .bs-subtexto-total { display: block; font-size: 1.05rem; color: #fff; opacity: 0.9; font-weight: 600; margin-top: 4px; }
@@ -125,7 +121,76 @@
     
     .btn-whatsapp-import { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: #25D366; color: white; text-decoration: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; margin-top: 1.75rem; transition: all 0.23s cubic-bezier(0.4, 0, 0.2, 1); text-align: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
     .btn-whatsapp-import:hover { background: #20ba56; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35); }
-    .btn-whatsapp-import:active { transform: translateY(0); }
+
+    /* ==========================================================================
+       📱 RESPONSIVE SYSTEM (OPTIMIZADO PARA COMPONENTES WEB MÓVILES)
+       ========================================================================== */
+    @media (max-width: 768px) {
+        .import-container { margin: 1.5rem auto; }
+        .titulo-seccion { font-size: 1.8rem; }
+        .header-importaciones { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+        .tasa-badge-info { width: 100%; justify-content: center; box-sizing: border-box; }
+        
+        .grid-inputs { grid-template-columns: 1fr; gap: 0.85rem; } 
+        .btn-agregar { width: 100%; height: 46px; }
+
+        .resumen-importacion { padding: 1.5rem 1.25rem; }
+        .resumen-total { font-size: 1.4rem; }
+
+        /* Transformación Estructural de la Tabla a Bloques de Tarjetas */
+        .tabla-productos-wrapper { border: none; background: transparent; box-shadow: none; }
+        .tabla-productos { display: block; }
+        .tabla-productos thead { display: none; } /* Ocultar cabeceras en móvil */
+        .tabla-productos tbody { display: block; }
+        
+        .tabla-productos tr { 
+            display: block; 
+            background: var(--blanco); 
+            border: 1px solid var(--borde); 
+            border-radius: 14px; 
+            margin-bottom: 1rem; 
+            padding: 0.75rem 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+            position: relative;
+        }
+        
+        .tabla-productos td { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0.65rem 0; 
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+            text-align: right;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+        
+        .tabla-productos td:last-of-type { border-bottom: none; }
+        
+        /* Inyección de etiquetas dinámicas descriptivas mediante Pseudo-elementos */
+        .tabla-productos td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            color: var(--primario);
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            text-align: left;
+        }
+
+        /* Posicionamiento flotante del botón eliminar para optimizar espacio */
+        .tabla-productos td:last-child {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            border: none;
+            width: auto !important;
+            padding: 0;
+        }
+        .btn-eliminar { background: #fef2f2; padding: 0.4rem; border-radius: 6px; }
+
+        .input-tabla { width: 110px; padding: 0.4rem; text-align: right; }
+    }
 </style>
 {% endblock %}
 
@@ -142,7 +207,6 @@
     
     <p class="descripcion-intro">Agrega los enlaces de los artículos que deseas traer de tus tiendas internacionales preferidas como Amazon, AliExpress o eBay. Calcularemos automáticamente una estimación precisa de los costos de flete y nacionalización hasta tus manos en Valencia.</p>
 
-    <!-- Formulario Inteligente -->
     <div class="formulario-adicion">
         <div class="grid-inputs">
             <div class="grupo-campo">
@@ -163,19 +227,17 @@
         </div>
     </div>
 
-    <!-- Bloque de Políticas Informadas -->
     <div class="politicas-box">
         <i class="bi bi-info-circle-fill"></i>
         <div>
             <strong>Condiciones generales de cotización logística:</strong>
             <ul>
-                <li><strong>Cálculo basado en físico:</strong> Los valores actuales son estimaciones logísticas preliminares. El costo final del flete aéreo se ajustará de acuerdo con las medidas (volumen) y el peso neto real del paquete certificado en nuestro almacén receptor de Miami.</li>
-                <li><strong>Garantía de procesamiento (Financiamiento):</strong> Para ejecutar la compra y asegurar la congelación de costos, es obligatorio abonar un pago inicial del <strong>50% del total general</strong>. El 50% restante se cancelará única y estrictamente al momento del retiro físico de la mercancía.</li>
+                <li><strong>Comisión de gestión variable:</strong> Minimizas costos a mayor volumen de compra. Aplicamos de forma automática 10% (< $200), 7.5% (entre $200 y $1000) y apenas 5% para presupuestos altos superiores a $1000.</li>
+                <li><strong>Cálculo definitivo:</strong> El costo final del flete aéreo se ajustará de acuerdo con las medidas (volumen) y el peso neto real del paquete medido en nuestro almacén receptor de Miami.</li>
             </ul>
         </div>
     </div>
 
-    <!-- Tabla Dinámica de Artículos -->
     <div class="tabla-productos-wrapper">
         <table class="tabla-productos">
             <thead>
@@ -199,7 +261,6 @@
         </table>
     </div>
 
-    <!-- Panel de Resultados de Presupuesto -->
     <div class="resumen-importacion">
         <h3 style="margin-top: 0; color: var(--acento); font-weight: 800; margin-bottom: 1.5rem; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 0.03em;">Resumen Estimado de Importación</h3>
         
@@ -218,7 +279,7 @@
             </div>
         </div>
         <div class="resumen-linea">
-            <span>Gestión Administrativa y Seguro Operativo (10% o Mín. $5):</span>
+            <span id="label-comision">Gestión Administrativa y Seguro Operativo (10%):</span>
             <div class="monto-desglose" id="resumen-comision">
                 <span>$0.00</span>
                 <span class="bs-subtexto">0.00 Bs</span>
@@ -247,12 +308,9 @@
 
 <script>
     const TARIFA_LIBRA = 9.00;       
-    const PORCENTAJE_COMISION = 0.10; 
     const COMISION_MINIMA = 5.00;     
     
-    // Captura segura del contexto numérico de Django
     const TASA_VES = parseFloat("{{ tasa_ves }}") || 0;
-
     let carritoProductos = [];
 
     function detectarTienda(url) {
@@ -296,7 +354,6 @@
         carritoProductos.push(nuevoItem);
         renderizarTabla();
 
-        // Limpieza y foco adaptativo del formulario
         inputUrl.value = '';
         inputPrecio.value = '';
         inputPeso.value = '1.0';
@@ -320,29 +377,30 @@
 
         tbody.innerHTML = '';
         carritoProductos.forEach((item) => {
-            let fleteItem = item.peso * TARIFA_LIBRA; // Corrección: Eliminada la mutación errónea de item.weight
+            let fleteItem = item.peso * TARIFA_LIBRA;
             let fleteItemBs = fleteItem * TASA_VES;
             let badgeClass = `bg-${item.tienda.toLowerCase()}`;
 
             let fila = document.createElement('tr');
+            // Nota: Se agregan atributos data-label para renderizado móvil apilado por CSS
             fila.innerHTML = `
-                <td><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
-                <td>
-                    <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
+                <td data-label="Tienda"><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
+                <td data-label="Artículo">
+                    <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
                         <i class="bi bi-box-arrow-up-right"></i> Ver Artículo
                     </a>
                 </td>
-                <td style="text-align: center;">
+                <td data-label="Precio ($)" style="text-align: center;">
                     <input type="number" step="0.01" class="input-tabla" value="${item.precio.toFixed(2)}" onchange="modificarItem(${item.id}, 'precio', this.value)">
                 </td>
-                <td style="text-align: center;">
+                <td data-label="Peso (Lbs)" style="text-align: center;">
                     <input type="number" step="0.1" class="input-tabla" value="${item.peso.toFixed(1)}" onchange="modificarItem(${item.id}, 'peso', this.value)">
                 </td>
-                <td style="text-align: right; font-weight: 600; color: var(--primario);">
+                <td data-label="Flete Est. ($ / Bs)" style="text-align: right; font-weight: 600; color: var(--primario);">
                     $${fleteItem.toFixed(2)}
                     <span style="display: block; font-size: 0.75rem; color: #71717a; font-weight: 500;">${fleteItemBs.toFixed(2)} Bs</span>
                 </td>
-                <td style="text-align: center;">
+                <td>
                     <button class="btn-eliminar" onclick="eliminarItem(${item.id})" title="Remover artículo"><i class="bi bi-trash3-fill"></i></button>
                 </td>
             `;
@@ -354,7 +412,7 @@
 
     function modificarItem(id, propiedad, valor) {
         let numValue = parseFloat(valor) || 0;
-        if (numValue <= 0) numValue = 1; // Salvaguarda para evitar valores nulos o negativos
+        if (numValue <= 0) numValue = 1;
         
         let item = carritoProductos.find(p => p.id === id);
         if (item) {
@@ -377,9 +435,17 @@
             totalFlete += (item.peso * TARIFA_LIBRA);
         });
 
+        // 🧠 Lógica de Comisión Dinámica Parametrizada
+        let porcentajeComision = 0.10;
+        if (totalFob >= 200 && totalFob <= 1000) {
+            porcentajeComision = 0.075; // 7.5%
+        } else if (totalFob > 1000) {
+            porcentajeComision = 0.05;  // 5%
+        }
+
         let totalComision = 0;
         if (carritoProductos.length > 0) {
-            totalComision = Math.max(totalFob * PORCENTAJE_COMISION, COMISION_MINIMA);
+            totalComision = Math.max(totalFob * porcentajeComision, COMISION_MINIMA);
         }
 
         let totalGeneral = totalFob + totalFlete + totalComision;
@@ -391,7 +457,9 @@
         let totalGeneralBs = totalGeneral * TASA_VES;
         let inicial50Bs = inicial50 * TASA_VES;
 
-        // Renderizado del resumen financiero
+        // Modificar dinámicamente la etiqueta de porcentaje de fianza en la UI
+        document.getElementById('label-comision').innerText = `Gestión Administrativa y Seguro Operativo (${(porcentajeComision * 100).toFixed(1)}%):`;
+
         document.getElementById('resumen-fob').innerHTML = `<span>$${totalFob.toFixed(2)}</span><span class="bs-subtexto">${totalFobBs.toFixed(2)} Bs</span>`;
         document.getElementById('resumen-flete').innerHTML = `<span>$${totalFlete.toFixed(2)}</span><span class="bs-subtexto">${totalFleteBs.toFixed(2)} Bs</span>`;
         document.getElementById('resumen-comision').innerHTML = `<span>$${totalComision.toFixed(2)}</span><span class="bs-subtexto">${totalComisionBs.toFixed(2)} Bs</span>`;
@@ -400,7 +468,7 @@
         document.getElementById('pago-inicial').innerText = `$${inicial50.toFixed(2)} (${inicial50Bs.toFixed(2)} Bs)`;
         document.getElementById('pago-final-entrega').innerText = `$${inicial50.toFixed(2)} (${inicial50Bs.toFixed(2)} Bs)`;
 
-        // Construcción y codificación del mensaje de WhatsApp
+        // Construcción del mensaje para WhatsApp con indicadores de tasa dinámicos
         const telefonoMTech = "584245022292";
         let lineasMensaje = [
             "¡Hola *MP Tech*! 👋",
@@ -413,7 +481,7 @@
             let itemPrecioBs = item.precio * TASA_VES;
             lineasMensaje.push(`📦 *Artículo #${i+1}* (${item.tienda})`);
             lineasMensaje.push(`🔗 *Link:* ${item.url}`);
-            lineasMensaje.push(`💵 *Precio:* $${item.precio.toFixed(2)} (~${itemPrecioBs.toFixed(2)} Bs) | ⚖️ *Peso:* ${item.peso.toFixed(1)} Lbs`); // Corrección: item.peso en lugar de item.weight
+            lineasMensaje.push(`💵 *Precio:* $${item.precio.toFixed(2)} (~${itemPrecioBs.toFixed(2)} Bs) | ⚖️ *Peso:* ${item.peso.toFixed(1)} Lbs`);
             lineasMensaje.push("");
         });
 
@@ -421,7 +489,7 @@
         lineasMensaje.push("📊 *DESGLOSE ESTIMADO DEL PEDIDO:*");
         lineasMensaje.push(`🔹 *Valor total productos:* $${totalFob.toFixed(2)} (${totalFobBs.toFixed(2)} Bs)`);
         lineasMensaje.push(`🔹 *Flete aéreo consolidado:* $${totalFlete.toFixed(2)} (${totalFleteBs.toFixed(2)} Bs)`);
-        lineasMensaje.push(`🔹 *Gestión y seguro corporativo:* $${totalComision.toFixed(2)} (${totalComisionBs.toFixed(2)} Bs)`);
+        lineasMensaje.push(`🔹 *Gestión y seguro corporativo (${(porcentajeComision * 100).toFixed(1)}%):* $${totalComision.toFixed(2)} (${totalComisionBs.toFixed(2)} Bs)`);
         lineasMensaje.push(`💰 *TOTAL GENERAL ESTIMADO:* *$${totalGeneral.toFixed(2)}* (*${totalGeneralBs.toFixed(2)} Bs*)`);
         lineasMensaje.push("");
         lineasMensaje.push(`💵 *Abono inicial (50% para comprar):* $${inicial50.toFixed(2)} (*${inicial50Bs.toFixed(2)} Bs*)`);
