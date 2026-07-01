@@ -90,7 +90,7 @@
     .paso-titulo { 
         font-weight: 700; 
         color: var(--primario); 
-        margin-bottom: 8px; 
+        margin-bottom: 12px; 
         display: flex; 
         align-items: center; 
         gap: 8px; 
@@ -98,87 +98,241 @@
         text-transform: uppercase; 
         letter-spacing: 0.5px; 
     }
-    
-    .acciones-paso { 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 10px; 
-        margin-top: 15px; 
+
+    /* ==========================================
+       ⚖️ UI ARMONIZADA DE MÉTODOS DE ENTREGA
+       ========================================== */
+    .grupo-opciones-entrega {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 20px 0;
     }
-    
-    .btn-mapa { 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 6px; 
-        background: var(--blanco); 
-        color: var(--primario); 
-        border: 1px solid var(--borde); 
-        padding: 10px 16px; 
-        border-radius: 6px; 
-        text-decoration: none; 
-        font-weight: 600; 
-        font-size: 0.85rem; 
-        transition: all 0.2s; 
+
+    .acordeon-entrega {
+        border: 1px solid var(--borde);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--blanco);
+        transition: border-color 0.2s;
     }
-    
-    .btn-mapa:hover { 
-        background: var(--fondo); 
+
+    .acordeon-entrega:has(.acordeon-header.active) {
         border-color: var(--primario);
-        transform: translateY(-1px); 
     }
-    
-    .btn-whatsapp { 
+
+    .acordeon-header {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--blanco);
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--texto);
+        font-size: 0.9rem;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .acordeon-header:hover {
+        background: rgba(0, 0, 0, 0.01);
+    }
+
+    .acordeon-header.active {
+        background: var(--fondo);
+        color: var(--primario);
+    }
+
+    .acordeon-header .titulo-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .acordeon-header .titulo-trigger i {
+        font-size: 1.1rem;
+        color: #71717a;
+    }
+
+    .acordeon-header.active .titulo-trigger i {
+        color: var(--primario);
+    }
+
+    .acordeon-header .flecha-icon {
+        font-size: 0.9rem;
+        transition: transform 0.3s ease;
+        color: #a1a1aa;
+    }
+
+    .acordeon-header.active .flecha-icon {
+        transform: rotate(180deg);
+        color: var(--primario);
+    }
+
+    .acordeon-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .acordeon-body {
+        padding: 16px;
+        border-top: 1px solid var(--borde);
+        font-size: 0.9rem;
+        background: var(--blanco);
+    }
+
+    /* Contenido interno: Taller */
+    .btn-mapa-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: var(--primario);
+        color: white;
+        border: 1px solid var(--primario);
+        padding: 10px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: all 0.2s;
+    }
+
+    .btn-mapa-link:hover {
+        background: #27272a;
+        transform: translateY(-1px);
+    }
+
+    /* Contenido interno: Encomiendas */
+    .bloque-receptor {
+        background: rgba(59, 130, 246, 0.03);
+        border: 1px dashed rgba(59, 130, 246, 0.25);
+        padding: 12px 14px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+        position: relative;
+    }
+
+    .bloque-receptor p {
+        margin: 4px 0;
+        color: var(--texto);
+    }
+
+    .btn-copiar-datos {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--blanco);
+        border: 1px solid var(--borde);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #71717a;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s;
+    }
+
+    .btn-copiar-datos:hover {
+        border-color: var(--primario);
+        color: var(--primario);
+    }
+
+    .lista-agencias {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .agencia-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+    }
+
+    .agencia-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .badge-recomendado {
+        background: #d1fae5;
+        color: #065f46;
+        font-size: 0.7rem;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+        margin-left: 6px;
+        display: inline-block;
+    }
+
+    /* Botón WhatsApp unificado al pie del contenedor */
+    .btn-whatsapp-unificado { 
         display: inline-flex; 
         align-items: center; 
-        gap: 6px; 
+        justify-content: center;
+        gap: 8px; 
         background: #25D366; 
         color: white; 
         border: 1px solid #25D366; 
-        padding: 10px 16px; 
-        border-radius: 6px; 
+        padding: 14px 20px; 
+        border-radius: 8px; 
         text-decoration: none; 
-        font-weight: 600; 
-        font-size: 0.85rem; 
+        font-weight: 700; 
+        font-size: 0.95rem; 
         transition: all 0.2s; 
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 5px;
+        box-shadow: 0 4px 10px -2px rgba(37, 211, 102, 0.15);
     }
     
-    .btn-whatsapp:hover { 
+    .btn-whatsapp-unificado:hover { 
         background: #20ba56; 
         border-color: #20ba56; 
         color: white; 
-        transform: translateY(-1px); 
-        box-shadow: 0 4px 6px -1px rgba(37, 211, 102, 0.2);
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 12px -1px rgba(37, 211, 102, 0.3);
     }
+    /* ========================================== */
     
     .btn-volver { 
         display: inline-flex; 
         align-items: center; 
         gap: 8px; 
-        background: var(--primario); 
-        color: white; 
+        background: transparent; 
+        color: #71717a; 
         padding: 12px 24px; 
         border-radius: 8px; 
         text-decoration: none; 
         font-weight: 600; 
-        margin-top: 10px; 
+        margin-top: 15px; 
         transition: all 0.2s; 
         font-size: 0.95rem; 
-        border: 1px solid var(--primario); 
+        border: 1px solid var(--borde); 
         width: 100%; 
         justify-content: center; 
         box-sizing: border-box; 
     }
     
     .btn-volver:hover { 
-        background: #27272a; 
-        border-color: #27272a; 
-        transform: translateY(-2px); 
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        background: var(--fondo); 
+        color: var(--primario);
+        border-color: var(--primario);
     }
 
     @media (max-width: 480px) {
-        .acciones-paso { flex-direction: column; }
-        .btn-mapa, .btn-whatsapp { width: 100%; justify-content: center; }
         .codigo-destacado { font-size: 1.5rem; padding: 10px 15px; }
     }
 </style>
@@ -208,25 +362,93 @@
         
         <div class="caja-siguiente-paso">
             <div class="paso-titulo">
-                <i class="bi bi-geo-alt-fill"></i> Siguiente Paso Requerido
+                <i class="bi bi-gear-fill"></i> ¿Cómo vas a entregar tu equipo?
             </div>
             <p style="font-size: 0.9rem; color: var(--texto); margin: 0; line-height: 1.5;">
-                Para iniciar la revisión física y el proceso de diagnóstico, por favor proceda a entregar el equipo en nuestra ubicación o notifíquenos el envío de su ticket por WhatsApp:
+                Selecciona la modalidad que más te convenga para el ingreso físico y posterior procesamiento de tu orden:
             </p>
             
-            <div class="acciones-paso">
-                <a href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" target="_blank" class="btn-mapa">
-                    <i class="bi bi-map-fill"></i> Ver Ubicación
-                </a>
+            <!-- 📦 GRUPO DE OPCIONES ARMONIZADAS -->
+            <div class="grupo-opciones-entrega">
                 
-                <a href="#" id="btn-whatsapp-ticket" target="_blank" class="btn-whatsapp">
-                    <i class="bi bi-whatsapp"></i> Enviar Ticket por WhatsApp
-                </a>
+                <!-- Opción A: Entrega en Taller -->
+                <div class="acordeon-entrega">
+                    <button type="button" class="acordeon-header">
+                        <span class="titulo-trigger">
+                            <i class="bi bi-shop"></i> Traer directamente al Taller
+                        </span>
+                        <i class="bi bi-chevron-down flecha-icon"></i>
+                    </button>
+                    <div class="acordeon-content">
+                        <div class="acordeon-body">
+                            <p style="margin: 0 0 8px 0; color: var(--texto); line-height: 1.4;">
+                                Nos encontramos ubicados en el Estado Carabobo, municipio Naguanagua, Sector Tazajal.
+                            </p>
+                            <a href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" target="_blank" class="btn-mapa-link">
+                                <i class="bi bi-geo-alt-fill"></i> Ver Ruta en Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opción B: Envío Nacional -->
+                <div class="acordeon-entrega">
+                    <button type="button" class="acordeon-header">
+                        <span class="titulo-trigger">
+                            <i class="bi bi-truck"></i> Envío Nacional (Encomienda)
+                        </span>
+                        <i class="bi bi-chevron-down flecha-icon"></i>
+                    </button>
+                    <div class="acordeon-content">
+                        <div class="acordeon-body">
+                            <div class="bloque-receptor">
+                                <span style="font-weight: 800; font-size: 0.75rem; color: #71717a; text-transform: uppercase; display:block; margin-bottom: 4px;">Datos del Receptor</span>
+                                <button type="button" class="btn-copiar-datos" onclick="copiarDatosReor(this)">
+                                    <i class="bi bi-files"></i> Copiar
+                                </button>
+                                <p><strong>Nombre:</strong> Manuel García</p>
+                                <p><strong>Cédula:</strong> V-29685051</p>
+                                <p><strong>Teléfono:</strong> 04245022292</p>
+                            </div>
+
+                            <span style="font-weight: 800; font-size: 0.75rem; color: #71717a; text-transform: uppercase; display:block; margin-bottom: 8px;">Agencias de Envío (Destino Valencia)</span>
+                            <div class="lista-agencias">
+                                <div class="agencia-item">
+                                    <i class="bi bi-caret-right-fill" style="color: #10b981; margin-top:3px;"></i>
+                                    <div>
+                                        <strong>MRW</strong><span class="badge-recomendado">Recomendada</span>
+                                        <p style="margin:1px 0 0; color:#52525b; font-size:0.82rem;">Cód: 0816000 - Av. Bolivar Norte, Valencia</p>
+                                    </div>
+                                </div>
+                                <div class="agencia-item">
+                                    <i class="bi bi-caret-right-fill" style="color: #71717a; margin-top:3px;"></i>
+                                    <div>
+                                        <strong>Tealca</strong>
+                                        <p style="margin:1px 0 0; color:#52525b; font-size:0.82rem;">Zona Industrial Norte 5208, Valencia</p>
+                                    </div>
+                                </div>
+                                <div class="agencia-item">
+                                    <i class="bi bi-caret-right-fill" style="color: #71717a; margin-top:3px;"></i>
+                                    <div>
+                                        <strong>Zoom</strong>
+                                        <p style="margin:1px 0 0; color:#52525b; font-size:0.82rem;">Aliado ZOOM Omega Colors, Valencia</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- CTA PRINCIPAL: Enviar Ticket por WhatsApp -->
+            <a href="#" id="btn-whatsapp-ticket" target="_blank" class="btn-whatsapp-unificado">
+                <i class="bi bi-whatsapp"></i> Notificar Entrega por WhatsApp
+            </a>
         </div>
         
         <a href="{% url 'inicio' %}" class="btn-volver">
-            <i class="bi bi-house"></i> Volver al Inicio
+            <i class="bi bi-arrow-left"></i> Volver al Inicio
         </a>
     </div>
 </div>
@@ -238,7 +460,6 @@
         const icono = document.getElementById("icono-copiar");
         
         navigator.clipboard.writeText(codigo).then(() => {
-            // Cambiar icono a check temporalmente
             icono.classList.remove("bi-clipboard");
             icono.classList.add("bi-check2");
             icono.style.color = "var(--verde-precio)";
@@ -251,8 +472,25 @@
         });
     }
 
+    // Copiar de manera limpia los datos del receptor de encomiendas
+    function copiarDatosReor(btn) {
+        const datosTexto = "Receptor: Manuel García\nCédula: V-29685051\nTeléfono: 04245022292\nDestino: Valencia";
+        navigator.clipboard.writeText(datosTexto).then(() => {
+            const contenidoOriginal = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡Copiado!';
+            btn.style.color = "#10b981";
+            btn.style.borderColor = "#10b981";
+            
+            setTimeout(() => {
+                btn.innerHTML = contenidoOriginal;
+                btn.style.color = "";
+                btn.style.borderColor = "";
+            }, 2000);
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
-        // Configuración de WhatsApp
+        // API Setup para WhatsApp
         const telefonoMTech = "584245022292"; 
         
         const codigoRastreo = "{{ orden.codigo_rastreo|escapejs }}";
@@ -268,6 +506,28 @@
         
         const urlWhatsapp = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
         document.getElementById("btn-whatsapp-ticket").href = urlWhatsapp;
+
+        // 🧠 Lógica Avanzada del Acordeón Exclusivo (Comportamiento Mutuo)
+        const headers = document.querySelectorAll(".grupo-opciones-entrega .acordeon-header");
+        
+        headers.forEach(header => {
+            header.addEventListener("click", function() {
+                const currentContent = this.nextElementSibling;
+                const isCurrentlyActive = this.classList.contains("active");
+
+                // Cerrar todos los páneles activos del grupo para balancear la UI
+                headers.forEach(h => {
+                    h.classList.remove("active");
+                    h.nextElementSibling.style.maxHeight = null;
+                });
+
+                // Si no estaba activo el clickeado, lo expandimos dinámicamente
+                if (!isCurrentlyActive) {
+                    this.classList.add("active");
+                    currentContent.style.maxHeight = currentContent.scrollHeight + "px";
+                }
+            });
+        });
     });
 </script>
 {% endblock %}
