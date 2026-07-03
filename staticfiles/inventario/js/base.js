@@ -53,30 +53,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* Dark mode toggle */
-    var darkToggle = document.getElementById("dark-mode-toggle");
-    if (darkToggle) {
-        var saved = localStorage.getItem("mp_tech_theme");
-        if (saved === "dark") {
-            document.documentElement.setAttribute("data-theme", "dark");
-            var moonIcon = darkToggle.querySelector("i");
-            if (moonIcon) { moonIcon.classList.remove("bi-moon-stars"); moonIcon.classList.add("bi-sun"); }
-        }
-        darkToggle.addEventListener("click", function () {
-            var html = document.documentElement;
-            var moonIcon = darkToggle.querySelector("i");
-            if (html.getAttribute("data-theme") === "dark") {
-                html.removeAttribute("data-theme");
-                localStorage.setItem("mp_tech_theme", "light");
-                if (moonIcon) { moonIcon.classList.remove("bi-sun"); moonIcon.classList.add("bi-moon-stars"); }
-            } else {
-                html.setAttribute("data-theme", "dark");
-                localStorage.setItem("mp_tech_theme", "dark");
-                if (moonIcon) { moonIcon.classList.remove("bi-moon-stars"); moonIcon.classList.add("bi-sun"); }
-            }
-        });
-    }
-
     var observerOptions = {
         root: null,
         rootMargin: '0px 0px -8% 0px',
