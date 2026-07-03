@@ -370,7 +370,18 @@
         justify-content: center;
     }
 
-    .catalogo-grid {
+.toolbar-catalogo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 1.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--borde);
+}
+
+.catalogo-grid {
         gap: 1.25rem;
     }
 }

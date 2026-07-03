@@ -22,7 +22,12 @@
 
             <div class="grupo-busqueda">
                 <i class="bi bi-search"></i>
-                <input type="text" name="q" placeholder="Buscar componente (ej: Intel, pantalla, RAM)..." value="{{ query_busqueda }}">
+                <input type="text" name="q" placeholder="Buscar componente (ej: Intel, pantalla, RAM)..." value="{{ query_busqueda }}" list="sugerencias-productos">
+                <datalist id="sugerencias-productos">
+                    {% for producto in page_obj %}
+                    <option value="{{ producto.nombre }}">
+                    {% endfor %}
+                </datalist>
             </div>
 
             <select name="categoria" class="select-filtro">
@@ -46,9 +51,25 @@
         </form>
     </div>
 
-    <div class="catalogo-grid">
+    {% if page_obj %}
+    <div class="toolbar-catalogo fade-in visible">
+        <div class="sort-controls">
+            <button class="sort-btn active" data-sort="default"><i class="bi bi-arrow-up"></i> Por defecto</button>
+            <button class="sort-btn" data-sort="price-asc"><i class="bi bi-sort-up"></i> Precio</button>
+            <button class="sort-btn" data-sort="price-desc"><i class="bi bi-sort-down"></i> Precio</button>
+        </div>
+        <div class="view-toggle-wrapper">
+            <div class="view-toggle">
+                <button class="active" data-view="grid" aria-label="Vista cuadrícula"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+                <button data-view="list" aria-label="Vista lista"><i class="bi bi-list-ul"></i></button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="catalogo-grid" id="catalogo-grid">
         {% for producto in page_obj %}
-        <div class="tarjeta-producto fade-in visible">
+        <div class="tarjeta-producto fade-in visible" data-price="{{ producto.precio }}">
             <div class="contenedor-imagen-prod">
                 {% if producto.imagen %}
                 <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
@@ -132,4 +153,50 @@
     </nav>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var grid = document.getElementById("catalogo-grid");
+    if (!grid) return;
+
+    /* View toggle */
+    var viewBtns = document.querySelectorAll(".view-toggle button");
+    viewBtns.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            viewBtns.forEach(function(b) { b.classList.remove("active"); });
+            this.classList.add("active");
+            if (this.dataset.view === "list") {
+                grid.classList.add("list-view");
+            } else {
+                grid.classList.remove("list-view");
+            }
+        });
+    });
+
+    /* Sort */
+    var sortBtns = document.querySelectorAll(".sort-btn");
+    sortBtns.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            sortBtns.forEach(function(b) { b.classList.remove("active"); });
+            this.classList.add("active");
+            var sort = this.dataset.sort;
+            var cards = Array.from(grid.querySelectorAll(".tarjeta-producto"));
+            if (sort === "default") {
+                cards.sort(function(a, b) { return a.dataset.index - b.dataset.index; });
+            } else if (sort === "price-asc") {
+                cards.sort(function(a, b) { return parseFloat(a.dataset.price) - parseFloat(b.dataset.price); });
+            } else if (sort === "price-desc") {
+                cards.sort(function(a, b) { return parseFloat(b.dataset.price) - parseFloat(a.dataset.price); });
+            }
+            cards.forEach(function(card) { grid.appendChild(card); });
+        });
+    });
+
+    /* Preserve original order for "default" sort */
+    var cards = Array.from(grid.querySelectorAll(".tarjeta-producto"));
+    cards.forEach(function(card, idx) { card.dataset.index = idx; });
+});
+</script>
 {% endblock %}

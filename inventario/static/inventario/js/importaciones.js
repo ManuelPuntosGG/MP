@@ -1,8 +1,39 @@
 const TARIFA_LIBRA = 9.00;
 const COMISION_MINIMA = 5.00;
+const STORAGE_KEY = 'mp_tech_carrito';
 
 const TASA_VES = parseFloat(document.getElementById('tasa-ves-data')?.value || 0);
 let carritoProductos = [];
+
+function guardarCarrito() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(carritoProductos));
+    } catch (e) { /* storage full or unavailable */ }
+}
+
+function restaurarCarrito() {
+    try {
+        var saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                carritoProductos = parsed;
+                renderizarTabla();
+            }
+        }
+    } catch (e) { /* ignore */ }
+}
+
+function limpiarCarrito() {
+    if (carritoProductos.length === 0) return;
+    if (!confirm('¿Estás seguro de limpiar toda la lista de cotización?')) return;
+    carritoProductos = [];
+    localStorage.removeItem(STORAGE_KEY);
+    renderizarTabla();
+    if (typeof showToast === 'function') {
+        showToast('Lista de cotización limpiada', 'info');
+    }
+}
 
 function detectarTienda(url) {
     let urlLower = url.toLowerCase();
@@ -22,15 +53,18 @@ function agregarProducto() {
     const peso = parseFloat(inputPeso.value) || 1.0;
 
     if (!url) {
-        alert("Por favor, ingresa un enlace de producto válido.");
+        if (typeof showToast === 'function') { showToast('Ingresa un enlace de producto válido', 'error'); }
+        else { alert('Por favor, ingresa un enlace de producto válido.'); }
         return;
     }
     if (precio <= 0) {
-        alert("Por favor, ingresa un precio mayor a 0.");
+        if (typeof showToast === 'function') { showToast('El precio debe ser mayor a 0', 'error'); }
+        else { alert('Por favor, ingresa un precio mayor a 0.'); }
         return;
     }
     if (peso <= 0) {
-        alert("El peso estimado debe ser superior a 0 Lbs.");
+        if (typeof showToast === 'function') { showToast('El peso debe ser superior a 0 Lbs', 'error'); }
+        else { alert('El peso estimado debe ser superior a 0 Lbs.'); }
         return;
     }
 
@@ -44,6 +78,7 @@ function agregarProducto() {
 
     carritoProductos.push(nuevoItem);
     renderizarTabla();
+    guardarCarrito();
 
     inputUrl.value = '';
     inputPrecio.value = '';
@@ -108,12 +143,14 @@ function modificarItem(id, propiedad, valor) {
     if (item) {
         item[propiedad] = numValue;
         renderizarTabla();
+        guardarCarrito();
     }
 }
 
 function eliminarItem(id) {
     carritoProductos = carritoProductos.filter(p => p.id !== id);
     renderizarTabla();
+    guardarCarrito();
 }
 
 function actualizarTotales() {
@@ -193,8 +230,20 @@ function actualizarTotales() {
 function validarEnvio(e) {
     if (carritoProductos.length === 0) {
         e.preventDefault();
-        alert("Agrega por lo menos un artículo con sus datos antes de enviar la lista.");
+        if (typeof showToast === 'function') {
+            showToast('Agrega por lo menos un artículo antes de enviar', 'error');
+        } else {
+            alert('Agrega por lo menos un artículo antes de enviar la lista.');
+        }
         return false;
     }
     return true;
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    restaurarCarrito();
+    var btnLimpiar = document.getElementById("btn-limpiar-lista");
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener("click", limpiarCarrito);
+    }
+});
