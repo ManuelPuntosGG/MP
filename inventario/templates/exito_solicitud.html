@@ -1,420 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Solicitud Exitosa | MP Tech{% endblock %}
 
 {% block extra_css %}
-<style>
-    /* Contenedor Principal Calibrado */
-    .container-exito { 
-        max-width: 580px; 
-        margin: 4rem auto; 
-        padding: 0 1.25rem;
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
-    
-    /* Tarjeta de Éxito Principal */
-    .exito-box { 
-        background: var(--blanco); 
-        padding: 3rem 2.25rem; 
-        border-radius: 16px; 
-        border: 1px solid var(--borde); 
-        border-top: 5px solid var(--verde-precio); 
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04); 
-        text-align: center; 
-    }
-    
-    /* Animación del Icono Principal */
-    @keyframes popIn {
-        0% { transform: scale(0.6); opacity: 0; }
-        70% { transform: scale(1.08); }
-        100% { transform: scale(1); opacity: 1; }
-    }
-
-    .icono-check { 
-        font-size: 4rem; 
-        color: var(--verde-precio); 
-        margin-bottom: 1rem; 
-        display: inline-block;
-        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-
-    .titulo-exito {
-        color: var(--primario); 
-        margin: 0 0 0.75rem 0; 
-        font-weight: 800; 
-        font-size: 1.85rem; 
-        letter-spacing: -0.025em;
-    }
-
-    .descripcion-exito {
-        font-size: 1rem; 
-        color: var(--texto); 
-        line-height: 1.6;
-        margin: 0 0 1.5rem 0;
-    }
-    
-    /* Sección del Código de Rastreo */
-    .subtitulo-codigo {
-        margin: 2rem 0 0.5rem 0; 
-        color: var(--texto-secundario, #71717a); 
-        font-size: 0.8rem; 
-        font-weight: 700; 
-        text-transform: uppercase; 
-        letter-spacing: 0.05em;
-    }
-
-    .contenedor-codigo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
-    .codigo-destacado { 
-        font-size: 1.85rem; 
-        font-weight: 800; 
-        color: var(--primario); 
-        background: var(--fondo); 
-        padding: 10px 20px; 
-        border-radius: 10px; 
-        letter-spacing: 2px; 
-        border: 1px solid var(--borde); 
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; 
-        margin: 0;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
-    }
-
-    .btn-copiar {
-        background: var(--blanco);
-        color: #71717a;
-        border: 1px solid var(--borde);
-        padding: 12px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        height: 56px;
-        width: 52px;
-        box-sizing: border-box;
-    }
-    .btn-copiar:hover {
-        background: var(--fondo);
-        color: var(--primario);
-        border-color: var(--primario);
-        transform: translateY(-1px);
-    }
-
-    /* Banner de Advertencia de Seguridad */
-    .banner-seguridad {
-        background: rgba(239, 68, 68, 0.03); 
-        border: 1px solid rgba(239, 68, 68, 0.15); 
-        padding: 0.75rem 1rem; 
-        border-radius: 10px; 
-        margin-bottom: 2.25rem;
-    }
-    .texto-seguridad {
-        font-size: 0.85rem; 
-        color: var(--acento); 
-        font-weight: 600; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 0.5rem; 
-        margin: 0;
-    }
-    
-    /* Caja de Próximos Pasos & Instrucciones */
-    .caja-siguiente-paso { 
-        background: var(--fondo); 
-        border: 1px solid var(--borde); 
-        padding: 1.75rem; 
-        border-radius: 14px; 
-        margin-bottom: 1.5rem; 
-        text-align: left; 
-        border-left: 4px solid var(--primario); 
-    }
-    
-    .paso-titulo { 
-        font-weight: 700; 
-        color: var(--primario); 
-        margin-bottom: 0.75rem; 
-        display: flex; 
-        align-items: center; 
-        gap: 0.5rem; 
-        font-size: 0.95rem; 
-        text-transform: uppercase; 
-        letter-spacing: 0.05em; 
-    }
-    .paso-instruccion {
-        font-size: 0.925rem; 
-        color: var(--texto); 
-        margin-bottom: 1.25rem; 
-        line-height: 1.5;
-    }
-    
-    /* Acordeones de Métodos de Entrega */
-    .grupo-opciones-entrega {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .acordeon-entrega {
-        border: 1px solid var(--borde);
-        border-radius: 10px;
-        overflow: hidden;
-        background: var(--blanco);
-        transition: all 0.2s ease;
-    }
-    .acordeon-entrega:has(.acordeon-header.active) {
-        border-color: var(--primario);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    }
-
-    .acordeon-header {
-        width: 100%;
-        padding: 1rem 1.25rem;
-        background: var(--blanco);
-        border: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--texto);
-        font-size: 0.925rem;
-        transition: all 0.2s;
-    }
-    .acordeon-header:hover {
-        background: var(--fondo);
-        color: var(--primario);
-    }
-    .acordeon-header.active {
-        background: var(--fondo);
-        color: var(--primario);
-    }
-
-    .acordeon-header .titulo-trigger {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    .acordeon-header .titulo-trigger i {
-        font-size: 1.2rem;
-        color: #71717a;
-    }
-    .acordeon-header.active .titulo-trigger i {
-        color: var(--primario);
-    }
-
-    .acordeon-header .flecha-icon {
-        font-size: 0.85rem;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        color: #a1a1aa;
-    }
-    .acordeon-header.active .flecha-icon {
-        transform: rotate(180deg);
-        color: var(--primario);
-    }
-
-    .acordeon-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .acordeon-body {
-        padding: 1.25rem;
-        border-top: 1px solid var(--borde);
-        font-size: 0.9rem;
-        background: var(--blanco);
-    }
-
-    /* Elementos Internos: Taller Local */
-    .texto-ubicacion {
-        margin: 0 0 1rem 0; 
-        color: var(--texto); 
-        line-height: 1.5;
-    }
-    .btn-mapa-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        background: var(--primario);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.875rem;
-        width: 100%;
-        box-sizing: border-box;
-        transition: all 0.2s ease;
-    }
-    .btn-mapa-link:hover {
-        background: #27272a;
-        transform: translateY(-1px);
-    }
-
-    /* Elementos Internos: Encomiendas Nacionales */
-    .bloque-receptor {
-        background: rgba(59, 130, 246, 0.02);
-        border: 1px dashed rgba(59, 130, 246, 0.25);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1.25rem;
-        position: relative;
-    }
-    .bloque-receptor p {
-        margin: 0.35rem 0;
-        color: var(--texto);
-    }
-    .subtitulo-receptor {
-        font-weight: 800; 
-        font-size: 0.75rem; 
-        color: #71717a; 
-        text-transform: uppercase; 
-        display: block; 
-        margin-bottom: 0.25rem;
-    }
-
-    .btn-copiar-datos {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        background: var(--blanco);
-        border: 1px solid var(--borde);
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #71717a;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        transition: all 0.2s;
-    }
-    .btn-copiar-datos:hover {
-        border-color: var(--primario);
-        color: var(--primario);
-        background: var(--fondo);
-    }
-
-    .titulo-agencias {
-        font-weight: 800; 
-        font-size: 0.75rem; 
-        color: #71717a; 
-        text-transform: uppercase; 
-        display: block; 
-        margin-bottom: 0.75rem;
-    }
-    .lista-agencias {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .agencia-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-    }
-    .agencia-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    .agencia-detalle p {
-        margin: 2px 0 0 0; 
-        color: #52525b; 
-        font-size: 0.825rem;
-    }
-
-    .badge-recomendado {
-        background: #d1fae5;
-        color: #065f46;
-        font-size: 0.7rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-weight: 700;
-        margin-left: 6px;
-        display: inline-block;
-    }
-
-    /* CTAs de salida y contacto unificados */
-    .btn-whatsapp-unificado { 
-        display: inline-flex; 
-        align-items: center; 
-        justify-content: center;
-        gap: 0.5rem; 
-        background: #25D366; 
-        color: white; 
-        border: none;
-        padding: 1rem 1.5rem; 
-        border-radius: 10px; 
-        text-decoration: none; 
-        font-weight: 700; 
-        font-size: 0.975rem; 
-        transition: all 0.23s ease; 
-        width: 100%;
-        box-sizing: border-box;
-        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15);
-    }
-    .btn-whatsapp-unificado:hover { 
-        background: #20ba56; 
-        transform: translateY(-2px); 
-        box-shadow: 0 6px 16px rgba(37, 211, 102, 0.25);
-    }
-    
-    .btn-volver { 
-        display: inline-flex; 
-        align-items: center; 
-        gap: 0.5rem; 
-        background: transparent; 
-        color: #71717a; 
-        padding: 0.875rem 1.5rem; 
-        border-radius: 10px; 
-        text-decoration: none; 
-        font-weight: 600; 
-        margin-top: 1rem; 
-        transition: all 0.2s; 
-        font-size: 0.95rem; 
-        border: 1px solid var(--borde); 
-        width: 100%; 
-        justify-content: center; 
-        box-sizing: border-box; 
-    }
-    .btn-volver:hover { 
-        background: var(--fondo); 
-        color: var(--primario);
-        border-color: var(--primario);
-    }
-
-    @media (max-width: 480px) {
-        .exito-box { padding: 2.25rem 1.25rem; }
-        .codigo-destacado { font-size: 1.4rem; padding: 10px 14px; }
-        .btn-copiar { height: 49px; width: 46px; }
-        .titulo-exito { font-size: 1.6rem; }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'inventario/css/exito.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="container-exito">
     <div class="exito-box">
-        <!-- Encabezado de confirmación -->
         <span class="icono-check"><i class="bi bi-check-circle-fill"></i></span>
         <h1 class="titulo-exito">¡Ingreso Registrado con Éxito!</h1>
         <p class="descripcion-exito">Estimado(a) <strong>{{ orden.cliente_nombre }}</strong>, los parámetros técnicos de su equipo (<strong>{{ orden.equipo }}</strong>) han sido cargados correctamente al ecosistema operativo de soporte.</p>
         
-        <!-- Identificador del Ticket -->
+        <input type="hidden" id="cliente-nombre-data" value="{{ orden.cliente_nombre }}">
+        <input type="hidden" id="equipo-nombre-data" value="{{ orden.equipo }}">
+        
         <p class="subtitulo-codigo">Código Único de Rastreo</p>
         <div class="contenedor-codigo">
             <div class="codigo-destacado" id="codigo-texto">{{ orden.codigo_rastreo }}</div>
@@ -429,7 +31,6 @@
             </p>
         </div>
         
-        <!-- Instrucciones Logísticas de Entrega -->
         <div class="caja-siguiente-paso">
             <div class="paso-titulo">
                 <i class="bi bi-gear-fill"></i> ¿Cómo vas a entregar tu equipo?
@@ -440,7 +41,6 @@
             
             <div class="grupo-opciones-entrega">
                 
-                <!-- Modalidad A: Taller Físico -->
                 <div class="acordeon-entrega">
                     <button type="button" class="acordeon-header">
                         <span class="titulo-trigger">
@@ -460,7 +60,6 @@
                     </div>
                 </div>
 
-                <!-- Modalidad B: Encomiendas -->
                 <div class="acordeon-entrega">
                     <button type="button" class="acordeon-header">
                         <span class="titulo-trigger">
@@ -510,92 +109,16 @@
 
             </div>
 
-            <!-- Canal Unificado de Confirmación -->
             <a href="#" id="btn-whatsapp-ticket" target="_blank" class="btn-whatsapp-unificado">
                 <i class="bi bi-whatsapp"></i> Notificar Entrega por WhatsApp
             </a>
         </div>
         
-        <!-- Retorno Seguro -->
-        <a href="{% url 'inicio' %}" class="btn-volver">
+        <a href="{% url 'inicio' %}" class="btn-volver-exito">
             <i class="bi bi-arrow-left"></i> Volver al Inicio
         </a>
     </div>
 </div>
 
-<script>
-    // Copiar código identificador
-    function copiarCodigo() {
-        const codigo = document.getElementById("codigo-texto").innerText;
-        const icono = document.getElementById("icono-copiar");
-        
-        navigator.clipboard.writeText(codigo).then(() => {
-            icono.classList.remove("bi-clipboard");
-            icono.classList.add("bi-check2");
-            icono.style.color = "var(--verde-precio)";
-            
-            setTimeout(() => {
-                icono.classList.remove("bi-check2");
-                icono.classList.add("bi-clipboard");
-                icono.style.color = "";
-            }, 2000);
-        });
-    }
-
-    // Copiar metadatos del receptor de forma estructurada
-    function copiarDatosReor(btn) {
-        const datosTexto = "Receptor: Manuel García\nCédula: V-29685051\nTeléfono: 04245022292\nDestino: Valencia";
-        navigator.clipboard.writeText(datosTexto).then(() => {
-            const contenidoOriginal = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡Copiado!';
-            btn.style.color = "#10b981";
-            btn.style.borderColor = "#10b981";
-            
-            setTimeout(() => {
-                btn.innerHTML = contenidoOriginal;
-                btn.style.color = "";
-                btn.style.borderColor = "";
-            }, 2000);
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Inicialización y empaquetado del mensaje API de WhatsApp
-        const telefonoMTech = "584245022292"; 
-        
-        const codigoRastreo = "{{ orden.codigo_rastreo|escapejs }}";
-        const clienteNombre = "{{ orden.cliente_nombre|escapejs }}";
-        const equipoNombre = "{{ orden.equipo|escapejs }}";
-        
-        const mensaje = `¡Hola *MP Tech*! 👋%0A%0A` +
-                        `Acabo de registrar una solicitud de soporte técnico. Aquí están los detalles de mi ticket:%0A%0A` +
-                        `📌 *Código de Rastreo:* ${codigoRastreo}%0A` +
-                        `👤 *Cliente:* ${clienteNombre}%0A` +
-                        `💻 *Equipo:* ${equipoNombre}%0A%0A` +
-                        `Quedo atento(a) para proceder con la entrega. ¡Muchas gracias!`;
-        
-        document.getElementById("btn-whatsapp-ticket").href = `https://wa.me/${telefonoMTech}?text=${mensaje}`;
-
-        // Lógica de Mutuo Exclusión para el acordeón
-        const headers = document.querySelectorAll(".grupo-opciones-entrega .acordeon-header");
-        
-        headers.forEach(header => {
-            header.addEventListener("click", function() {
-                const currentContent = this.nextElementSibling;
-                const isCurrentlyActive = this.classList.contains("active");
-
-                headers.forEach(h => {
-                    h.classList.remove("active");
-                    h.nextElementSibling.style.maxHeight = null;
-                });
-
-                if (!isCurrentlyActive) {
-                    this.classList.add("active");
-                    this.currentContent = currentContent;
-                    currentContent.style.maxHeight = currentContent.scrollHeight + "px";
-                }
-            });
-        });
-    });
-</script>
+<script src="{% static 'inventario/js/exito.js' %}"></script>
 {% endblock %}

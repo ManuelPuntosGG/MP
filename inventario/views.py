@@ -1,15 +1,12 @@
 import decimal
-import re
+import os
 import requests
-from bs4 import BeautifulSoup
 from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q, Sum  # <-- Sum optimiza matemáticas de presupuestos
+from django.db.models import Q, Sum, Prefetch
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
 
-# Centralizamos todas las importaciones locales aquí arriba
 from .forms import SolicitudReparacionForm
 from .models import Categoria, Producto, OrdenServicio, AvanceOrden 
 
@@ -24,17 +21,13 @@ def imprimir_ticket(request, pk):
 
 
 def obtener_tasa_binance():
-    # 1. Intentar leer desde la caché de Django (1 hora)
     tasa = cache.get('tasa_usdt_ves')
     if tasa:
         return tasa
 
-    # -------------------------------------------------------------------------
-    # INTENTO 1: CoinGecko API
-    # -------------------------------------------------------------------------
     try:
         url_coingecko = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
-        COINGECKO_KEY = "CG-ybVxa4i2NXhfgLtKzHa2YPY8" 
+        COINGECKO_KEY = os.environ.get('COINGECKO_API_KEY', 'CG-ybVxa4i2NXhfgLtKzHa2YPY8')
         
         headers = {
             "accept": "application/json",
@@ -50,11 +43,8 @@ def obtener_tasa_binance():
                 cache.set('tasa_usdt_ves', precio, 3600)
                 return precio
     except Exception as error_api:
-        print(f"⚠️ Falló CoinGecko: {error_api}")
+        print(f"Falló CoinGecko: {error_api}")
 
-    # -------------------------------------------------------------------------
-    # INTENTO 2: ExchangeRate-API (Respaldo)
-    # -------------------------------------------------------------------------
     try:
         url_exchangerate = "https://open.er-api.com/v6/latest/USD"
         response = requests.get(url_exchangerate, timeout=5)
@@ -63,36 +53,20 @@ def obtener_tasa_binance():
             data = response.json()
             if 'rates' in data and 'VES' in data['rates']:
                 tasa_bcv = float(data['rates']['VES'])
-                
-                # Ajuste del 20% para saltar de tasa oficial a tasa P2P
                 FACTOR_AJUSTE = 1.20
                 precio = round(tasa_bcv * FACTOR_AJUSTE, 2)
                 
                 cache.set('tasa_usdt_ves', precio, 3600)
                 return precio
     except Exception as error_global:
-        print(f"⚠️ Falló ExchangeRate-API: {error_global}")
+        print(f"Falló ExchangeRate-API: {error_global}")
 
-    # -------------------------------------------------------------------------
-    # ÚLTIMO RECURSO: Colchón de seguridad
-    # -------------------------------------------------------------------------
     fallback = cache.get('tasa_usdt_ves', 760.00)
     return fallback
 
 
-def portal_cliente(request):
-    """Vista unificada que maneja tanto el rastreo como la creación de nuevas órdenes"""
-    
-    # 1. Lógica para procesar una NUEVA solicitud (POST)
-    if request.method == 'POST':
-        form = SolicitudReparacionForm(request.POST)
-        if form.is_valid():
-            nueva_orden = form.save()
-            return render(request, 'exito_solicitud.html', {'orden': nueva_orden})
-    else:
-        form = SolicitudReparacionForm()
-
-    # 2. Lógica para RASTREAR una orden existente (GET)
+def rastrear_orden(request):
+    form = SolicitudReparacionForm()
     ticket = None
     error = None
     total_usd = decimal.Decimal('0.00')
@@ -101,7 +75,10 @@ def portal_cliente(request):
 
     if codigo:
         try:
-            ticket = OrdenServicio.objects.get(codigo_rastreo=codigo)
+            ticket = OrdenServicio.objects.prefetch_related(
+                Prefetch('lineas_presupuesto'),
+                Prefetch('avances')
+            ).get(codigo_rastreo=codigo)
             
             if ticket.presupuesto_estado != 'SIN_PRESUPUESTO':
                 resultado = ticket.lineas_presupuesto.aggregate(total=Sum('monto'))
@@ -123,6 +100,18 @@ def portal_cliente(request):
         'total_ves': total_ves
     }
     return render(request, 'rastreo.html', contexto)
+
+
+def solicitar_reparacion(request):
+    if request.method == 'POST':
+        form = SolicitudReparacionForm(request.POST)
+        if form.is_valid():
+            nueva_orden = form.save()
+            return render(request, 'exito_solicitud.html', {'orden': nueva_orden})
+    else:
+        form = SolicitudReparacionForm()
+
+    return render(request, 'rastreo.html', {'form': form})
 
 
 def catalogo(request):
