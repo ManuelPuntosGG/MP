@@ -380,6 +380,27 @@ footer {
     100% { background-position: -200% 0; }
 }
 
+/* --- Button loading state --- */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+.btn-loading::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: btnSpin 0.6s linear infinite;
+    display: inline-block;
+    margin-left: 8px;
+}
+@keyframes btnSpin {
+    to { transform: rotate(360deg); }
+}
+
 /* --- Enhanced footer --- */
 .footer-content {
     max-width: 1200px;
@@ -504,10 +525,6 @@ footer {
         width: 60px;
         height: 60px;
         border-radius: 50%;
-    }
-
-    .whatsapp-texto {
-        display: none;
     }
 
     .whatsapp-btn-flotante i {

@@ -271,6 +271,11 @@
     color: var(--texto);
     border: 1px solid var(--borde);
 }
+.badge-stock-prod.agotado {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
 
 .prod-actions {
     display: flex;

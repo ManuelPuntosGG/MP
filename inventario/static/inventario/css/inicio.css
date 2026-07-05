@@ -51,12 +51,13 @@
     background: var(--acento);
     color: var(--blanco);
     border: 1px solid var(--acento);
+    box-shadow: 0 6px 20px -8px rgba(220, 38, 38, 0.45);
 }
 
 .btn-primario:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     background: var(--acento-hover);
-    box-shadow: 0 10px 20px -10px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 12px 28px -10px rgba(220, 38, 38, 0.55);
 }
 
 .btn-secundario {

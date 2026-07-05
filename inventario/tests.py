@@ -201,7 +201,7 @@ class ViewCatalogoTest(TestCase):
     def test_catalogo_search_no_results(self):
         response = self.client.get(reverse('inventario:catalogo'), {'q': 'NOEXISTE'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No se encontraron componentes")
+        self.assertContains(response, "No se encuentran productos disponibles")
 
     def test_catalogo_filter_category(self):
         response = self.client.get(reverse('inventario:catalogo'), {'categoria': self.categoria.id})

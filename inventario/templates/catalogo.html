@@ -26,6 +26,7 @@
 #cart-sidebar { position:fixed; top:0;right:0;bottom:0;width:380px;z-index:1002;
     background:var(--blanco); box-shadow:-4px 0 20px rgba(0,0,0,0.4);
     transform:translateX(100%); transition:transform 0.3s; display:flex; flex-direction:column; }
+@media (max-width:480px) { #cart-sidebar { width:100%; } }
 #cart-sidebar.open { transform:translateX(0); }
 #cart-sidebar .cart-sidebar-header { display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid var(--borde); }
 #cart-sidebar .cart-sidebar-header h2 { padding:0; margin:0; border-bottom:none; }
@@ -137,7 +138,7 @@
                                 ≈ {{ producto.precio_ves|floatformat:2 }} Bs.
                             </span>
                         </div>
-                        <span class="badge-stock-prod">Stock: {{ producto.stock }}</span>
+                        <span class="badge-stock-prod{% if producto.stock == 0 %} agotado{% endif %}">{% if producto.stock == 0 %}Agotado{% else %}Stock: {{ producto.stock }}{% endif %}</span>
                     </div>
 
                     <div class="prod-actions">
@@ -170,8 +171,8 @@
         {% empty %}
         <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--texto-mutado);">
             <i class="bi bi-search-heart" style="font-size: 3.5rem; color: var(--borde); display: block; margin-bottom: 16px;"></i>
-            <h3 style="color: var(--primario); font-weight: 700;">No se encontraron componentes indexados</h3>
-            <p style="font-size: 0.95rem; margin-top: 6px;">Prueba modificando los parámetros de búsqueda o limpiando los filtros actuales.</p>
+            <h3 style="color: var(--primario); font-weight: 700;">No se encuentran productos disponibles</h3>
+            <p style="font-size: 0.95rem; margin-top: 6px;">Ajusta los parámetros de búsqueda o limpiando los filtros actuales.</p>
             {% if query_busqueda or categoria_seleccionada %}
             <a href="{% url 'inventario:catalogo' %}" class="btn-limpiar" style="margin-top: 20px; border-color: var(--primario); color: var(--primario);">
                 <i class="bi bi-eye"></i> Ver catálogo completo

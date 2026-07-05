@@ -23,7 +23,7 @@
 }
 
 .dash-card {
-    background: var(--fondo-elevado);
+    background: var(--blanco);
     border: 1px solid var(--borde);
     border-radius: 14px;
     padding: 1.5rem;
@@ -73,7 +73,7 @@
 }
 
 .dash-section {
-    background: var(--fondo-elevado);
+    background: var(--blanco);
     border: 1px solid var(--borde);
     border-radius: 14px;
     padding: 1.5rem;

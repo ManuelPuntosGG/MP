@@ -7,7 +7,7 @@
 }
 
 .auth-box {
-    background: var(--fondo-elevado);
+    background: var(--blanco);
     border: 1px solid var(--borde);
     border-radius: 16px;
     padding: 2.5rem 2rem;

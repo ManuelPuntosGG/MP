@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", function() {
             showToast('Nombre y teléfono son requeridos', 'error');
             return;
         }
+        btn.classList.add('btn-loading');
         fetch('/comprar-producto/' + productoId + '/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
@@ -119,7 +120,8 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 showToast(data.error || 'Error al crear pedido', 'error');
             }
-        }).catch(function() { showToast('Error de conexión', 'error'); });
+        }).catch(function() { showToast('Error de conexión', 'error'); })
+        .finally(function() { btn.classList.remove('btn-loading'); });
     };
 
     window.agregarAlCarrito = function(btn) {
@@ -171,15 +173,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         lineas.push("----------------------------------");
         lineas.push("💰 *TOTAL ESTIMADO:* $" + total.toFixed(2));
-        lineas.push("");
-        lineas.push("💵 *Estructura de pago:*");
-        lineas.push("   • 50% inicial: $" + (total / 2).toFixed(2));
-        lineas.push("   • 50% al retirar: $" + (total / 2).toFixed(2));
-        lineas.push("");
-        if (nombre) lineas.push("👤 *Nombre:* " + nombre);
-        if (telefono) lineas.push("📞 *Teléfono:* " + telefono);
-        lineas.push("");
-        lineas.push("📍 *Código de seguimiento:* Generado por el sistema");
         return lineas.join("\n");
     }
 
@@ -210,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var wsUrl = "https://wa.me/584245022292?text=" + encodeURIComponent(mensaje);
         window.open(wsUrl, '_blank');
 
+        cartCheckout.classList.add('btn-loading');
         fetch('/guardar-pedido-catalogo/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
@@ -220,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 renderCart();
                 showToast('Pedido #' + data.codigo + ' registrado', 'success');
             }
-        }).catch(function() {});
+        }).catch(function() {})
+        .finally(function() { cartCheckout.classList.remove('btn-loading'); });
     });
 });
