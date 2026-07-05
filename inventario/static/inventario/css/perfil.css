@@ -1,0 +1,324 @@
+.perfil-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--borde);
+}
+
+.perfil-avatar {
+    font-size: 3.5rem;
+    color: var(--acento);
+}
+
+.perfil-header h2 {
+    font-family: var(--fuente-display);
+    font-weight: 800;
+    color: var(--primario);
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.perfil-subtitle {
+    color: var(--texto-mutado);
+    font-size: 0.85rem;
+    margin: 2px 0 0;
+}
+
+.perfil-section {
+    margin-bottom: 2.5rem;
+}
+
+.perfil-section h3 {
+    font-family: var(--fuente-display);
+    font-weight: 700;
+    color: var(--primario);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.perfil-section h3 i {
+    color: var(--acento);
+}
+
+.perfil-card {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    transition: border-color 0.2s;
+}
+
+.perfil-card:hover {
+    border-color: var(--texto-mutado);
+}
+
+.perfil-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.perfil-card-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--texto-mutado);
+    letter-spacing: 0.5px;
+}
+
+.perfil-card-body p {
+    margin: 2px 0;
+    font-size: 0.88rem;
+    color: var(--texto);
+}
+
+.perfil-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--texto-mutado);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.perfil-card-link:hover {
+    color: var(--texto);
+    text-decoration: underline;
+}
+
+.perfil-empty {
+    text-align: center;
+    padding: 2rem;
+    background: var(--fondo);
+    border: 1px dashed var(--borde);
+    border-radius: 12px;
+    color: var(--texto-mutado);
+}
+
+.perfil-empty .btn-submit {
+    display: inline-flex;
+    margin-top: 0.8rem;
+}
+
+.perfil-avatar-wrapper {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--fondo);
+    border: 2px solid var(--borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.perfil-avatar {
+    font-size: 2.2rem;
+    color: var(--texto-mutado);
+    margin: 0;
+}
+
+.perfil-header-info {
+    flex: 1;
+}
+
+.perfil-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--texto-mutado);
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.perfil-edit-btn:hover {
+    border-color: var(--texto-mutado);
+    color: var(--texto);
+}
+
+.perfil-stats {
+    display: flex;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 10px 16px;
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    min-width: 70px;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--texto);
+    font-family: var(--fuente-display);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: var(--texto-mutado);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+
+.perfil-card-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.perfil-card-grid p {
+    margin: 0;
+}
+
+.pago-info {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.pago-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #e6fdf4;
+    color: #065f46;
+}
+
+.pago-badge.pendiente {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.perfil-edit-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.perfil-edit-form .form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--texto);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.perfil-edit-form .form-group .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--fondo);
+    color: var(--texto);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.perfil-edit-form .form-group .form-input:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    background: var(--blanco);
+}
+
+.perfil-edit-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--borde);
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--texto-mutado);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    color: var(--texto);
+    background: var(--fondo);
+}
+
+.btn-submit {
+    background: var(--acento);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-submit:hover {
+    background: var(--acento-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+}
+
+@media (max-width: 640px) {
+    .perfil-header {
+        flex-wrap: wrap;
+    }
+    .perfil-stats {
+        width: 100%;
+        justify-content: center;
+        margin-top: 12px;
+    }
+    .stat-item {
+        flex: 1;
+        min-width: auto;
+    }
+    .perfil-card-grid {
+        flex-direction: column;
+        gap: 2px;
+    }
+}

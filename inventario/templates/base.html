@@ -27,7 +27,7 @@
     <a href="#contenido-principal" class="skip-link">Saltar al contenido principal</a>
 
     <header>
-        <a href="{% url 'inicio' %}" class="logo-nav">
+        <a href="{% url 'inventario:inicio' %}" class="logo-nav">
             <img src="{% static 'images/logo.png' %}" alt="MP Tech Logo" class="logo-img">
             MP <span>Tech</span>
         </a>
@@ -37,9 +37,22 @@
         </button>
 
         <nav class="nav-links" id="menu-navegacion">
-            <a href="{% url 'catalogo' %}" class="{% if request.resolver_match.url_name == 'catalogo' %}active{% endif %}"><i class="bi bi-cpu"></i> Catálogo</a>
-            <a href="{% url 'rastrear_ticket' %}" class="{% if request.resolver_match.url_name == 'rastrear_ticket' or request.resolver_match.url_name == 'solicitar_reparacion' %}active{% endif %}"><i class="bi bi-tools"></i> Reparaciones</a>
-            <a href="{% url 'cotizador_auto' %}" class="nav-cta {% if request.resolver_match.url_name == 'cotizador_auto' %}active{% endif %}"><i class="bi bi-cart-check"></i> Pedidos (BETA)</a>
+            <a href="{% url 'inventario:catalogo' %}" class="{% if request.resolver_match.url_name == 'catalogo' %}active{% endif %}"><i class="bi bi-cpu"></i> Catálogo</a>
+            <a href="{% url 'inventario:rastrear_ticket' %}" class="{% if request.resolver_match.url_name == 'rastrear_ticket' or request.resolver_match.url_name == 'solicitar_reparacion' %}active{% endif %}"><i class="bi bi-tools"></i> Reparaciones</a>
+            <a href="{% url 'inventario:cotizador_auto' %}" class="nav-cta {% if request.resolver_match.url_name == 'cotizador_auto' %}active{% endif %}"><i class="bi bi-cart-check"></i> Pedidos (BETA)</a>
+
+            <div class="nav-user">
+                {% if user.is_authenticated %}
+                <a href="{% url 'inventario:perfil_cliente' %}" class="{% if request.resolver_match.url_name == 'perfil_cliente' %}active{% endif %}">
+                    <i class="bi bi-person-circle"></i> {{ user.username }}
+                </a>
+                <a href="{% url 'inventario:cerrar_sesion' %}"><i class="bi bi-box-arrow-right"></i></a>
+                {% else %}
+                <a href="{% url 'inventario:iniciar_sesion' %}" class="{% if request.resolver_match.url_name == 'iniciar_sesion' or request.resolver_match.url_name == 'registrar_cliente' %}active{% endif %}">
+                    <i class="bi bi-person"></i> Entrar
+                </a>
+                {% endif %}
+            </div>
         </nav>
     </header>
 
@@ -72,9 +85,9 @@
             </div>
             <div class="footer-col">
                 <h4>Servicios</h4>
-                <a href="{% url 'catalogo' %}">Cat&aacute;logo de Hardware</a>
-                <a href="{% url 'rastrear_ticket' %}">Reparaciones</a>
-                <a href="{% url 'cotizador_auto' %}">Pedidos (BETA)</a>
+                <a href="{% url 'inventario:catalogo' %}">Cat&aacute;logo de Hardware</a>
+                <a href="{% url 'inventario:rastrear_ticket' %}">Reparaciones</a>
+                <a href="{% url 'inventario:cotizador_auto' %}">Pedidos (BETA)</a>
             </div>
             <div class="footer-col">
                 <h4>Contacto</h4>

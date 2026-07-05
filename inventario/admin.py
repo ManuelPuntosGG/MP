@@ -1,3 +1,4 @@
+import decimal
 from django.contrib import admin
 from django.db import models 
 from django.utils.html import format_html 
@@ -11,7 +12,7 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action
 
 # Importación de tus modelos locales
-from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto
+from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto, PedidoImportacion, PedidoCatalogo, UserProfile
 
 
 # =========================================================
@@ -160,7 +161,7 @@ class OrdenServicioAdmin(ModelAdmin):
 
     # Botón de Ticket estilizado en sintonía con Tailwind (Azul moderno)
     def imprimir_ticket_link(self, obj):
-        url = reverse('imprimir_ticket', args=[obj.pk])
+        url = reverse('inventario:imprimir_ticket', args=[obj.pk])
         return format_html(
             '<a href="{}" target="_blank" style="background-color: #3b82f6; color: white; '
             'padding: 4px 10px; border-radius: 6px; text-decoration: none; '
@@ -177,6 +178,55 @@ class OrdenServicioAdmin(ModelAdmin):
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(OrdenServicio, OrdenServicioAdmin)
+
+
+class PedidoImportacionAdmin(ModelAdmin):
+    list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'pago_inicial_usd', 'saldo_pendiente_usd', 'estado', 'fecha']
+    list_filter = ['estado', 'fecha']
+    search_fields = ['codigo_seguimiento', 'cliente_nombre', 'cliente_telefono']
+    readonly_fields = ['codigo_seguimiento', 'fecha']
+    fieldsets = [
+        ('Información del Cliente', {'fields': ['usuario', 'cliente_nombre', 'cliente_telefono']}),
+        ('Detalles del Pedido', {'fields': ['estado', 'total_usd', 'total_ves', 'productos_json', 'nota']}),
+        ('Pago 50/50', {'fields': [('tasa_confirmacion', 'pago_inicial_usd', 'pago_inicial_ves'), ('tasa_entrega', 'saldo_pendiente_usd', 'saldo_pendiente_ves')]}),
+        ('Seguimiento', {'fields': ['carrier_nombre', 'carrier_tracking', 'codigo_seguimiento', 'fecha']}),
+    ]
+
+    def save_model(self, request, obj, form, change):
+        from .views import obtener_tasa_binance
+        if obj.estado == 'CONFIRMADA' and not obj.pago_inicial_usd:
+            obj.pago_inicial_usd = obj.total_usd / 2
+            obj.saldo_pendiente_usd = obj.total_usd / 2
+            if not obj.tasa_confirmacion:
+                obj.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
+            if obj.tasa_confirmacion and not obj.pago_inicial_ves:
+                obj.pago_inicial_ves = obj.pago_inicial_usd * obj.tasa_confirmacion
+        if obj.estado == 'ENTREGADO' and obj.saldo_pendiente_usd and not obj.tasa_entrega:
+            obj.tasa_entrega = decimal.Decimal(str(obtener_tasa_binance()))
+            obj.saldo_pendiente_ves = obj.saldo_pendiente_usd * obj.tasa_entrega
+        super().save_model(request, obj, form, change)
+
+
+class PedidoCatalogoAdmin(ModelAdmin):
+    list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'estado', 'fecha']
+    list_filter = ['estado', 'fecha']
+    search_fields = ['codigo_seguimiento', 'cliente_nombre']
+    readonly_fields = ['codigo_seguimiento', 'fecha']
+    fieldsets = [
+        ('Información del Cliente', {'fields': ['usuario', 'cliente_nombre', 'cliente_telefono']}),
+        ('Detalles del Pedido', {'fields': ['estado', 'total_usd', 'productos_json']}),
+        ('Seguimiento', {'fields': ['codigo_seguimiento', 'fecha']}),
+    ]
+
+
+class UserProfileAdmin(ModelAdmin):
+    list_display = ['usuario', 'nombre_completo', 'telefono']
+    search_fields = ['usuario__email', 'nombre_completo', 'telefono']
+
+
+admin.site.register(PedidoImportacion, PedidoImportacionAdmin)
+admin.site.register(PedidoCatalogo, PedidoCatalogoAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)
 
 # Eliminar la gestión de "Grupos de usuarios" de Django por defecto
 admin.site.unregister(Group)

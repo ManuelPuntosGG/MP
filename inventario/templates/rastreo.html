@@ -44,7 +44,7 @@
         <div class="tab-content" id="content-ingreso">
             <p style="color: var(--texto-mutado); font-size: 0.95rem; margin-bottom: 25px;">Completa los parámetros técnicos para emitir la orden de ingreso en cola. NOTA: Nuestra revisión diagnóstica no genera cargos.</p>
 
-            <form method="POST" action="{% url 'solicitar_reparacion' %}">
+            <form method="POST" action="{% url 'inventario:solicitar_reparacion' %}">
                 {% csrf_token %}
                 {% for field in form %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -170,13 +170,13 @@
                         {% if ticket.presupuesto_estado == 'PENDIENTE' %}
                             <p style="color: var(--texto-mutado); font-size: 0.88rem; margin-bottom: 18px; text-align: center;">Por favor audite la relación de costos y valide una acción para que procedamos con el hardware.</p>
                             <div class="acciones-presupuesto" style="display: flex; gap: 10px;">
-                                <form action="{% url 'responder_presupuesto' ticket.pk 'aprobar' %}" method="POST" style="flex: 1;">
+                                <form action="{% url 'inventario:responder_presupuesto' ticket.pk 'aprobar' %}" method="POST" style="flex: 1;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-aprobar">
                                         <i class="bi bi-check-circle-fill"></i> Aprobar Operación
                                     </button>
                                 </form>
-                                <form action="{% url 'responder_presupuesto' ticket.pk 'rechazar' %}" method="POST" style="flex: 1;">
+                                <form action="{% url 'inventario:responder_presupuesto' ticket.pk 'rechazar' %}" method="POST" style="flex: 1;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-rechazar" onclick="return confirm('¿Confirma el rechazo del presupuesto? El flujo operativo de reparación se detendrá automáticamente.')">
                                         <i class="bi bi-x-circle-fill"></i> Rechazar

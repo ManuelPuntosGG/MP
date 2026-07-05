@@ -272,30 +272,47 @@
     border: 1px solid var(--borde);
 }
 
-.btn-interesado-wa {
-    background: var(--acento);
-    color: white;
-    text-align: center;
-    padding: 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.88rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.prod-actions {
+    display: flex;
+    gap: 8px;
     width: 100%;
-    transition: var(--transition-smooth);
+}
+
+.btn-product-action {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    border: none;
+    gap: 5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
-.btn-interesado-wa:hover {
+.btn-add-cart {
+    background: var(--primario);
+    color: #fff;
+}
+
+.btn-add-cart:hover {
+    background: #27272a;
+    transform: translateY(-1px);
+}
+
+.btn-buy-now {
+    background: var(--acento);
+    color: #fff;
+}
+
+.btn-buy-now:hover {
     background: var(--acento-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.25);
+    transform: translateY(-1px);
 }
 
 .paginacion-container {

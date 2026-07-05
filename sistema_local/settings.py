@@ -6,17 +6,24 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-sb3r5629a&^gu_hq19ue=@#laytjq@b!@2f_^1_tf2ul48u9^y')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# DEBUG: True por defecto localmente. Se vuelve False en Render si configuras la variable de entorno.
+# DEBUG: True por defecto localmente. Setear "False" en producción en Render.
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['mp-tech-dl5s.onrender.com', '127.0.0.1', 'localhost']
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-dev-key-not-for-production'
+    else:
+        raise ValueError("SECRET_KEY environment variable is required")
 
-# 🔒 CRÍTICO PARA RENDER: Evita que Django bloquee los formularios (Admin login, solicitudes, etc.)
-CSRF_TRUSTED_ORIGINS = [
-    'https://mp-tech-dl5s.onrender.com',
-]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# 🔒 CRÍTICO PARA RENDER: Evita que Django bloquee los formularios
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000').split(',')
+
+# URL base del sitio (para QR, WhatsApp, etc.)
+SITE_BASE_URL = os.environ.get('SITE_BASE_URL', 'http://127.0.0.1:8000')
 
 # Application definition
 INSTALLED_APPS = [
@@ -61,6 +68,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'sistema_local.wsgi.application'
+
+# Autenticación con email
+AUTHENTICATION_BACKENDS = ['inventario.auth_backend.EmailBackend', 'django.contrib.auth.backends.ModelBackend']
+
+# Email (consola para desarrollo, SMTP en producción)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Redirigir login required a nuestra página
+LOGIN_URL = '/login/'
 
 # Database configuration (Switch automático entre Postgres y SQLite)
 DATABASES = {
@@ -130,6 +146,20 @@ if 'AWS_STORAGE_BUCKET_NAME' in os.environ:
         
         # Seteamos la URL final
         MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+
+# ==============================================================================
+# 🔒 CONFIGURACIÓN DE SEGURIDAD HTTPS (PRODUCCIÓN)
+# ==============================================================================
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 # ==============================================================================
 # CONFIGURACIÓN DE LA PWA (PROGRESSIVE WEB APP)

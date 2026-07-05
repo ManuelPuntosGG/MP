@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Importación {{ p.codigo_seguimiento }} | MP Tech{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'inventario/css/rastreo.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'inventario:perfil_cliente' %}" class="btn-volver" style="margin-bottom: 1rem; display: inline-flex;">
+        <i class="bi bi-arrow-left"></i> Volver al perfil
+    </a>
+
+    <div class="resultado-card">
+        <div class="resultado-header">
+            <h3><i class="bi bi-box-seam"></i> IMPORTACIÓN {{ p.codigo_seguimiento }}</h3>
+            <span class="badge-estado {% if p.estado == 'ENTREGADO' %}status-entregado{% elif p.estado == 'PENDIENTE' %}status-pendiente{% endif %}">
+                {{ p.get_estado_display }}
+            </span>
+        </div>
+
+        <div class="resultado-body">
+            {% if p.estado == 'ENTREGADO' %}
+                <div style="background: #e6fdf4; color: #065f46; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                    <i class="bi bi-check-circle-fill" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                    <h4 style="margin: 0; font-weight: 800;">Importación completada</h4>
+                    <p style="margin: 4px 0 0; font-size: 0.9rem;">Esta importación fue entregada al cliente.</p>
+                </div>
+            {% else %}
+                <div class="stepper-container">
+                    <div class="step-item {% if p.estado == 'PENDIENTE' %}active{% elif p.estado in 'CONFIRMADA EN_TRANSITO_EXTERIOR EN_TRANSITO_VENEZUELA LISTO_RETIRAR ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-clock"></i></div>
+                        <div class="step-label">Pendiente</div>
+                    </div>
+                    <div class="step-item {% if p.estado == 'CONFIRMADA' %}active{% elif p.estado in 'EN_TRANSITO_EXTERIOR EN_TRANSITO_VENEZUELA LISTO_RETIRAR ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+                        <div class="step-label">Confirmada</div>
+                    </div>
+                    <div class="step-item {% if p.estado == 'EN_TRANSITO_EXTERIOR' %}active{% elif p.estado in 'EN_TRANSITO_VENEZUELA LISTO_RETIRAR ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-airplane"></i></div>
+                        <div class="step-label">Tránsito Exterior</div>
+                    </div>
+                    <div class="step-item {% if p.estado == 'EN_TRANSITO_VENEZUELA' %}active{% elif p.estado in 'LISTO_RETIRAR ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-geo-alt"></i></div>
+                        <div class="step-label">Tránsito Venezuela</div>
+                    </div>
+                    <div class="step-item {% if p.estado == 'LISTO_RETIRAR' %}active{% elif p.estado == 'ENTREGADO' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-shop"></i></div>
+                        <div class="step-label">Listo para Retirar</div>
+                    </div>
+                    <div class="step-item {% if p.estado == 'ENTREGADO' %}active{% endif %}">
+                        <div class="step-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+                        <div class="step-label">Entregado</div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Cliente</label>
+                    <p><strong>{{ p.cliente_nombre|default:'' }}</strong></p>
+                </div>
+                <div class="info-item">
+                    <label>Teléfono</label>
+                    <p><strong>{{ p.cliente_telefono|default:'No registrado' }}</strong></p>
+                </div>
+                <div class="info-item">
+                    <label>Fecha del pedido</label>
+                    <p><strong>{{ p.fecha|date:"d/m/Y H:i" }}</strong></p>
+                </div>
+                <div class="info-item">
+                    <label>Total estimado</label>
+                    <p><strong style="color: var(--primario);">${{ p.total_usd|floatformat:2 }}</strong></p>
+                </div>
+            </div>
+
+            {% if p.carrier_nombre %}
+            <div class="presupuesto-box">
+                <h3 style="margin-top: 0; margin-bottom: 14px; color: var(--acento); display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 900; text-transform: uppercase;">
+                    <i class="bi bi-truck"></i> Información de Envío
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Carrier / Courier</label>
+                        <p><strong>{{ p.carrier_nombre }}</strong></p>
+                    </div>
+                    {% if p.carrier_tracking %}
+                    <div class="info-item">
+                        <label>N° de Seguimiento</label>
+                        <p><strong style="font-family: monospace; letter-spacing: 1px;">{{ p.carrier_tracking }}</strong></p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="presupuesto-box">
+                <h3 style="margin-top: 0; margin-bottom: 14px; color: var(--primario); display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 900; text-transform: uppercase;">
+                    <i class="bi bi-box"></i> Artículos del Pedido
+                </h3>
+                {% with items=p.productos_parsed %}
+                    {% if items %}
+                    <table class="presupuesto-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tienda</th>
+                                <th>Enlace</th>
+                                <th style="text-align: right;">Precio ($)</th>
+                                <th style="text-align: center;">Peso (Lbs)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><span class="badge-tienda" style="background: var(--acento); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem;">{{ item.tienda|default:"-" }}</span></td>
+                                <td><a href="{{ item.url }}" target="_blank" style="color: var(--acento); text-decoration: none; font-size: 0.85rem;"><i class="bi bi-box-arrow-up-right"></i> Ver</a></td>
+                                <td style="text-align: right; font-weight: 600;">${{ item.precio }}</td>
+                                <td style="text-align: center;">{{ item.peso|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p style="color: var(--texto-mutado);">No hay artículos registrados.</p>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            {% if p.nota %}
+            <div class="info-grid">
+                <div class="info-item" style="grid-column: 1 / -1;">
+                    <label>Nota del cliente</label>
+                    <p>{{ p.nota }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="presupuesto-box">
+                <h3 style="margin-top: 0; margin-bottom: 14px; color: var(--verde-precio); display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 900; text-transform: uppercase;">
+                    <i class="bi bi-currency-dollar"></i> Estado de Pago
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Total (USD)</label>
+                        <p><strong>${{ p.total_usd|floatformat:2 }}</strong></p>
+                    </div>
+                    <div class="info-item">
+                        <label>Total (Bs)</label>
+                        <p><strong>{{ p.total_ves|floatformat:2 }} Bs</strong></p>
+                    </div>
+                    {% if p.pago_inicial_usd %}
+                    <div class="info-item">
+                        <label>Inicial (50%)</label>
+                        <p><strong style="color: var(--verde-precio);">${{ p.pago_inicial_usd|floatformat:2 }}</strong></p>
+                    </div>
+                    {% endif %}
+                    {% if p.saldo_pendiente_usd %}
+                    <div class="info-item">
+                        <label>Saldo pendiente</label>
+                        <p><strong style="color: var(--acento);">${{ p.saldo_pendiente_usd|floatformat:2 }}</strong></p>
+                    </div>
+                    {% endif %}
+                    {% if p.tasa_confirmacion %}
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <label>Tasa al momento de confirmación</label>
+                        <p><strong>{{ p.tasa_confirmacion|floatformat:2 }} Bs/$</strong></p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="financiamiento-panel" style="margin-top: 16px;">
+                    📌 <strong>Estructura de Financiamiento:</strong><br>
+                    • Inicial del 50% para procesar la orden: <strong>{% if p.pago_inicial_usd %}${{ p.pago_inicial_usd|floatformat:2 }}{% else %}Pendiente{% endif %}</strong><br>
+                    • Saldo contra entrega al retirar: <strong>{% if p.saldo_pendiente_usd %}${{ p.saldo_pendiente_usd|floatformat:2 }}{% else %}Pendiente{% endif %}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

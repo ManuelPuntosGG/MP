@@ -50,7 +50,7 @@ function agregarProducto() {
 
     const url = inputUrl.value.trim();
     const precio = parseFloat(inputPrecio.value) || 0;
-    const peso = parseFloat(inputPeso.value) || 1.0;
+    const peso = parseInt(inputPeso.value, 10) || 1;
 
     if (!url) {
         if (typeof showToast === 'function') { showToast('Ingresa un enlace de producto válido', 'error'); }
@@ -136,8 +136,8 @@ function renderizarTabla() {
 }
 
 function modificarItem(id, propiedad, valor) {
-    let numValue = parseFloat(valor) || 0;
-    if (numValue <= 0) numValue = 1;
+    let numValue = propiedad === 'peso' ? (parseInt(valor, 10) || 1) : (parseFloat(valor) || 0);
+    if (numValue <= 0) numValue = propiedad === 'peso' ? 1 : 0.01;
     
     let item = carritoProductos.find(p => p.id === id);
     if (item) {
@@ -240,10 +240,43 @@ function validarEnvio(e) {
     return true;
 }
 
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+
+function guardarPedidoImportacion() {
+    if (carritoProductos.length === 0) return;
+    var totalFob = carritoProductos.reduce(function(s, i) { return s + i.precio; }, 0);
+    var totalFlete = carritoProductos.reduce(function(s, i) { return s + i.peso * TARIFA_LIBRA; }, 0);
+    var totalGeneral = totalFob + totalFlete;
+    var nombre = document.getElementById('user-nombre-data')?.value || '';
+    var telefono = document.getElementById('user-telefono-data')?.value || '';
+    fetch('/guardar-importacion/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+        body: JSON.stringify({ productos: carritoProductos, total_usd: totalGeneral, total_ves: totalGeneral * TASA_VES, nombre: nombre, telefono: telefono })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.success) {
+            carritoProductos = [];
+            localStorage.removeItem(STORAGE_KEY);
+            renderizarTabla();
+            if (typeof showToast === 'function') {
+                showToast('Pedido de importacion #' + data.codigo + ' registrado', 'success');
+            }
+        }
+    }).catch(function() {});
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     restaurarCarrito();
     var btnLimpiar = document.getElementById("btn-limpiar-lista");
     if (btnLimpiar) {
         btnLimpiar.addEventListener("click", limpiarCarrito);
+    }
+    var btnWs = document.getElementById("btn-ws-import");
+    if (btnWs) {
+        btnWs.addEventListener("click", function() {
+            setTimeout(guardarPedidoImportacion, 500);
+        });
     }
 });

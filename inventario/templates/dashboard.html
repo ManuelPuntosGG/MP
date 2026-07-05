@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | MP Tech{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'inventario/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2 class="dashboard-title"><i class="bi bi-bar-chart-fill"></i> Panel de Métricas</h2>
+
+    <div class="dashboard-grid">
+        <div class="dash-card">
+            <i class="bi bi-box-seam"></i>
+            <h3>{{ total_productos }}</h3>
+            <p>Productos en Catálogo</p>
+        </div>
+        <div class="dash-card">
+            <i class="bi bi-ticket-perforated"></i>
+            <h3>{{ total_ordenes }}</h3>
+            <p>Órdenes Totales</p>
+        </div>
+        <div class="dash-card accent">
+            <i class="bi bi-gear"></i>
+            <h3>{{ ordenes_activas }}</h3>
+            <p>Órdenes Activas</p>
+        </div>
+        <div class="dash-card warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <h3>{{ stock_bajo }}</h3>
+            <p>Productos con Stock Bajo</p>
+        </div>
+    </div>
+
+    <div class="dashboard-lists">
+        <div class="dash-section">
+            <h3><i class="bi bi-pie-chart"></i> Órdenes por Estado</h3>
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>Estado</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ordenes_por_estado %}
+                    <tr>
+                        <td>{{ item.estado }}</td>
+                        <td><strong>{{ item.total }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2">Sin datos</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="dash-section">
+            <h3><i class="bi bi-tag"></i> Productos por Categoría</h3>
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Productos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categorias_count %}
+                    <tr>
+                        <td>{{ cat.nombre }}</td>
+                        <td><strong>{{ cat.total }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2">Sin datos</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

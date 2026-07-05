@@ -13,8 +13,8 @@
     <h1>Soluciones Tecnológicas</h1>
     <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de todas las gamas. Transparencia y confiabilidad en cada uno de nuestros trabajos.</p>
     <div class="botones-hero">
-        <a href="{% url 'catalogo' %}" class="btn btn-primario"><i class="bi bi-cpu"></i> Catálogo de Hardware</a>
-        <a href="{% url 'rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Gestionar Mi Reparación</a>
+        <a href="{% url 'inventario:catalogo' %}" class="btn btn-primario"><i class="bi bi-cpu"></i> Catálogo de Hardware</a>
+        <a href="{% url 'inventario:rastrear_ticket' %}" class="btn btn-secundario"><i class="bi bi-search"></i> Gestionar Mi Reparación</a>
     </div>
 </section>
 
@@ -25,7 +25,7 @@
             <span class="card-servicio-icono"><i class="bi bi-tools"></i></span>
             <h3>Servicio Técnico Especializado</h3>
             <p>Diagnóstico y reparación avanzada de equipos electrónicos (PCs, Laptops, Tarjetas Madre, Gráficas e Impresoras).</p>
-            <a href="{% url 'solicitar_reparacion' %}" class="btn btn-primario btn-interno-p">
+            <a href="{% url 'inventario:solicitar_reparacion' %}" class="btn btn-primario btn-interno-p">
                 <i class="bi bi-file-earmark-plus"></i> Solicitar Reparación
             </a>
         </div>
@@ -33,7 +33,7 @@
             <span class="card-servicio-icono"><i class="bi bi-gpu-card"></i></span>
             <h3>Tienda de Hardware</h3>
             <p>Disponibilidad constante de componentes de alto rendimiento, periféricos y repuestos originales al mejor precio del mercado.</p>
-            <a href="{% url 'catalogo' %}" class="btn btn-interno-s">
+            <a href="{% url 'inventario:catalogo' %}" class="btn btn-interno-s">
                 <i class="bi bi-arrow-right"></i> Explorar Tienda
             </a>
         </div>

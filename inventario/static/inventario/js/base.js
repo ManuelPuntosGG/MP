@@ -2,7 +2,7 @@ function showToast(message, type) {
     const container = document.getElementById('toast-container');
     if (!container) return;
     const toast = document.createElement('div');
-    const icons = { success: 'bi-check-circle-fill', error: 'bi-exclamation-circle-fill', info: 'bi-info-circle-fill' };
+    const icons = { success: 'bi-check-circle-fill', error: 'bi-exclamation-circle-fill', info: 'bi-info-circle-fill', warning: 'bi-exclamation-triangle-fill' };
     toast.className = 'toast toast-' + type;
     toast.innerHTML = '<i class="bi ' + (icons[type] || icons.info) + '"></i> ' + message;
     container.appendChild(toast);
