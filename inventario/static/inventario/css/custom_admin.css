@@ -3,19 +3,19 @@
    ============================================================ */
 
 :root {
-    --mp-bg: #0b0f19;
-    --mp-card: #111827;
-    --mp-header-bg: #1f2937;
-    --mp-border: #1f2937;
-    --mp-input-bg: #1f2937;
-    --mp-input-border: #374151;
-    --mp-text: #f9fafb;
-    --mp-muted: #9ca3af;
-    --mp-accent: #3b82f6;
-    --mp-accent-hover: #2563eb;
+    --mp-bg: #050508;
+    --mp-card: #111218;
+    --mp-header-bg: #14161f;
+    --mp-border: #1e2029;
+    --mp-input-bg: #14161f;
+    --mp-input-border: #1e2029;
+    --mp-text: #f4f4f5;
+    --mp-muted: #a1a1aa;
+    --mp-accent: #ff2d55;
+    --mp-accent-hover: #ff003c;
     --mp-success: #10b981;
     --mp-danger: #ef4444;
-    --mp-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    --mp-shadow: 0 4px 16px rgba(0,0,0,0.7);
 }
 
 body {
@@ -85,15 +85,15 @@ textarea:focus,
 .vTextField:focus,
 .vLargeTextField:focus {
     border-color: var(--mp-accent);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 3px rgba(255, 45, 85, 0.15);
     background: var(--mp-input-bg);
 }
 
 /* Inlines (avances, presupuestos) */
 .inline-group,
 .inline-related {
-    background: #151f32;
-    border: 1px solid #24334d;
+    background: var(--mp-card);
+    border: 1px solid var(--mp-border);
     border-radius: 10px;
     padding: 1.25rem;
     margin: 1rem 0;
@@ -170,7 +170,7 @@ a:visited {
 }
 
 #changelist table tbody tr:hover {
-    background: #1a2538;
+    background: #181922;
 }
 
 #changelist table tbody td,

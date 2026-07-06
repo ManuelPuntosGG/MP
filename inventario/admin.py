@@ -151,22 +151,16 @@ class OrdenServicioAdmin(ModelAdmin):
     def notificar_cliente(self, obj):
         url = obj.enlace_whatsapp
         return format_html(
-            '<a href="{}" target="_blank" style="background-color: #10b981; color: white; '
-            'padding: 4px 10px; border-radius: 6px; text-decoration: none; '
-            'font-weight: 600; font-size: 0.75rem; display: inline-block; text-align: center; '
-            'box-shadow: 0 1px 2px rgba(0,0,0,0.05);">💬 Enviar</a>',
+            '<a href="{}" target="_blank" class="px-2.5 py-1 text-xs font-semibold rounded bg-green-600 hover:bg-green-700 text-white inline-block shadow-sm transition-colors text-center">💬 Enviar</a>',
             url
         )
     notificar_cliente.short_description = 'Aviso'
 
-    # Botón de Ticket estilizado en sintonía con Tailwind (Azul moderno)
+    # Botón de Ticket estilizado en sintonía con Tailwind (Rojo cyber-tech)
     def imprimir_ticket_link(self, obj):
         url = reverse('inventario:imprimir_ticket', args=[obj.pk])
         return format_html(
-            '<a href="{}" target="_blank" style="background-color: #3b82f6; color: white; '
-            'padding: 4px 10px; border-radius: 6px; text-decoration: none; '
-            'font-weight: 600; font-size: 0.75rem; display: inline-block; text-align: center; '
-            'box-shadow: 0 1px 2px rgba(0,0,0,0.05);">🖨️ Ticket</a>',
+            '<a href="{}" target="_blank" class="px-2.5 py-1 text-xs font-semibold rounded bg-rose-600 hover:bg-rose-700 text-white inline-block shadow-sm transition-colors text-center">🖨️ Ticket</a>',
             url
         )
     imprimir_ticket_link.short_description = 'Imprimir'

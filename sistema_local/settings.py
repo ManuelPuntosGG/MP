@@ -178,20 +178,20 @@ UNFOLD = {
     "SHOW_HISTORY": True, # Muestra historial de cambios rápidos
     "SHOW_VIEW_ON_SITE": True, # Enlace rápido para ver el producto en el catálogo
     
-    # Paleta de colores para botones y acentos (Usamos zinc/rojo oscuro)
+    # Paleta de colores para botones y acentos (Usamos rosa/rojo cyber-tech)
     "COLORS": {
         "primary": {
-            "50": "250, 250, 250",
-            "100": "244, 244, 245",
-            "200": "228, 228, 231",
-            "300": "212, 212, 216",
-            "400": "161, 161, 170",
-            "500": "113, 113, 122",
-            "600": "82, 82, 91",
-            "700": "63, 63, 70",
-            "800": "39, 39, 42",
-            "900": "24, 24, 27",
-            "950": "9, 9, 11",
+            "50": "255, 241, 242",
+            "100": "255, 228, 230",
+            "200": "254, 205, 211",
+            "300": "253, 164, 175",
+            "400": "251, 113, 133",
+            "500": "244, 63, 94",
+            "600": "225, 29, 72",
+            "700": "190, 24, 74",
+            "800": "159, 18, 57",
+            "900": "136, 19, 55",
+            "950": "76, 5, 25",
         },
     },
 }
