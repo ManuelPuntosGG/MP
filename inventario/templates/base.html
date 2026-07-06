@@ -39,7 +39,7 @@
         <nav class="nav-links" id="menu-navegacion">
             <a href="{% url 'inventario:catalogo' %}" class="{% if request.resolver_match.url_name == 'catalogo' %}active{% endif %}"><i class="bi bi-cpu"></i> Catálogo</a>
             <a href="{% url 'inventario:rastrear_ticket' %}" class="{% if request.resolver_match.url_name == 'rastrear_ticket' or request.resolver_match.url_name == 'solicitar_reparacion' %}active{% endif %}"><i class="bi bi-tools"></i> Reparaciones</a>
-            <a href="{% url 'inventario:cotizador_auto' %}" class="nav-cta {% if request.resolver_match.url_name == 'cotizador_auto' %}active{% endif %}"><i class="bi bi-cart-check"></i> Importaciones</a>
+            <a href="{% url 'inventario:cotizador_auto' %}" class="{% if request.resolver_match.url_name == 'cotizador_auto' %}active{% endif %}"><i class="bi bi-cart-check"></i> Importaciones</a>
 
             <div class="nav-user">
                 {% if user.is_authenticated %}
