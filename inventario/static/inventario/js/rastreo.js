@@ -61,7 +61,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     var newCard = doc.querySelector('.resultado-card');
                     var newError = doc.querySelector('.alert-box');
                     if (newCard) {
-                        resultadoCard.innerHTML = newCard.innerHTML;
+                        resultadoCard.style.transition = 'opacity 0.25s ease-in-out';
+                        resultadoCard.style.opacity = '0.3';
+                        setTimeout(function() {
+                            resultadoCard.innerHTML = newCard.innerHTML;
+                            resultadoCard.style.opacity = '1';
+                        }, 250);
                     } else if (newError) {
                         /* ticket no longer found — reload page */
                         location.reload();

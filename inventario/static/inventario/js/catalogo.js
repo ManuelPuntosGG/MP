@@ -29,7 +29,13 @@ document.addEventListener("DOMContentLoaded", function() {
             } else if (sort === "price-desc") {
                 cards.sort(function(a, b) { return parseFloat(b.dataset.price) - parseFloat(a.dataset.price); });
             }
-            cards.forEach(function(card) { grid.appendChild(card); });
+            grid.style.opacity = "0.3";
+            grid.style.transition = "opacity 0.15s ease-in-out";
+            
+            setTimeout(function() {
+                cards.forEach(function(card) { grid.appendChild(card); });
+                grid.style.opacity = "1";
+            }, 150);
         });
     });
 

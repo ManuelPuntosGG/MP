@@ -117,8 +117,8 @@
 }
 
 .btn-filtrar {
-    background: var(--primario);
-    color: var(--blanco);
+    background: var(--acento);
+    color: var(--texto-claro);
     border: none;
     padding: var(--space-3) var(--space-5);
     border-radius: var(--radius-md);
@@ -132,8 +132,9 @@
 }
 
 .btn-filtrar:hover {
-    background: var(--gris-medio);
+    background: var(--acento-hover);
     transform: translateY(-1px);
+    box-shadow: var(--neon-glow);
 }
 
 .btn-limpiar {
@@ -245,7 +246,8 @@
 
 /* --- Product Card --- */
 .tarjeta-producto {
-    background: var(--blanco);
+    background: rgba(17, 18, 24, 0.4);
+    backdrop-filter: blur(8px);
     border-radius: var(--radius-lg);
     overflow: hidden;
     border: 1px solid var(--borde);
@@ -256,8 +258,8 @@
 
 .tarjeta-producto:hover {
     transform: translateY(-4px);
-    border-color: var(--borde);
-    box-shadow: var(--shadow-card-hover);
+    border-color: var(--acento);
+    box-shadow: var(--neon-glow);
 }
 
 .contenedor-imagen-prod {
@@ -376,12 +378,12 @@
 
 .badge-stock-prod {
     font-size: var(--text-xs);
-    background: var(--fondo-sutil);
+    background: rgba(16, 185, 129, 0.08);
     padding: var(--space-1) var(--space-3);
     border-radius: var(--radius-sm);
-    font-weight: 500;
-    color: var(--texto-secundario);
-    border: 1px solid var(--borde);
+    font-weight: 700;
+    color: var(--exito);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-stock-prod.agotado {
@@ -415,23 +417,26 @@
 }
 
 .btn-add-cart {
-    background: var(--primario);
-    color: var(--blanco);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--texto);
+    border: 1px solid var(--borde);
 }
 
 .btn-add-cart:hover {
-    background: var(--gris-medio);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--texto-secundario);
     transform: translateY(-1px);
 }
 
 .btn-buy-now {
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
 }
 
 .btn-buy-now:hover {
     background: var(--acento-hover);
     transform: translateY(-1px);
+    box-shadow: var(--neon-glow);
 }
 
 /* --- Pagination --- */
@@ -471,7 +476,7 @@
 .paginacion-activa-pilla {
     padding: var(--space-2) var(--space-4);
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     border-radius: var(--radius-md);
     font-size: var(--text-sm);
     font-weight: 600;
@@ -486,8 +491,8 @@
     width: 56px;
     height: 56px;
     border-radius: var(--radius-full);
-    background: var(--primario);
-    color: var(--blanco);
+    background: var(--acento);
+    color: var(--texto-claro);
     border: none;
     font-size: var(--text-xl);
     cursor: pointer;
@@ -500,8 +505,9 @@
 }
 
 #cart-toggle:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-xl);
+    background: var(--acento-hover);
+    box-shadow: var(--neon-glow);
+    transform: translateY(-2px);
 }
 
 #cart-count {
@@ -509,7 +515,7 @@
     top: -4px;
     right: -4px;
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     border-radius: var(--radius-full);
     width: 22px;
     height: 22px;
@@ -528,7 +534,7 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 1150;
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-smooth);
@@ -547,7 +553,7 @@
     bottom: 0;
     width: 400px;
     max-width: 100%;
-    z-index: 1002;
+    z-index: 1200;
     background: var(--blanco);
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
     transform: translateX(100%);
@@ -582,15 +588,20 @@
     background: transparent;
     border: none;
     color: var(--texto-mutado);
-    font-size: var(--text-2xl);
+    font-size: 1.1rem;
     cursor: pointer;
-    line-height: 1;
-    padding: var(--space-1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     transition: var(--transition-smooth);
 }
 
 .cart-close-btn:hover {
-    color: var(--texto);
+    color: var(--acento);
+    background: rgba(255, 45, 85, 0.1);
 }
 
 #cart-items {
@@ -723,7 +734,7 @@
     padding: var(--space-3);
     margin-top: var(--space-3);
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     border: none;
     border-radius: var(--radius-md);
     font-size: var(--text-sm);

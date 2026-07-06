@@ -7,32 +7,34 @@
 
 /* --- Design Tokens --- */
 :root {
-    /* Colores Primarios */
-    --primario: #09090b;
-    --primario-rgb: 9, 9, 11;
-    --gris-oscuro: #121214;
-    --gris-medio: #27272a;
+    /* Colores Primarios - Redefinidos para Modo Oscuro Premium */
+    --primario: #ffffff; /* Color claro para encabezados (heredado en CSS) */
+    --primario-bg: #050508; /* Fondo principal oscuro */
+    --primario-rgb: 5, 5, 8;
+    --gris-oscuro: #0a0a0f;
+    --gris-medio: #14141b;
     
     /* Superficies */
-    --fondo: #fafafa;
-    --fondo-sutil: #f4f4f5;
-    --blanco: #ffffff;
+    --fondo: #050508;
+    --fondo-sutil: #0c0d12;
+    --blanco: #111218; /* Tarjetas/superficies en maquetación */
     
-    /* Texto */
-    --texto: #1c1c1e;
-    --texto-secundario: #52525b;
+    /* Texto - Alto Contraste */
+    --texto: #f4f4f5;
+    --texto-secundario: #a1a1aa;
     --texto-mutado: #71717a;
-    --texto-claro: #a1a1aa;
+    --texto-claro: #ffffff;
     
-    /* Acento */
-    --acento: #dc2626;
-    --acento-rgb: 220, 38, 38;
-    --acento-hover: #991b1b;
-    --acento-claro: rgba(220, 38, 38, 0.08);
+    /* Acento Cyber-Tech (Rojo Neón de Alto Rendimiento) */
+    --acento: #ff2d55;
+    --acento-rgb: 255, 45, 85;
+    --acento-hover: #ff003c;
+    --acento-claro: rgba(255, 45, 85, 0.08);
+    --acento-glow: rgba(255, 45, 85, 0.25);
     
-    /* Bordes */
-    --borde: #e4e4e7;
-    --borde-claro: #f4f4f5;
+    /* Bordes Tecnológicos */
+    --borde: #1e2029;
+    --borde-claro: #14161f;
     
     /* Estados */
     --exito: #10b981;
@@ -43,6 +45,7 @@
     --info: #3b82f6;
     --whatsapp: #25D366;
     --whatsapp-hover: #20ba56;
+    --verde-precio: #10b981;
     
     /* Tipografía */
     --fuente-display: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -79,14 +82,15 @@
     --radius-xl: 20px;
     --radius-full: 9999px;
     
-    /* Sombras - Más sutiles y elegantes */
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.06);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.08);
-    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
-    --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.08);
+    /* Sombras - Adaptadas a oscuridad con luz interna (efecto 3D premium) */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    --shadow-card-hover: 0 12px 32px rgba(255, 45, 85, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --neon-glow: 0 0 12px rgba(255, 45, 85, 0.25);
     
     /* Transiciones */
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -112,8 +116,19 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+body,
+h1, h2, h3, h4, h5, h6,
+input, button, textarea, select,
+label, th, td, table, form {
     font-family: var(--fuente-base);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fuente-display);
+    font-weight: 700;
+}
+
+body {
     font-size: var(--text-base);
     line-height: 1.6;
     color: var(--texto);
@@ -128,7 +143,6 @@ input,
 button,
 textarea,
 select {
-    font-family: inherit;
     font-size: inherit;
 }
 
@@ -156,24 +170,23 @@ img {
 
 /* --- Header & Navigation --- */
 header {
-    background: var(--primario);
+    background: rgba(5, 5, 8, 0.75);
     padding: var(--space-4) 8%;
-    border-bottom: 1px solid var(--gris-medio);
+    border-bottom: 1px solid var(--borde);
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 1100;
-    backdrop-filter: blur(12px);
-    background: rgba(9, 9, 11, 0.95);
+    backdrop-filter: blur(16px);
 }
 
 .logo-nav {
     font-family: var(--fuente-display);
     font-size: var(--text-xl);
     font-weight: 800;
-    color: var(--blanco);
+    color: var(--texto-claro);
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -220,18 +233,18 @@ header {
 }
 
 .nav-links a:hover {
-    color: var(--blanco);
+    color: var(--texto-claro);
     background: var(--gris-medio);
 }
 
 .nav-links a.active {
-    color: var(--blanco);
+    color: var(--texto-claro);
     background: var(--gris-medio);
 }
 
 .nav-links a.nav-cta {
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     font-weight: 600;
     padding: var(--space-2) var(--space-5);
 }
@@ -261,7 +274,7 @@ header {
 }
 
 .nav-user a:hover {
-    color: var(--blanco);
+    color: var(--texto-claro);
     background: var(--gris-medio);
 }
 
@@ -269,7 +282,7 @@ header {
     display: none;
     background: transparent;
     border: none;
-    color: var(--blanco);
+    color: var(--texto-claro);
     font-size: var(--text-2xl);
     cursor: pointer;
     padding: var(--space-2);
@@ -327,7 +340,7 @@ select:focus {
 
 .btn-primary {
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
 }
 
@@ -360,7 +373,7 @@ select:focus {
 
 .btn-submit {
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     padding: var(--space-3) var(--space-6);
     border-radius: var(--radius-md);
     font-size: var(--text-base);
@@ -625,7 +638,7 @@ select:focus {
     bottom: var(--space-8);
     right: var(--space-8);
     background: var(--whatsapp);
-    color: var(--blanco);
+    color: var(--texto-claro);
     width: 56px;
     height: 56px;
     border-radius: var(--radius-full);
@@ -643,7 +656,7 @@ select:focus {
     background: var(--whatsapp-hover);
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4);
-    color: var(--blanco);
+    color: var(--texto-claro);
 }
 
 .scroll-top-btn {
@@ -676,9 +689,10 @@ select:focus {
 }
 
 .scroll-top-btn:hover {
-    background: var(--primario);
-    color: var(--blanco);
-    border-color: var(--primario);
+    background: var(--acento);
+    color: var(--texto-claro);
+    border-color: var(--acento);
+    box-shadow: var(--neon-glow);
 }
 
 /* --- Animations --- */
@@ -735,11 +749,11 @@ select:focus {
 
 /* --- Footer --- */
 footer {
-    background: var(--primario);
-    color: rgba(255, 255, 255, 0.6);
+    background: var(--primario-bg);
+    color: var(--texto-secundario);
     padding: var(--space-12) 8%;
     font-size: var(--text-sm);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--borde);
 }
 
 .footer-content {
@@ -752,7 +766,7 @@ footer {
 }
 
 .footer-col h4 {
-    color: var(--blanco);
+    color: var(--texto-claro);
     font-weight: 600;
     font-size: var(--text-sm);
     text-transform: uppercase;
@@ -772,7 +786,7 @@ footer {
 }
 
 .footer-col a:hover {
-    color: var(--blanco);
+    color: var(--texto-claro);
 }
 
 .footer-col i {
@@ -805,7 +819,7 @@ footer {
 
 .footer-social a:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--blanco);
+    color: var(--texto-claro);
 }
 
 .footer-bottom {
@@ -878,9 +892,9 @@ footer {
         top: 100%;
         left: 0;
         width: 100%;
-        background: var(--primario);
+        background: var(--primario-bg);
         padding: var(--space-4) 5%;
-        border-bottom: 1px solid var(--gris-medio);
+        border-bottom: 1px solid var(--borde);
         box-shadow: var(--shadow-lg);
         gap: var(--space-2);
     }
@@ -913,7 +927,7 @@ footer {
         padding-left: 0;
         margin-top: var(--space-3);
         padding-top: var(--space-3);
-        border-top: 1px solid var(--gris-medio);
+        border-top: 1px solid var(--borde);
         width: 100%;
         justify-content: center;
     }

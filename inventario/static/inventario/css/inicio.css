@@ -7,11 +7,11 @@
 .hero {
     background: linear-gradient(
         135deg, 
-        rgba(9, 9, 11, 0.92) 0%, 
-        rgba(9, 9, 11, 0.88) 100%
+        rgba(5, 5, 8, 0.95) 0%, 
+        rgba(5, 5, 8, 0.9) 100%
     ), 
     url('https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover;
-    color: var(--blanco);
+    color: var(--texto-claro);
     text-align: center;
     padding: 160px 8% 140px;
     position: relative;
@@ -67,27 +67,29 @@
 
 .botones-hero .btn-primario {
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
     border: none;
-    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 45, 85, 0.3);
 }
 
 .botones-hero .btn-primario:hover {
     background: var(--acento-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 8px 30px rgba(255, 45, 85, 0.4);
 }
 
 .botones-hero .btn-secundario {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--blanco);
+    color: var(--texto-claro);
     backdrop-filter: blur(8px);
 }
 
 .botones-hero .btn-secundario:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--acento);
+    color: var(--texto-claro);
+    box-shadow: var(--neon-glow);
     transform: translateY(-2px);
 }
 
@@ -104,8 +106,10 @@
     gap: var(--space-6);
 }
 
+/*.card-servicio*/
 .card-servicio {
-    background: var(--blanco);
+    background: rgba(17, 18, 24, 0.6);
+    backdrop-filter: blur(8px);
     padding: var(--space-10) var(--space-8);
     border-radius: var(--radius-lg);
     text-align: center;
@@ -132,8 +136,8 @@
 
 .card-servicio:hover {
     transform: translateY(-4px);
-    border-color: var(--borde);
-    box-shadow: var(--shadow-lg);
+    border-color: var(--acento);
+    box-shadow: var(--neon-glow);
 }
 
 .card-servicio:hover::before {
@@ -180,11 +184,12 @@
 
 .card-servicio .btn-interno-p {
     background: var(--acento);
-    color: var(--blanco);
+    color: var(--texto-claro);
 }
 
 .card-servicio .btn-interno-p:hover {
     background: var(--acento-hover);
+    box-shadow: var(--neon-glow);
 }
 
 .card-servicio .btn-interno-s {
@@ -194,18 +199,21 @@
 }
 
 .card-servicio .btn-interno-s:hover {
-    background: var(--primario);
-    color: var(--blanco);
-    border-color: var(--primario);
+    background: var(--acento);
+    color: var(--texto-claro);
+    border-color: var(--acento);
+    box-shadow: var(--neon-glow);
 }
 
 /* --- Trust Section --- */
 .trust-section {
-    background: var(--primario);
-    color: var(--blanco);
+    background: var(--primario-bg);
+    color: var(--texto-claro);
     padding: var(--space-16) 8%;
     position: relative;
     overflow: hidden;
+    border-top: 1px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
 }
 
 .trust-section::before {
@@ -255,7 +263,7 @@
     font-weight: 700;
     margin: 0 0 var(--space-2);
     letter-spacing: -0.5px;
-    color: var(--blanco);
+    color: var(--texto-claro);
 }
 
 .trust-item p {

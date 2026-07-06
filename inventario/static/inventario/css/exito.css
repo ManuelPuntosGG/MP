@@ -230,8 +230,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: var(--primario);
-    color: white;
+    background: var(--acento);
+    color: var(--texto-claro);
     border: none;
     padding: 0.75rem 1.25rem;
     border-radius: 8px;
@@ -243,7 +243,8 @@
     transition: all 0.2s ease;
 }
 .btn-mapa-link:hover {
-    background: #27272a;
+    background: var(--acento-hover);
+    box-shadow: var(--neon-glow);
     transform: translateY(-1px);
 }
 

@@ -325,4 +325,43 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 500);
         });
     }
+
+    // Validación visual interactiva en tiempo real para entusiastas de tecnología
+    const inputUrl = document.getElementById('url-producto');
+    const inputPrecio = document.getElementById('precio-producto');
+    const inputPeso = document.getElementById('peso-producto');
+
+    function validarCampo(input, condicion) {
+        if (!input) return;
+        if (input.value.trim() === '') {
+            input.classList.remove('input-valido', 'input-invalido');
+            return;
+        }
+        if (condicion) {
+            input.classList.remove('input-invalido');
+            input.classList.add('input-valido');
+        } else {
+            input.classList.remove('input-valido');
+            input.classList.add('input-invalido');
+        }
+    }
+
+    if (inputUrl) {
+        inputUrl.addEventListener('input', function() {
+            var val = this.value.trim();
+            validarCampo(this, val.startsWith('http://') || val.startsWith('https://'));
+        });
+    }
+    if (inputPrecio) {
+        inputPrecio.addEventListener('input', function() {
+            var val = parseFloat(this.value) || 0;
+            validarCampo(this, val > 0);
+        });
+    }
+    if (inputPeso) {
+        inputPeso.addEventListener('input', function() {
+            var val = parseFloat(this.value) || 0;
+            validarCampo(this, val > 0);
+        });
+    }
 });
