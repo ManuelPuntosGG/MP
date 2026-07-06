@@ -634,6 +634,15 @@ class ViewPerfilEditarTest(TestCase):
 class ViewFinalizarPedidoCatalogoTest(TestCase):
     def setUp(self):
         self.client = Client()
+        self.categoria = Categoria.objects.create(nombre="RAM")
+        self.producto = Producto.objects.create(
+            id=1,
+            categoria=self.categoria,
+            nombre="RAM",
+            precio=50.00,
+            stock=10,
+            disponible=True
+        )
 
     def test_finalizar_sin_carrito(self):
         response = self.client.post(reverse('inventario:finalizar_catalogo'), json.dumps({}), content_type='application/json')
@@ -672,3 +681,97 @@ class ViewRastreoPreFillTest(TestCase):
         form = response.context['form']
         self.assertIn('test', form.initial.get('cliente_nombre', ''))
         self.assertEqual(form.initial.get('cliente_telefono', ''), '04121234567')
+
+
+class EmailNormalizationAndAuthTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Crear usuario con email normalizado
+        self.user = User.objects.create_user('normalizado@test.com', 'normalizado@test.com', 'Testpass123!')
+        self.user.email = 'normalizado@test.com'
+        self.user.save()
+
+    def test_registration_normalizes_email(self):
+        response = self.client.post(reverse('inventario:registrar_cliente'), {
+            'email': 'NUEVO@TEST.COM',
+            'password1': 'Nuevopass123!',
+            'password2': 'Nuevopass123!',
+        })
+        self.assertRedirects(response, reverse('inventario:perfil_cliente'))
+        user_exists = User.objects.filter(email='nuevo@test.com').exists()
+        self.assertTrue(user_exists)
+
+    def test_login_is_case_insensitive(self):
+        response = self.client.post(reverse('inventario:iniciar_sesion'), {
+            'email': 'NORMALIZADO@TEST.COM',
+            'password': 'Testpass123!',
+        })
+        self.assertRedirects(response, reverse('inventario:perfil_cliente'))
+
+
+class StockDecrementAndTransactionsTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.categoria = Categoria.objects.create(nombre="GPUs")
+        self.producto = Producto.objects.create(
+            categoria=self.categoria,
+            nombre="RTX 4060",
+            descripcion="12GB VRAM",
+            precio=350.00,
+            stock=3,
+            disponible=True
+        )
+
+    def test_checkout_decrements_stock(self):
+        productos_json = [{
+            'producto_id': self.producto.id,
+            'nombre': self.producto.nombre,
+            'precio': float(self.producto.precio),
+            'cantidad': 2
+        }]
+        response = self.client.post(reverse('inventario:finalizar_catalogo'), json.dumps({
+            'productos': productos_json,
+            'nombre': 'Cliente Prueba',
+            'telefono': '04121111111'
+        }), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['success'])
+        
+        # Verificar stock actualizado
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 1)
+
+    def test_checkout_insufficient_stock(self):
+        productos_json = [{
+            'producto_id': self.producto.id,
+            'nombre': self.producto.nombre,
+            'precio': float(self.producto.precio),
+            'cantidad': 5 # Más del stock disponible (3)
+        }]
+        response = self.client.post(reverse('inventario:finalizar_catalogo'), json.dumps({
+            'productos': productos_json,
+            'nombre': 'Cliente Prueba',
+            'telefono': '04121111111'
+        }), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()['success'])
+        self.assertIn('insuficiente', response.json()['error'])
+        
+        # Verificar stock intacto
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 3)
+
+    def test_comprar_ahora_decrements_stock(self):
+        response = self.client.post(
+            reverse('inventario:comprar_producto', args=[self.producto.id]),
+            json.dumps({'nombre': 'Juan', 'telefono': '04122222222'}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['success'])
+        
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 2)
+

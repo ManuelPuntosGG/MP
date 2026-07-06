@@ -23,8 +23,6 @@ urlpatterns = [
     path('password-reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html', success_url=reverse_lazy('inventario:password_reset_complete')), name='password_reset_confirm'),
     path('password-reset/complete/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
     # Carrito
-    path('agregar-carrito/', views.agregar_al_carrito, name='agregar_carrito'),
-    path('actualizar-carrito/', views.actualizar_carrito, name='actualizar_carrito'),
     path('guardar-pedido-catalogo/', views.finalizar_pedido_catalogo, name='finalizar_catalogo'),
     path('comprar-producto/<int:producto_id>/', views.comprar_producto, name='comprar_producto'),
     # Pedidos

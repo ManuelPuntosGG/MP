@@ -9,7 +9,6 @@ urlpatterns = [
     path('', include('inventario.urls')),
     path('manifest.json', TemplateView.as_view(template_name='pwa/manifest.json', content_type='application/json'), name='manifest'),
     path('sw.js', TemplateView.as_view(template_name='pwa/sw.js', content_type='application/javascript'), name='sw'),
-    path('', include('pwa.urls')),
 ]
 
 # CORRECCIÓN: Quitamos 'if settings.DEBUG' para que también sirva imágenes en Render

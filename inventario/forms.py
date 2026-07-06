@@ -79,14 +79,17 @@ class EmailUserCreationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Este correo ya está registrado.")
+        if email:
+            email = email.strip().lower()
+            if User.objects.filter(email=email).exists():
+                raise forms.ValidationError("Este correo ya está registrado.")
         return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.username = self.cleaned_data['email']
-        user.email = self.cleaned_data['email']
+        email_normalized = self.cleaned_data['email'].strip().lower()
+        user.username = email_normalized
+        user.email = email_normalized
         if commit:
             user.save()
             UserProfile.objects.get_or_create(
@@ -132,6 +135,8 @@ class EmailAuthenticationForm(forms.Form):
         password = self.cleaned_data.get('password')
 
         if email is not None and password:
+            email = email.strip().lower()
+            self.cleaned_data['email'] = email
             self.user_cache = authenticate(
                 self.request, username=email, password=password
             )

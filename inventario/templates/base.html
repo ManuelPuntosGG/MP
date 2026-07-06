@@ -74,7 +74,7 @@
 
     <div id="login-modal-overlay" class="modal-overlay">
         <div class="modal-box" id="login-modal-box">
-            <button class="modal-close" id="login-modal-close" onclick="cerrarModalLogin()">&times;</button>
+            <button class="modal-close" id="login-modal-close">&times;</button>
             <h2><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</h2>
             <p class="auth-desc">Accede a tu cuenta para gestionar reparaciones, pedidos e importaciones.</p>
             <form method="POST" action="{% url 'inventario:iniciar_sesion' %}" id="login-modal-form" data-next="{% url 'inventario:perfil_cliente' %}">

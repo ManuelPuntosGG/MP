@@ -100,10 +100,10 @@
                           class="btn-product-action btn-add-cart"
                           onclick="agregarAlCarrito(this)"
                           data-id="{{ producto.id }}"
-                          data-name="{{ producto.nombre|escapejs }}"
+                          data-name="{{ producto.nombre }}"
                           data-price="{{ producto.precio }}"
                           data-stock="{{ producto.stock }}"
-                          data-img="{% if producto.imagen %}{{ producto.imagen.url|escapejs }}{% else %}{% endif %}"
+                          data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% endif %}"
                       >
                           <i class="bi bi-cart-plus"></i> Añadir
                       </button>
@@ -111,10 +111,10 @@
                           class="btn-product-action btn-buy-now"
                           onclick="comprarAhora(this)"
                           data-id="{{ producto.id }}"
-                          data-name="{{ producto.nombre|escapejs }}"
+                          data-name="{{ producto.nombre }}"
                           data-price="{{ producto.precio }}"
                           data-stock="{{ producto.stock }}"
-                          data-img="{% if producto.imagen %}{{ producto.imagen.url|escapejs }}{% else %}{% endif %}"
+                          data-img="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% endif %}"
                       >
                           Comprar
                       </button>

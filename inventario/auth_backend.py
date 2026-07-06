@@ -16,6 +16,9 @@ class EmailBackend(ModelBackend):
         if email is None:
             return None
 
+        # Normalizar email a minúsculas
+        email = email.strip().lower()
+
         try:
             user = UserModel.objects.get(email=email)
         except UserModel.DoesNotExist:
@@ -28,3 +31,4 @@ class EmailBackend(ModelBackend):
 
         logger.warning("Contraseña incorrecta para: %s", email)
         return None
+

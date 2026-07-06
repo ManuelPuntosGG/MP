@@ -3,6 +3,32 @@ function abrirModalLogin() {
     if (overlay) overlay.classList.add('active');
 }
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function safeUrl(url) {
+    if (!url) return '#';
+    const trimmed = String(url).trim();
+    const lower = trimmed.toLowerCase();
+    if (trimmed.startsWith('/') || trimmed.startsWith('.') || trimmed.startsWith('#')) {
+        return trimmed;
+    }
+    if (lower.startsWith('http://') || lower.startsWith('https://')) {
+        return trimmed;
+    }
+    if (lower.startsWith('javascript:') || lower.startsWith('data:')) {
+        return '#';
+    }
+    return 'https://' + trimmed;
+}
+
 function showToast(message, type) {
     const container = document.getElementById('toast-container');
     if (!container) return;

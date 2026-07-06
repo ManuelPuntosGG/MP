@@ -49,14 +49,17 @@ document.addEventListener("DOMContentLoaded", function() {
         carrito.forEach(function(item) {
             var subtotal = item.precio * item.cantidad;
             total += subtotal;
+            var escapedNombre = escapeHTML(item.nombre);
+            var safeImg = item.imagen && typeof item.imagen === 'string' && item.imagen.indexOf('/catalogo/') === -1 ? escapeHTML(safeUrl(item.imagen)) : '';
+
             html += '<div class="cart-item" data-id="' + item.producto_id + '">';
-            if (item.imagen && typeof item.imagen === 'string' && item.imagen.indexOf('/catalogo/') === -1) {
-                html += '<img src="' + item.imagen + '" alt="' + item.nombre + '" class="cart-item-img">';
+            if (safeImg) {
+                html += '<img src="' + safeImg + '" alt="' + escapedNombre + '" class="cart-item-img">';
             } else {
                 html += '<div class="cart-item-img-placeholder"><i class="bi bi-image"></i></div>';
             }
             html += '<div class="cart-item-info">';
-            html += '<div class="cart-item-name">' + item.nombre + '</div>';
+            html += '<div class="cart-item-name">' + escapedNombre + '</div>';
             html += '<div class="cart-item-price">$' + item.precio.toFixed(2) + '</div>';
             html += '<div class="cart-item-qty">';
             html += '<button class="cart-qty-btn" onclick="cambiarCantidad(' + item.producto_id + ', -1)">-</button>';

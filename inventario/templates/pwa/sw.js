@@ -18,8 +18,13 @@ self.addEventListener('install', event => {
 // Interceptar peticiones (Estrategia: Primero red, luego caché)
 self.addEventListener('fetch', event => {
     event.respondWith(
-        fetch(event.request).catch(() => {
-            return caches.match(event.request);
+        fetch(event.request).catch(error => {
+            return caches.match(event.request).then(response => {
+                if (response) {
+                    return response;
+                }
+                throw error;
+            });
         })
     );
 });

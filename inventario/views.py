@@ -2,13 +2,15 @@ import decimal
 import json
 import logging
 import os
+import threading
 
 import requests
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.db.models import Count, Prefetch, Q, Sum
+from django.db import transaction
+from django.db.models import Count, F, Prefetch, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -33,9 +35,13 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 TASA_CACHE_KEY = 'tasa_usdt_ves'
-TASA_CACHE_TTL = 3600
-FACTOR_AJUSTE_BCV = 1.20
+TASA_CACHE_TTL = 3600          # 1 hora de vigencia fresca
+TASA_STALE_TTL = 86400         # 24 horas de vigencia de respaldo (stale)
+TASA_UPDATING_TTL = 60         # 1 minuto de bloqueo para hilos duplicados
+FACTOR_AJUSTE_BCV = 1.13
 TASA_FALLBACK = 760.00
+
+_tasa_lock = threading.Lock()
 
 
 def _obtener_perfil_inicial(usuario):
@@ -111,27 +117,56 @@ def _fetch_tasa_bcv():
     return round(tasa_bcv * FACTOR_AJUSTE_BCV, 2)
 
 
+def _actualizar_tasa_async():
+    """Ejecuta la actualización de la tasa de cambio en un hilo secundario daemon."""
+    def run():
+        with _tasa_lock:
+            # Doble check de cache fresco
+            tasa = cache.get(TASA_CACHE_KEY)
+            if tasa:
+                return
+
+            fuentes = [
+                ('CoinGecko', _fetch_tasa_coingecko),
+                ('ExchangeRate-API', _fetch_tasa_bcv),
+            ]
+
+            for nombre, fetch_fn in fuentes:
+                try:
+                    precio = fetch_fn()
+                    cache.set(TASA_CACHE_KEY, precio, TASA_CACHE_TTL)
+                    cache.set(f"{TASA_CACHE_KEY}_stale", precio, TASA_STALE_TTL)
+                    logger.info("Tasa de cambio actualizada asíncronamente vía %s: %s VES/USDT", nombre, precio)
+                    return
+                except Exception as e:
+                    logger.warning("Fallo en obtención de tasa vía %s: %s", nombre, e)
+
+            # Si todas fallaron, extendemos la vida de la tasa stale para no reintentar
+            # en cada renderización de página web por los próximos 5 minutos.
+            stale = cache.get(f"{TASA_CACHE_KEY}_stale")
+            if stale:
+                cache.set(TASA_CACHE_KEY, stale, 300)
+            else:
+                cache.set(TASA_CACHE_KEY, TASA_FALLBACK, 300)
+
+    threading.Thread(target=run, daemon=True).start()
+
+
 def obtener_tasa_binance():
-    """Obtiene la tasa de cambio USD/VE con fallback a API pública."""
+    """Obtiene la tasa de cambio USD/VE utilizando el patrón Stale-While-Revalidate asíncrono."""
     tasa = cache.get(TASA_CACHE_KEY)
     if tasa:
         return tasa
 
-    fuentes = [
-        ('CoinGecko', _fetch_tasa_coingecko),
-        ('ExchangeRate-API', _fetch_tasa_bcv),
-    ]
+    stale_tasa = cache.get(f"{TASA_CACHE_KEY}_stale")
 
-    for nombre, fetch_fn in fuentes:
-        try:
-            precio = fetch_fn()
-            cache.set(TASA_CACHE_KEY, precio, TASA_CACHE_TTL)
-            return precio
-        except Exception as e:
-            logger.warning("Falló %s: %s", nombre, e)
+    updating_flag = f"{TASA_CACHE_KEY}_updating"
+    if not cache.get(updating_flag):
+        cache.set(updating_flag, True, TASA_UPDATING_TTL)
+        _actualizar_tasa_async()
 
-    fallback = cache.get(TASA_CACHE_KEY, TASA_FALLBACK)
-    return fallback
+    return stale_tasa or TASA_FALLBACK
+
 
 
 def rastrear_orden(request):
@@ -331,15 +366,8 @@ def perfil_editar(request):
 
 
 # ==============================================================================
-# CARRITO DE COMPRAS (CATÁLOGO) - SESSION BASED
+# CARRITO DE COMPRAS (CATÁLOGO) - UTILS
 # ==============================================================================
-
-def _obtener_datos_carrito(request):
-    """Retorna los items del carrito y el total."""
-    carrito = request.session.get('carrito', [])
-    total = sum(item.get('precio', 0) * item.get('cantidad', 1) for item in carrito)
-    return {'carrito': carrito, 'total_carrito': total, 'cantidad_items': len(carrito)}
-
 
 def _serializar_producto(producto):
     """Serializa un producto para el carrito."""
@@ -351,96 +379,6 @@ def _serializar_producto(producto):
         'stock': producto.stock,
         'imagen': producto.imagen.url if producto.imagen else '',
     }
-
-
-@require_POST
-def agregar_al_carrito(request):
-    try:
-        data = json.loads(request.body)
-    except (json.JSONDecodeError, ValueError):
-        return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
-
-    producto_id = data.get('producto_id')
-    cantidad = data.get('cantidad', 1)
-
-    if not producto_id:
-        return JsonResponse({'success': False, 'error': 'producto_id requerido'}, status=400)
-
-    try:
-        cantidad = int(cantidad)
-        if cantidad <= 0:
-            raise ValueError
-    except (TypeError, ValueError):
-        return JsonResponse({'success': False, 'error': 'Cantidad inválida'}, status=400)
-
-    producto = get_object_or_404(Producto, pk=producto_id, disponible=True)
-
-    if cantidad > producto.stock:
-        return JsonResponse({
-            'success': False,
-            'error': f'Stock insuficiente. Disponible: {producto.stock}'
-        })
-
-    carrito = request.session.get('carrito', [])
-
-    for item in carrito:
-        if item['producto_id'] == producto_id:
-            nueva_cant = item['cantidad'] + cantidad
-            if nueva_cant > producto.stock:
-                return JsonResponse({
-                    'success': False,
-                    'error': f'Stock insuficiente. Disponible: {producto.stock}'
-                })
-            item['cantidad'] = nueva_cant
-            request.session['carrito'] = carrito
-            return JsonResponse({'success': True, 'msg': 'Cantidad actualizada'})
-
-    carrito.append(_serializar_producto(producto))
-    carrito[-1]['cantidad'] = cantidad
-    request.session['carrito'] = carrito
-    return JsonResponse({'success': True, 'msg': 'Producto añadido al carrito'})
-
-
-@require_POST
-def actualizar_carrito(request):
-    try:
-        data = json.loads(request.body)
-    except (json.JSONDecodeError, ValueError):
-        return JsonResponse({'success': False, 'error': 'Datos JSON inválidos'}, status=400)
-
-    producto_id = data.get('producto_id')
-    cantidad = data.get('cantidad', 0)
-
-    if not producto_id:
-        return JsonResponse({'success': False, 'error': 'producto_id requerido'}, status=400)
-
-    try:
-        cantidad = int(cantidad)
-    except (TypeError, ValueError):
-        return JsonResponse({'success': False, 'error': 'Cantidad inválida'}, status=400)
-
-    carrito = request.session.get('carrito', [])
-
-    if cantidad <= 0:
-        carrito = [item for item in carrito if item['producto_id'] != producto_id]
-    else:
-        for item in carrito:
-            if item['producto_id'] == producto_id:
-                if cantidad > item['stock']:
-                    return JsonResponse({
-                        'success': False,
-                        'error': f'Stock máximo: {item["stock"]}'
-                    })
-                item['cantidad'] = cantidad
-                break
-
-    request.session['carrito'] = carrito
-    info = _obtener_datos_carrito(request)
-    return JsonResponse({
-        'success': True,
-        'cantidad_items': info['cantidad_items'],
-        'total_carrito': info['total_carrito'],
-    })
 
 
 @require_POST
@@ -460,15 +398,47 @@ def finalizar_pedido_catalogo(request):
     if not cliente_nombre:
         return JsonResponse({'success': False, 'error': 'Nombre requerido'}, status=400)
 
-    total = sum(item['precio'] * item['cantidad'] for item in productos)
+    try:
+        total = sum(float(item['precio']) * int(item['cantidad']) for item in productos)
+    except (KeyError, ValueError, TypeError):
+        return JsonResponse({'success': False, 'error': 'Montos o cantidades inválidas'}, status=400)
 
-    pedido = PedidoCatalogo.objects.create(
-        usuario=request.user if request.user.is_authenticated else None,
-        cliente_nombre=cliente_nombre,
-        cliente_telefono=cliente_telefono,
-        total_usd=round(total, 2),
-        productos_json=json.dumps(productos),
-    )
+    try:
+        with transaction.atomic():
+            for item in productos:
+                try:
+                    prod_id = int(item['producto_id'])
+                    cantidad = int(item['cantidad'])
+                except (KeyError, ValueError, TypeError):
+                    return JsonResponse({'success': False, 'error': 'Datos de producto inválidos'}, status=400)
+
+                try:
+                    producto = Producto.objects.select_for_update().get(pk=prod_id, disponible=True)
+                except Producto.DoesNotExist:
+                    return JsonResponse({
+                        'success': False,
+                        'error': f"El producto '{item.get('nombre', 'Desconocido')}' no está disponible o no existe."
+                    }, status=400)
+
+                if producto.stock < cantidad:
+                    return JsonResponse({
+                        'success': False,
+                        'error': f"Stock insuficiente para '{producto.nombre}'. Disponible: {producto.stock}."
+                    }, status=400)
+
+                producto.stock = F('stock') - cantidad
+                producto.save()
+
+            pedido = PedidoCatalogo.objects.create(
+                usuario=request.user if request.user.is_authenticated else None,
+                cliente_nombre=cliente_nombre,
+                cliente_telefono=cliente_telefono,
+                total_usd=round(total, 2),
+                productos_json=json.dumps(productos),
+            )
+    except Exception as e:
+        logger.error("Error al procesar el pedido de catálogo: %s", e)
+        return JsonResponse({'success': False, 'error': 'Error interno al procesar el pedido'}, status=500)
 
     return JsonResponse({
         'success': True,
@@ -490,17 +460,32 @@ def comprar_producto(request, producto_id):
     if not cliente_nombre:
         return JsonResponse({'success': False, 'error': 'Nombre requerido'}, status=400)
 
-    producto = get_object_or_404(Producto, pk=producto_id, disponible=True)
-    item = _serializar_producto(producto)
-    total = float(producto.precio)
+    try:
+        with transaction.atomic():
+            producto = get_object_or_404(Producto.objects.select_for_update(), pk=producto_id, disponible=True)
 
-    pedido = PedidoCatalogo.objects.create(
-        usuario=request.user if request.user.is_authenticated else None,
-        cliente_nombre=cliente_nombre,
-        cliente_telefono=cliente_telefono,
-        total_usd=round(total, 2),
-        productos_json=json.dumps([item]),
-    )
+            if producto.stock < 1:
+                return JsonResponse({
+                    'success': False,
+                    'error': f"Stock insuficiente para '{producto.nombre}'. Producto agotado."
+                }, status=400)
+
+            producto.stock = F('stock') - 1
+            producto.save()
+
+            item = _serializar_producto(producto)
+            total = float(producto.precio)
+
+            pedido = PedidoCatalogo.objects.create(
+                usuario=request.user if request.user.is_authenticated else None,
+                cliente_nombre=cliente_nombre,
+                cliente_telefono=cliente_telefono,
+                total_usd=round(total, 2),
+                productos_json=json.dumps([item]),
+            )
+    except Exception as e:
+        logger.error("Error al procesar la compra directa: %s", e)
+        return JsonResponse({'success': False, 'error': 'Error interno al procesar la compra'}, status=500)
 
     return JsonResponse({
         'success': True,
@@ -508,6 +493,7 @@ def comprar_producto(request, producto_id):
         'total': round(total, 2),
         'producto_nombre': producto.nombre,
     })
+
 
 
 # ==============================================================================
@@ -535,15 +521,16 @@ def guardar_pedido_importacion(request):
     except (TypeError, ValueError):
         return JsonResponse({'success': False, 'error': 'Montos inválidos'}, status=400)
 
-    pedido = PedidoImportacion.objects.create(
-        usuario=request.user if request.user.is_authenticated else None,
-        cliente_nombre=cliente_nombre,
-        cliente_telefono=data.get('telefono', '').strip(),
-        total_usd=round(total_usd, 2),
-        total_ves=round(total_ves, 2),
-        productos_json=json.dumps(productos),
-        nota=data.get('nota', '').strip(),
-    )
+    with transaction.atomic():
+        pedido = PedidoImportacion.objects.create(
+            usuario=request.user if request.user.is_authenticated else None,
+            cliente_nombre=cliente_nombre,
+            cliente_telefono=data.get('telefono', '').strip(),
+            total_usd=round(total_usd, 2),
+            total_ves=round(total_ves, 2),
+            productos_json=json.dumps(productos),
+            nota=data.get('nota', '').strip(),
+        )
 
     return JsonResponse({'success': True, 'codigo': pedido.codigo_seguimiento})
 

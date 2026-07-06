@@ -106,12 +106,13 @@ function renderizarTabla() {
         let fleteItem = item.peso * TARIFA_LIBRA;
         let fleteItemBs = fleteItem * TASA_VES;
         let badgeClass = `bg-${item.tienda.toLowerCase()}`;
+        let sanitizedUrl = escapeHTML(safeUrl(item.url));
 
         let fila = document.createElement('tr');
         fila.innerHTML = `
             <td data-label="Tienda"><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
             <td data-label="Artículo">
-                <a href="${item.url}" target="_blank" style="color: var(--acento); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.url}">
+                <a href="${sanitizedUrl}" target="_blank" style="color: var(--acento); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${sanitizedUrl}">
                     <i class="bi bi-box-arrow-up-right"></i> Ver Artículo
                 </a>
             </td>
