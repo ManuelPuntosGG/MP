@@ -171,3 +171,104 @@
 
     .input-tabla { width: 110px; padding: 0.4rem; text-align: right; }
 }
+
+/* --- ESTILOS TRASLADADOS DESDE PLANTILLA IMPORTACIONES --- */
+
+.toolbar-limpiar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--borde);
+}
+
+#btn-limpiar-lista {
+    background: transparent;
+    border: 1px solid var(--borde);
+    color: var(--texto-mutado);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.col-precio {
+    width: 120px;
+    text-align: center;
+}
+
+.col-peso {
+    width: 110px;
+    text-align: center;
+}
+
+.col-flete {
+    text-align: right;
+    width: 160px;
+}
+
+.col-eliminar {
+    text-align: center;
+    width: 60px;
+}
+
+.fila-vacia-td {
+    text-align: center;
+    color: #a1a1aa;
+    padding: 50px 20px;
+}
+
+.fila-vacia-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 12px;
+    color: #d4d4d8;
+}
+
+.resumen-titulo {
+    margin-top: 0;
+    color: var(--acento);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.link-articulo {
+    color: var(--acento);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.flete-celda {
+    text-align: right;
+    font-weight: 600;
+    color: var(--primario);
+}
+
+.flete-ves-subtexto {
+    display: block;
+    font-size: 0.75rem;
+    color: #71717a;
+    font-weight: 500;
+}

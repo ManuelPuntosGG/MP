@@ -14,6 +14,8 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.utils import timezone
 
+from .utils import obtener_tasa_binance
+
 logger = logging.getLogger(__name__)
 
 
@@ -337,6 +339,55 @@ class PedidoImportacion(models.Model):
 
     def __str__(self):
         return f"Importación {self.codigo_seguimiento} - {self.cliente_nombre or self.usuario}"
+
+    @property
+    def saldo_pendiente_ves_actual(self):
+        """Calcula el saldo pendiente en Bs a la tasa del momento si está listo para retirar."""
+        import decimal
+        if self.estado == 'LISTO_RETIRAR':
+            try:
+                tasa_actual = obtener_tasa_binance()
+                if self.saldo_pendiente_usd:
+                    return self.saldo_pendiente_usd * decimal.Decimal(str(tasa_actual))
+            except Exception:
+                pass
+        if self.estado == 'ENTREGADO' and self.saldo_pendiente_ves:
+            return self.saldo_pendiente_ves
+        return None
+
+    def save(self, *args, **kwargs):
+        import decimal
+
+        total_usd = decimal.Decimal(str(self.total_usd)) if self.total_usd is not None else decimal.Decimal('0')
+
+        # 1. Asegurar cálculos y tasas al confirmar
+        if self.estado == 'CONFIRMADA':
+            if not self.pago_inicial_usd:
+                self.pago_inicial_usd = total_usd / 2
+            if not self.saldo_pendiente_usd:
+                self.saldo_pendiente_usd = total_usd - decimal.Decimal(str(self.pago_inicial_usd))
+            if not self.tasa_confirmacion:
+                self.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
+            if not self.pago_inicial_ves and self.tasa_confirmacion:
+                self.pago_inicial_ves = decimal.Decimal(str(self.pago_inicial_usd)) * self.tasa_confirmacion
+
+        # 2. Asegurar cálculos y tasas al entregar (congelar todo)
+        elif self.estado == 'ENTREGADO':
+            if not self.pago_inicial_usd:
+                self.pago_inicial_usd = total_usd / 2
+            if not self.saldo_pendiente_usd:
+                self.saldo_pendiente_usd = total_usd - decimal.Decimal(str(self.pago_inicial_usd))
+            if not self.tasa_confirmacion:
+                self.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
+            if not self.pago_inicial_ves and self.tasa_confirmacion:
+                self.pago_inicial_ves = decimal.Decimal(str(self.pago_inicial_usd)) * self.tasa_confirmacion
+
+            if not self.tasa_entrega:
+                self.tasa_entrega = decimal.Decimal(str(obtener_tasa_binance()))
+            if not self.saldo_pendiente_ves and self.tasa_entrega:
+                self.saldo_pendiente_ves = decimal.Decimal(str(self.saldo_pendiente_usd)) * self.tasa_entrega
+
+        super().save(*args, **kwargs)
 
 
 class PedidoCatalogo(models.Model):

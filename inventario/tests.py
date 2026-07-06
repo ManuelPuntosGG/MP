@@ -2,6 +2,7 @@ import io
 import json
 from PIL import Image
 from django.test import TestCase, Client
+from unittest.mock import patch
 from django.urls import reverse
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
@@ -465,15 +466,54 @@ class PedidoImportacionModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('test@test.com', 'test@test.com', 'testpass')
 
-    def test_create_pedido(self):
+    @patch('inventario.models.obtener_tasa_binance')
+    def test_import_order_state_flow_and_rates(self, mock_tasa):
+        # 1. Creamos un pedido en estado PENDIENTE
+        mock_tasa.return_value = 40.00
         pedido = PedidoImportacion.objects.create(
             usuario=self.user,
-            total_usd=150.00,
-            total_ves=120000.00,
-            productos_json='[{"nombre": "RTX 3060", "precio": 150}]'
+            total_usd=100.00,
+            productos_json='[{"nombre": "CPU Cooler", "precio": 100, "peso": 1}]',
+            cliente_nombre='Test Importacion'
         )
-        self.assertEqual(str(pedido), f"Importación {pedido.codigo_seguimiento} - test@test.com")
-        self.assertEqual(len(pedido.codigo_seguimiento), 8)
+        self.assertEqual(pedido.estado, 'PENDIENTE')
+        self.assertNil = lambda x: self.assertIsNone(x)
+        self.assertIsNone(pedido.tasa_confirmacion)
+        self.assertIsNone(pedido.pago_inicial_usd)
+        self.assertIsNone(pedido.pago_inicial_ves)
+        self.assertIsNone(pedido.saldo_pendiente_usd)
+        
+        # 2. Transición a CONFIRMADA (se debe congelar el 50% abono inicial a tasa de confirmación)
+        pedido.estado = 'CONFIRMADA'
+        pedido.save()
+        
+        self.assertEqual(pedido.pago_inicial_usd, 50.00)
+        self.assertEqual(pedido.saldo_pendiente_usd, 50.00)
+        self.assertEqual(pedido.tasa_confirmacion, 40.00)
+        self.assertEqual(pedido.pago_inicial_ves, 2000.00) # 50 * 40
+        self.assertIsNone(pedido.tasa_entrega)
+        self.assertIsNone(pedido.saldo_pendiente_ves)
+        
+        # 3. Transición a LISTO_RETIRAR (Disponible para retiro)
+        # El saldo pendiente en Bs debe calcularse en base a la tasa actual (por ejemplo, si subió a 42.0)
+        pedido.estado = 'LISTO_RETIRAR'
+        pedido.save()
+        
+        mock_tasa.return_value = 42.00
+        self.assertEqual(pedido.saldo_pendiente_ves_actual, 2100.00) # 50 * 42 (tasa actual)
+        
+        # 4. Transición a ENTREGADO
+        # Se congela la tasa de entrega (42.0) y el saldo pendiente final (2100.0)
+        pedido.estado = 'ENTREGADO'
+        pedido.save()
+        
+        self.assertEqual(pedido.tasa_entrega, 42.00)
+        self.assertEqual(pedido.saldo_pendiente_ves, 2100.00)
+        
+        # El saldo pendiente ves actual ahora retorna el congelado
+        mock_tasa.return_value = 45.00
+        self.assertEqual(pedido.saldo_pendiente_ves_actual, 2100.00) # No varía aunque cambie la tasa
+
 
 
 class PedidoCatalogoModelTest(TestCase):

@@ -12,30 +12,32 @@
 
     <div id="errors-hook" data-has-errors="{% if form.errors %}true{% else %}false{% endif %}" style="display: none;"></div>
 
+    <!-- Panel de Consulta Principal -->
     <div class="rastreo-box" id="panel-principal" {% if ticket %}style="display:none;"{% endif %}>
         <h2>Rastrear Reparación</h2>
-        <p style="color: var(--texto-mutado); font-size: 0.95rem; margin-bottom: 1rem;">Ingresa tu código de seguimiento para ver el estado y presupuesto en tiempo real.</p>
+        <p style="color: var(--texto-mutado); font-size: 0.95rem; margin-bottom: 1.5rem;">Ingresa tu código de seguimiento para ver el estado de tu equipo y presupuesto en tiempo real.</p>
         
-        <form class="formulario-rastreo" method="GET">
+        <form class="formulario-rastreo" method="GET" style="max-width: 500px; margin: 0 auto;">
             <input type="text" name="codigo" placeholder="CÓDIGO DE ORDEN" value="{{ codigo }}" class="input-rastreo" oninput="this.value = this.value.toUpperCase()" required>
-            <button type="submit" class="btn-submit">
+            <button type="submit" class="btn-submit" style="padding: 0.8rem 2rem;">
                 <i class="bi bi-search"></i> Buscar
             </button>
         </form>
 
         {% if error and not ticket %}
-        <div class="alert-box alert-error">
+        <div class="alert-box alert-error" style="max-width: 500px; margin: 1.5rem auto 0;">
             <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
         </div>
         {% endif %}
 
-        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--borde);text-align:center;">
-            <p style="color:var(--texto-mutado);font-size:0.9rem;">¿No tienes código? Solicita una reparación nueva.</p>
-            <button type="button" class="btn-outline" id="btn-nueva-solicitud" onclick="toggleSolicitarForm()"><i class="bi bi-tools"></i> Nueva Solicitud</button>
+        <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--borde);text-align:center;">
+            <p style="color:var(--texto-mutado);font-size:0.9rem;margin-bottom:12px;">¿No tienes código o deseas ingresar un nuevo equipo?</p>
+            <button type="button" class="btn-outline" id="btn-nueva-solicitud" onclick="toggleSolicitarForm()"><i class="bi bi-tools"></i> Registrar Equipo en Línea</button>
         </div>
 
-        <div id="content-solicitar" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--borde);">
-            <p style="color: var(--texto-mutado); font-size: 0.9rem; margin-bottom: 25px;">Completa los datos y tu equipo será registrado en nuestro sistema. El diagnóstico no genera cargos.</p>
+        <!-- Formulario para nueva solicitud -->
+        <div id="content-solicitar" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--borde); text-align: left; max-width: 550px; margin-left: auto; margin-right: auto;">
+            <p style="color: var(--texto-mutado); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Completa los datos técnicos del equipo para pre-registrarlo. El diagnóstico preliminar no genera cargos.</p>
 
             <form method="POST" action="{% url 'inventario:solicitar_reparacion' %}" id="form-solicitar-reparacion">
                 {% csrf_token %}
@@ -51,13 +53,14 @@
                 </div>
                 {% endfor %}
 
-                <button type="submit" class="btn-submit" style="width: 100%;">
-                    <i class="bi bi-hdd-network"></i> Registrar Solicitud
+                <button type="submit" class="btn-submit" style="width: 100%; padding: 0.9rem; font-weight: 800; text-transform: uppercase; margin-top: 10px;">
+                    <i class="bi bi-hdd-network"></i> Registrar Solicitud de Reparación
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Detalle del Ticket Encontrado -->
     {% if ticket %}
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;">
             <button class="btn-volver" onclick="document.getElementById('panel-principal').style.display='block'; this.style.display='none'; document.querySelector('.resultado-card').style.display='none';">
@@ -74,20 +77,21 @@
             </div>
             
             <div class="resultado-body">
+                <!-- Stepper Progress Tracker -->
                 {% if ticket.estado == 'CANCELADO' %}
                     <div class="cancelado-box">
                         <div class="cancelado-icon">
                             <i class="bi bi-x-circle-fill"></i>
                         </div>
-                        <h4 style="color: #991b1b; font-weight: 900; margin-bottom: 6px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; font-family: var(--fuente-display);">
-                            Cerrada / No Reparada
+                        <h4 style="color: #991b1b; font-weight: 900; margin-bottom: 6px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Cerrada / No Reparable
                         </h4>
-                        <p style="color: #b91c1c; font-size: 0.95rem; margin: 0; opacity: 0.9;">
-                            Esta orden de servicio ha sido cancelada. Puedes auditar las causales e informes en el bloque de historial técnico inferior.
+                        <p style="color: #b91c1c; font-size: 0.92rem; margin: 0; opacity: 0.9; line-height: 1.5;">
+                            Esta orden de servicio ha sido cancelada por razones técnicas. Puedes consultar el informe y las observaciones del operador técnico en el historial detallado de avances al final de esta página.
                         </p>
                     </div>
                 {% else %}
-                    <div class="stepper-container">
+                    <div class="stepper-container" style="margin-bottom: 3rem;">
                         <div class="step-item {% if ticket.estado == 'ESPERANDO' %}active{% elif ticket.estado in 'RECIBIDO DIAGNOSTICO REPUESTOS REPARADO ENTREGADO' %}completed{% endif %}">
                             <div class="step-icon"><i class="bi bi-hourglass"></i></div>
                             <div class="step-label">Espera</div>
@@ -108,54 +112,56 @@
                             <div class="step-icon"><i class="bi bi-check-circle"></i></div>
                             <div class="step-label">Listo</div>
                         </div>
-                        <div class="step-item {% if ticket.estado == 'ENTREGADO' %}active{% endif %}">
-                            <div class="step-icon"><i class="bi bi-hand-thumbs-up"></i></div>
-                            <div class="step-label">Entregado</div>
-                        </div>
                     </div>
                 {% endif %}
 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Cliente Titular</label>
-                        <p><strong>{{ ticket.cliente_nombre }}</strong></p>
+                <!-- Resumen Rápido del Dispositivo (Sin Contacto Redundante) -->
+                <div class="info-resumen-header">
+                    <div class="info-resumen-item">
+                        <span class="info-label"><i class="bi bi-cpu"></i> Dispositivo / Hardware</span>
+                        <span class="info-value">{{ ticket.equipo }}</span>
                     </div>
-                    <div class="info-item">
-                        <label>Unidad de Hardware</label>
-                        <p><strong>{{ ticket.equipo }}</strong></p>
-                    </div>
-                    <div class="info-item" style="grid-column: 1 / -1; border-top: 1px solid var(--borde); padding-top: 14px; margin-top: 4px;">
-                        <label>Sintomatología / Falla Declarada</label>
-                        <p style="color: var(--texto); opacity: 0.95;">{{ ticket.falla_reportada }}</p>
+                    <div class="info-resumen-item">
+                        <span class="info-label"><i class="bi bi-calendar-check"></i> Fecha de Recepción</span>
+                        <span class="info-value">{{ ticket.fecha_ingreso|date:"d \d\e F, Y" }}</span>
                     </div>
                 </div>
 
+                <!-- Sintomatología / Falla Declarada -->
+                <div class="falla-reportada-card">
+                    <h4 class="falla-title">
+                        <i class="bi bi-virus"></i> Falla Reportada por el Cliente
+                    </h4>
+                    <p class="falla-text">{{ ticket.falla_reportada }}</p>
+                </div>
+
+                <!-- Relación de Costos y Presupuestos -->
                 {% if ticket.presupuesto_estado != 'SIN_PRESUPUESTO' %}
                     <div class="presupuesto-box">
-                        <h3 style="margin-top: 0; margin-bottom: 18px; color: var(--primario); display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 900; font-family: var(--fuente-display); text-transform: uppercase;">
-                            <i class="bi bi-calculator" style="color: var(--verde-precio);"></i> Estructura Presupuestaria
+                        <h3 style="margin-top: 0; margin-bottom: 18px; color: var(--texto-claro); display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="bi bi-calculator" style="color: var(--verde-precio);"></i> Relación Presupuestaria de Servicio
                         </h3>
 
-                        <table class="presupuesto-table">
+                        <table class="presupuesto-table" style="margin-bottom: 24px;">
                             <thead>
                                 <tr>
-                                    <th>Concepto Técnico / Repuesto</th>
+                                    <th>Concepto de Reparación / Repuesto</th>
                                     <th style="text-align: right;">Costo ($)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for linea in ticket.lineas_presupuesto.all %}
                                 <tr>
-                                    <td>{{ linea.concepto }}</td>
-                                    <td style="text-align: right; font-weight: 600;">${{ linea.monto }}</td>
+                                    <td style="font-weight: 600;">{{ linea.concepto }}</td>
+                                    <td style="text-align: right; font-weight: 700; color: var(--texto-claro);">${{ linea.monto }}</td>
                                 </tr>
                                 {% endfor %}
-                                <tr style="border-top: 2px solid var(--borde); font-weight: bold; font-size: 1.05rem;">
-                                    <td style="padding-top: 16px;">Total de la Orden:</td>
-                                    <td style="padding-top: 16px; text-align: right; color: var(--verde-precio); font-family: var(--fuente-base);">
+                                <tr style="border-top: 2px solid var(--borde); font-weight: 900; font-size: 1.1rem;">
+                                    <td style="padding-top: 16px;">Costo Total Estimado:</td>
+                                    <td style="padding-top: 16px; text-align: right; color: var(--verde-precio);">
                                         ${{ total_usd }}
-                                        <span style="display: block; font-size: 0.8rem; color: var(--texto-mutado); font-weight: 500; margin-top: 4px;">
-                                            Tasa de Cambio: {{ total_ves|floatformat:2 }} Bs.
+                                        <span style="display: block; font-size: 0.78rem; color: var(--texto-mutado); font-weight: 600; margin-top: 4px;">
+                                            ~ {{ total_ves|floatformat:2 }} Bs. (Tasa de referencia)
                                         </span>
                                     </td>
                                 </tr>
@@ -163,35 +169,38 @@
                         </table>
 
                         {% if ticket.presupuesto_estado == 'PENDIENTE' %}
-                            <p style="color: var(--texto-mutado); font-size: 0.88rem; margin-bottom: 18px; text-align: center;">Por favor audite la relación de costos y valide una acción para que procedamos con el hardware.</p>
-                            <div class="acciones-presupuesto" style="display: flex; gap: 10px;">
+                            <p style="color: var(--texto-mutado); font-size: 0.88rem; margin-bottom: 18px; text-align: center; font-weight: 500;">
+                                Requerimos tu aprobación formal del presupuesto anterior para proceder a ordenar componentes e iniciar las labores en el taller.
+                            </p>
+                            <div class="acciones-presupuesto" style="display: flex; gap: 12px;">
                                 <form action="{% url 'inventario:responder_presupuesto' ticket.pk 'aprobar' %}" method="POST" style="flex: 1;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-aprobar">
-                                        <i class="bi bi-check-circle-fill"></i> Aprobar Operación
+                                    <button type="submit" class="btn-aprobar" style="padding: 12px; font-weight: 800; border-radius: 8px;">
+                                        <i class="bi bi-check-circle-fill"></i> Aprobar Presupuesto
                                     </button>
                                 </form>
                                 <form action="{% url 'inventario:responder_presupuesto' ticket.pk 'rechazar' %}" method="POST" style="flex: 1;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-rechazar" onclick="return confirm('¿Confirma el rechazo del presupuesto? El flujo operativo de reparación se detendrá automáticamente.')">
+                                    <button type="submit" class="btn-rechazar" style="padding: 12px; font-weight: 800; border-radius: 8px;" onclick="return confirm('¿Confirma el rechazo del presupuesto? El proceso operativo se detendrá y tendrás que retirar el hardware sin reparar.')">
                                         <i class="bi bi-x-circle-fill"></i> Rechazar
                                     </button>
                                 </form>
                             </div>
                         {% elif ticket.presupuesto_estado == 'APROBADO' %}
-                            <div style="background-color: #e6fdf4; color: #065f46; padding: 14px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.9rem; border: 1px solid rgba(16, 185, 129, 0.2);">
-                                <i class="bi bi-check-all"></i> Presupuesto aprobado por el usuario. La unidad se encuentra en línea de diagnóstico y montaje técnico.
+                            <div style="background-color: rgba(16, 185, 129, 0.08); color: #10b981; padding: 14px; border-radius: 8px; font-weight: 700; text-align: center; font-size: 0.88rem; border: 1px solid rgba(16, 185, 129, 0.25);">
+                                <i class="bi bi-check-all"></i> ¡Presupuesto Aprobado! Tu equipo se encuentra asignado a la línea de trabajo activo del taller.
                             </div>
                         {% elif ticket.presupuesto_estado == 'RECHAZADO' %}
-                            <div style="background-color: #fff5f5; color: #991b1b; padding: 14px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.9rem; border: 1px solid rgba(220, 38, 38, 0.15);">
-                                <i class="bi bi-exclamation-octagon"></i> Presupuesto rechazado. Por favor póngase en comunicación por canales internos si desea retirar la unidad física.
+                            <div style="background-color: rgba(220, 38, 38, 0.08); color: var(--acento); padding: 14px; border-radius: 8px; font-weight: 700; text-align: center; font-size: 0.88rem; border: 1px solid rgba(220, 38, 38, 0.25);">
+                                <i class="bi bi-exclamation-octagon"></i> Presupuesto Rechazado. Las reparaciones están suspendidas. Por favor, comunícate con soporte para coordinar el retiro de tu dispositivo.
                             </div>
                         {% endif %}
                     </div>
                 {% endif %}
 
+                <!-- Bitácora Técnica / Avances -->
                 <h4 class="timeline-title">
-                    <i class="bi bi-journal-text" style="color: var(--acento);"></i> Bitácora Técnica de Avances
+                    <i class="bi bi-journal-text" style="color: var(--acento);"></i> Bitácora Técnica e Informes de Avance
                 </h4>
 
                 <div class="timeline">
@@ -200,15 +209,19 @@
                             <div class="timeline-fecha">
                                 <i class="bi bi-clock"></i> {{ avance.fecha|date:"d/m/Y - H:i" }}
                             </div>
-                            <div class="timeline-desc">{{ avance.descripcion }}</div>
-                            {% if avance.imagen %}
-                                <img src="{{ avance.imagen.url }}" class="timeline-img" alt="Registro fotográfico MTech">
-                            {% endif %}
+                            <div class="timeline-desc">
+                                {{ avance.descripcion }}
+                                {% if avance.imagen %}
+                                    <div class="timeline-img-wrapper">
+                                        <img src="{{ avance.imagen.url }}" class="timeline-img" alt="Registro microfotográfico MTech">
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     {% empty %}
-                        <div style="background: var(--fondo); padding: 24px; border-radius: 8px; border: 1px dashed var(--borde); text-align: center; color: var(--texto-mutado);">
-                            <i class="bi bi-info-circle" style="font-size: 1.6rem; display: block; margin-bottom: 8px; color: var(--primario);"></i>
-                            Unidad física en cola de análisis preliminar. Se indexarán capturas e informes a la brevedad.
+                        <div style="background: rgba(255,255,255,0.01); padding: 2.5rem; border-radius: 12px; border: 1px dashed var(--borde); text-align: center; color: var(--texto-mutado);">
+                            <i class="bi bi-info-circle" style="font-size: 1.8rem; display: block; margin-bottom: 10px; color: var(--acento);"></i>
+                            Tu dispositivo está en cola para inspección visual y mediciones iniciales. Los informes de los técnicos se actualizarán aquí.
                         </div>
                     {% endfor %}
                 </div>
@@ -218,6 +231,7 @@
 
 </div> 
 
+<!-- Lightbox Modal para fotos de hardware -->
 <div id="imageLightbox" class="lightbox-modal">
     <span class="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightboxImage" alt="Microfotografía ampliada de hardware">

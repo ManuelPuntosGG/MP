@@ -89,19 +89,20 @@ function agregarProducto() {
 function renderizarTabla() {
     const tbody = document.getElementById('items-carrito');
     
+    // Remover todas las filas de productos existentes (clase .fila-producto)
+    const filasProductos = tbody.querySelectorAll('.fila-producto');
+    filasProductos.forEach(f => f.remove());
+
+    const filaVacia = document.getElementById('fila-vacia');
+
     if (carritoProductos.length === 0) {
-        tbody.innerHTML = `
-            <tr id="fila-vacia">
-                <td colspan="6" style="text-align: center; color: #a1a1aa; padding: 50px 20px;">
-                    <i class="bi bi-box-seam" style="font-size: 2.5rem; display: block; margin-bottom: 12px; color: #d4d4d8;"></i>
-                    No has añadido ningún producto a tu lista de cotización todavía.
-                </td>
-            </tr>`;
+        if (filaVacia) filaVacia.style.display = 'table-row';
         actualizarTotales();
         return;
     }
 
-    tbody.innerHTML = '';
+    if (filaVacia) filaVacia.style.display = 'none';
+
     carritoProductos.forEach((item) => {
         let fleteItem = item.peso * TARIFA_LIBRA;
         let fleteItemBs = fleteItem * TASA_VES;
@@ -109,22 +110,23 @@ function renderizarTabla() {
         let sanitizedUrl = escapeHTML(safeUrl(item.url));
 
         let fila = document.createElement('tr');
+        fila.className = 'fila-producto';
         fila.innerHTML = `
             <td data-label="Tienda"><span class="badge-tienda ${badgeClass}">${item.tienda}</span></td>
             <td data-label="Artículo">
-                <a href="${sanitizedUrl}" target="_blank" style="color: var(--acento); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${sanitizedUrl}">
+                <a href="${sanitizedUrl}" target="_blank" class="link-articulo" title="${sanitizedUrl}">
                     <i class="bi bi-box-arrow-up-right"></i> Ver Artículo
                 </a>
             </td>
-            <td data-label="Precio ($)" style="text-align: center;">
+            <td data-label="Precio ($)" class="text-center">
                 <input type="number" step="0.01" class="input-tabla" value="${item.precio.toFixed(2)}" onchange="modificarItem(${item.id}, 'precio', this.value)">
             </td>
-            <td data-label="Peso (Lbs)" style="text-align: center;">
+            <td data-label="Peso (Lbs)" class="text-center">
                 <input type="number" step="1" class="input-tabla" value="${item.peso.toFixed(1)}" onchange="modificarItem(${item.id}, 'peso', this.value)">
             </td>
-            <td data-label="Flete Est. ($ / Bs)" style="text-align: right; font-weight: 600; color: var(--primario);">
+            <td data-label="Flete Est. ($ / Bs)" class="flete-celda">
                 $${fleteItem.toFixed(2)}
-                <span style="display: block; font-size: 0.75rem; color: #71717a; font-weight: 500;">${fleteItemBs.toFixed(2)} Bs</span>
+                <span class="flete-ves-subtexto">${fleteItemBs.toFixed(2)} Bs</span>
             </td>
             <td>
                 <button class="btn-eliminar" onclick="eliminarItem(${item.id})" title="Remover artículo"><i class="bi bi-trash3-fill"></i></button>

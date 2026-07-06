@@ -224,7 +224,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.status-reparado, .status-entregado { background: rgba(16, 185, 129, 0.1) !important; color: var(--verde-precio) !important; border-color: rgba(16, 185, 129, 0.2); }
+.status-reparado, .status-entregado { background: rgba(16, 185, 129, 0.1) !important; color: var(--exito) !important; border-color: rgba(16, 185, 129, 0.2); }
 .status-cancelado { background: rgba(220, 38, 38, 0.1) !important; color: var(--acento) !important; border-color: rgba(220, 38, 38, 0.2); }
 .status-diagnostico, .status-repuestos { background: rgba(59, 130, 246, 0.1) !important; color: #3b82f6 !important; border-color: rgba(59, 130, 246, 0.2); }
 
@@ -371,7 +371,7 @@
     margin-bottom: 3rem;
     padding: 24px;
     border: 1px solid var(--borde);
-    border-top: 4px solid var(--verde-precio);
+    border-top: 4px solid var(--exito);
     border-radius: 12px;
     background-color: var(--fondo);
     text-align: left;
@@ -418,7 +418,7 @@
     gap: 8px;
 }
 
-.btn-aprobar { background-color: var(--verde-precio); }
+.btn-aprobar { background-color: var(--exito); }
 .btn-aprobar:hover { background-color: #059669; transform: translateY(-2px); }
 
 .btn-rechazar { background-color: var(--acento); }
@@ -621,5 +621,277 @@
 
     .acciones-presupuesto {
         flex-direction: column;
+    }
+}
+
+/* --- OPTIMIZACIONES Y ESTILOS TRASLADADOS DESDE PLANTILLA --- */
+
+/* Asegurar que la tipografía Space Grotesk se aplique a todos los elementos del módulo */
+#panel-principal, 
+.resultado-card, 
+.info-resumen-header, 
+.info-resumen-item, 
+.info-value, 
+.falla-reportada-card, 
+.presupuesto-box, 
+.timeline-title, 
+.timeline-item, 
+.timeline-desc, 
+.timeline-fecha, 
+button, 
+label, 
+select, 
+input, 
+textarea,
+.btn-submit,
+.btn-outline,
+.btn-volver {
+    font-family: var(--fuente-base), 'Space Grotesk', sans-serif !important;
+}
+
+/* Estilos Premium para el Módulo de Rastreo */
+.rastreo-box {
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid var(--borde);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
+}
+
+.input-rastreo {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid var(--borde) !important;
+    color: var(--texto-claro) !important;
+    font-family: monospace;
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 2px;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.input-rastreo:focus {
+    border-color: var(--acento) !important;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15) !important;
+    outline: none;
+}
+
+.info-resumen-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    background: var(--fondo-sutil);
+    border: 1px solid var(--borde);
+    padding: 1.25rem 1.75rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+.info-resumen-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: left;
+}
+.info-resumen-item .info-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--texto-mutado);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+.info-resumen-item .info-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--texto);
+}
+
+.falla-reportada-card {
+    background: rgba(220, 38, 38, 0.01);
+    border-left: 4px solid var(--acento);
+    border-top: 1px solid var(--borde);
+    border-right: 1px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+.falla-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--texto-mutado);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
+}
+.falla-text {
+    font-size: 0.95rem;
+    color: var(--texto);
+    margin: 0;
+    line-height: 1.5;
+    opacity: 0.95;
+}
+
+.presupuesto-box {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-top: 4px solid var(--exito);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+}
+.presupuesto-box h3 {
+    color: var(--texto) !important;
+}
+
+.acciones-presupuesto form button {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.acciones-presupuesto form button:hover {
+    transform: translateY(-2px);
+}
+
+/* Timeline Estetizado y Centrado */
+.timeline {
+    border-left: none !important; /* Quitamos borde nativo */
+    padding-left: 2rem !important;
+    position: relative;
+    margin-left: 0.5rem !important;
+    text-align: left;
+}
+
+/* Línea vertical perfecta */
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--borde);
+}
+
+.timeline-item {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+/* Punto perfectamente centrado en la línea */
+.timeline-item::before {
+    content: '' !important;
+    position: absolute !important;
+    left: -24px !important; /* Ajustado matemáticamente para centrarse en left: 8px de .timeline */
+    top: 8px !important;
+    width: 12px !important;
+    height: 12px !important;
+    background: var(--blanco) !important;
+    border: 3px solid var(--acento) !important;
+    border-radius: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 2 !important;
+    transition: border-color 0.2s ease;
+}
+
+.timeline-fecha {
+    font-size: 0.8rem;
+    color: var(--texto-mutado);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.timeline-desc {
+    background: var(--fondo-sutil) !important;
+    border: 1px solid var(--borde) !important; /* Sin borde de acento izquierdo para evitar la doble línea paralela */
+    padding: 1.1rem 1.4rem !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+    color: var(--texto) !important;
+    line-height: 1.6 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.timeline-img-wrapper {
+    position: relative;
+    display: block; /* Forzar bloque para que se apile verticalmente bajo el texto */
+    margin-top: 6px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+    cursor: pointer;
+    max-width: 100%;
+}
+.timeline-img {
+    display: block;
+    max-height: 220px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain; /* Evita recortes toscos en las imágenes de hardware */
+    transition: transform 0.3s ease;
+}
+.timeline-img-wrapper:hover .timeline-img {
+    transform: scale(1.04);
+}
+.timeline-img-wrapper::after {
+    content: '\F52A'; /* bootstrap icon zoom-in */
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(9, 9, 11, 0.7);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none; /* Hace que el overlay sea click-through */
+}
+.timeline-img-wrapper:hover::after {
+    opacity: 1;
+}
+
+/* Adaptación a dispositivos móviles */
+@media (max-width: 768px) {
+    .info-resumen-header {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    .timeline {
+        padding-left: 1.5rem !important;
+        margin-left: 0 !important;
+    }
+    .timeline::before {
+        left: 4px;
+    }
+    .timeline-item::before {
+        left: -20px !important; /* aligns with left: 4px when padding is 1.5rem (24px) */
+    }
+    .timeline-desc {
+        padding: 0.9rem 1.1rem !important;
+    }
+    .presupuesto-box {
+        padding: 1rem !important; /* Reducir padding lateral para ganar área horizontal */
+    }
+    .presupuesto-box table {
+        min-width: 0 !important; /* Elimina la restricción de scroll de 400px */
+        width: 100% !important;
     }
 }

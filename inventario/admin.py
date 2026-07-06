@@ -192,20 +192,6 @@ class PedidoImportacionAdmin(ModelAdmin):
         ('Seguimiento', {'fields': ['carrier_nombre', 'carrier_tracking', 'codigo_seguimiento', 'fecha']}),
     ]
 
-    def save_model(self, request, obj, form, change):
-        from .views import obtener_tasa_binance
-        if obj.estado == 'CONFIRMADA' and not obj.pago_inicial_usd:
-            obj.pago_inicial_usd = obj.total_usd / 2
-            obj.saldo_pendiente_usd = obj.total_usd / 2
-            if not obj.tasa_confirmacion:
-                obj.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
-            if obj.tasa_confirmacion and not obj.pago_inicial_ves:
-                obj.pago_inicial_ves = obj.pago_inicial_usd * obj.tasa_confirmacion
-        if obj.estado == 'ENTREGADO' and obj.saldo_pendiente_usd and not obj.tasa_entrega:
-            obj.tasa_entrega = decimal.Decimal(str(obtener_tasa_binance()))
-            obj.saldo_pendiente_ves = obj.saldo_pendiente_usd * obj.tasa_entrega
-        super().save_model(request, obj, form, change)
-
 
 class PedidoCatalogoAdmin(ModelAdmin):
     list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'estado', 'fecha']
