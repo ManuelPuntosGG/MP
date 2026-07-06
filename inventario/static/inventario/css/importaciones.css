@@ -65,8 +65,8 @@
 .grupo-campo input { padding: 0.75rem 1rem; border: 1px solid var(--borde); border-radius: 10px; font-size: 0.95rem; background: var(--fondo); transition: all 0.2s ease; color: var(--primario); width: 100%; box-sizing: border-box; }
 .grupo-campo input:focus { outline: none; border-color: var(--acento); background: var(--blanco); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15); }
 
-.btn-agregar { background: var(--primario); color: white; border: none; padding: 0 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 46px; }
-.btn-agregar:hover { background: #27272a; transform: translateY(-1px); }
+.btn-agregar { background: var(--primario); color: var(--blanco); border: none; padding: 0 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 46px; }
+.btn-agregar:hover { background: var(--gris-medio); transform: translateY(-1px); }
 
 .politicas-box { background: #fffdf5; border: 1px solid #fde047; color: #713f12; padding: 1.25rem; border-radius: 14px; margin-bottom: 2.5rem; font-size: 0.925rem; display: flex; gap: 1rem; align-items: flex-start; line-height: 1.5; }
 .politicas-box i { font-size: 1.5rem; color: #ca8a04; flex-shrink: 0; }
@@ -91,7 +91,7 @@
 .bg-ebay { background: rgba(0, 100, 210, 0.12); color: #0064d2; border: 1px solid rgba(0, 100, 210, 0.2); }
 .bg-otro { background: rgba(113, 113, 122, 0.12); color: #52525b; border: 1px solid rgba(113, 113, 122, 0.2); }
 
-.resumen-importacion { background: var(--primario); color: white; padding: 2.25rem; border-radius: 18px; box-shadow: 0 12px 24px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+.resumen-importacion { background: var(--primario); color: var(--blanco); padding: 2.25rem; border-radius: 18px; box-shadow: 0 12px 24px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
 .resumen-importacion::before { content: ''; position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%); pointer-events: none; }
 .resumen-linea { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.975rem; opacity: 0.9; gap: 15px; }
 .resumen-linea .monto-desglose { text-align: right; flex-shrink: 0; }
@@ -100,13 +100,13 @@
 .resumen-total .monto-desglose { text-align: right; flex-shrink: 0; }
 
 .bs-subtexto { display: block; font-size: 0.8rem; opacity: 0.75; font-weight: 500; margin-top: 2px; }
-.bs-subtexto-total { display: block; font-size: 1.05rem; color: #fff; opacity: 0.9; font-weight: 600; margin-top: 4px; }
+.bs-subtexto-total { display: block; font-size: 1.05rem; color: var(--blanco); opacity: 0.9; font-weight: 600; margin-top: 4px; }
 
 .financiamiento-panel { margin-top: 1.5rem; background: rgba(255,255,255,0.07); padding: 1.25rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.6; border: 1px solid rgba(255,255,255,0.1); }
 .financiamiento-panel strong { color: var(--acento); }
 
-.btn-whatsapp-import { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: #25D366; color: white; text-decoration: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; margin-top: 1.75rem; transition: all 0.23s cubic-bezier(0.4, 0, 0.2, 1); text-align: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
-.btn-whatsapp-import:hover { background: #20ba56; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35); }
+.btn-whatsapp-import { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: var(--whatsapp); color: var(--blanco); text-decoration: none; padding: 1rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; margin-top: 1.75rem; transition: all 0.23s cubic-bezier(0.4, 0, 0.2, 1); text-align: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
+.btn-whatsapp-import:hover { background: var(--whatsapp-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35); }
 
 @media (max-width: 768px) {
     .import-container { margin: 1.5rem auto; }
