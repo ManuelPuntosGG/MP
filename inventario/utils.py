@@ -102,9 +102,28 @@ def obtener_tasa_binance():
 
     stale_tasa = cache.get(f"{TASA_CACHE_KEY}_stale")
 
+    # Si no hay tasa fresca ni stale en caché (inicio en frío del servidor),
+    # realizamos una actualización síncrona en este hilo para evitar retornar el fallback 760.
+    if not stale_tasa:
+        fuentes = [
+            ('Binance P2P', _fetch_tasa_binance_p2p),
+            ('ExchangeRate-API', _fetch_tasa_bcv),
+        ]
+        for nombre, fetch_fn in fuentes:
+            try:
+                precio = fetch_fn()
+                cache.set(TASA_CACHE_KEY, precio, TASA_CACHE_TTL)
+                cache.set(f"{TASA_CACHE_KEY}_stale", precio, TASA_STALE_TTL)
+                logger.info("Tasa de cambio inicial obtenida síncronamente vía %s: %s VES/USDT", nombre, precio)
+                return precio
+            except Exception as e:
+                logger.warning("Fallo síncrono al obtener tasa vía %s: %s", nombre, e)
+        return TASA_FALLBACK
+
+    # Si hay tasa stale disponible, iniciamos la actualización asíncrona de fondo y la retornamos de inmediato.
     updating_flag = f"{TASA_CACHE_KEY}_updating"
     if not cache.get(updating_flag):
         cache.set(updating_flag, True, TASA_UPDATING_TTL)
         _actualizar_tasa_async()
 
-    return stale_tasa or TASA_FALLBACK
+    return stale_tasa
