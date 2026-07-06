@@ -5,50 +5,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'inventario/css/catalogo.css' %}">
-<style>
-#cart-toggle {
-    position: fixed; bottom: 100px; right: 30px; z-index: 1001;
-    width: 60px; height: 60px; border-radius: 50%;
-    background: var(--primario); color: #fff; border: none;
-    font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s;
-}
-#cart-toggle:hover { transform: scale(1.1); }
-#cart-count { position: absolute; top: -5px; right: -5px;
-    background: #e74c3c; color: #fff; border-radius: 50%;
-    width: 24px; height: 24px; font-size: 0.75rem;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; }
-#cart-overlay { position: fixed; top:0;left:0;right:0;bottom:0;z-index:1000;
-    background: rgba(0,0,0,0.5); opacity:0; visibility:hidden; transition:0.3s; }
-#cart-overlay.visible { opacity:1; visibility:visible; }
-#cart-sidebar { position:fixed; top:0;right:0;bottom:0;width:380px;z-index:1002;
-    background:var(--blanco); box-shadow:-4px 0 20px rgba(0,0,0,0.4);
-    transform:translateX(100%); transition:transform 0.3s; display:flex; flex-direction:column; }
-@media (max-width:480px) { #cart-sidebar { width:100%; } }
-#cart-sidebar.open { transform:translateX(0); }
-#cart-sidebar .cart-sidebar-header { display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid var(--borde); }
-#cart-sidebar .cart-sidebar-header h2 { padding:0; margin:0; border-bottom:none; }
-.cart-close-btn { background:none; border:none; color:var(--texto-mutado); font-size:1.8rem; cursor:pointer; line-height:1; padding:0; transition:color 0.2s; }
-.cart-close-btn:hover { color:var(--texto); }
-#cart-items { flex:1; overflow-y:auto; padding:10px 20px; }
-.cart-empty { text-align:center; padding:40px 0; color:var(--texto-mutado); }
-.cart-empty i { font-size:3rem; display:block; margin-bottom:10px; }
-.cart-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--borde); }
-.cart-item-img { width:50px; height:50px; border-radius:8px; object-fit:cover; }
-.cart-item-img-placeholder { width:50px; height:50px; border-radius:8px; background:var(--fondo); display:flex; align-items:center; justify-content:center; color:var(--texto-mutado); font-size:1.3rem; flex-shrink:0; }
-.cart-item-info { flex:1; }
-.cart-item-name { font-weight:600; }
-.cart-item-price { color:var(--primario); font-weight:700; }
-.cart-item-qty { display:flex; align-items:center; gap:8px; margin-top:4px; }
-.cart-qty-btn { width:28px;height:28px;border-radius:50%;border:1px solid var(--borde);
-    background:var(--fondo);cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center; }
-.cart-item-remove { background:none;border:none;color:var(--texto-mutado);cursor:pointer;font-size:1.1rem; }
-#cart-footer { padding:20px; border-top:1px solid var(--borde); }
-#cart-total { font-size:1.3rem; font-weight:700; color:var(--primario); }
-#cart-checkout { width:100%; padding:12px; margin-top:10px; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -119,7 +75,7 @@
                 <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
                 {% else %}
                 <div class="imagen-placeholder-prod">
-                    <i class="bi bi-image" style="font-size: 1.8rem;"></i>
+                    <i class="bi bi-image"></i>
                     <span>Sin registro de imagen</span>
                 </div>
                 {% endif %}
@@ -132,11 +88,9 @@
 
                 <div class="tarjeta-footer-prod">
                     <div class="info-precio-stock">
-                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <div class="precio-group">
                             <span class="precio-usd">${{ producto.precio }}</span>
-                            <span style="font-size: 0.82rem; color: var(--texto-mutado); font-weight: 600;">
-                                ≈ {{ producto.precio_ves|floatformat:2 }} Bs.
-                            </span>
+                            <span class="precio-ves">≈ {{ producto.precio_ves|floatformat:2 }} Bs.</span>
                         </div>
                         <span class="badge-stock-prod{% if producto.stock == 0 %} agotado{% endif %}">{% if producto.stock == 0 %}Agotado{% else %}Stock: {{ producto.stock }}{% endif %}</span>
                     </div>
@@ -169,12 +123,12 @@
             </div>
         </div>
         {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--texto-mutado);">
-            <i class="bi bi-search-heart" style="font-size: 3.5rem; color: var(--borde); display: block; margin-bottom: 16px;"></i>
-            <h3 style="color: var(--primario); font-weight: 700;">No se encuentran productos disponibles</h3>
-            <p style="font-size: 0.95rem; margin-top: 6px;">Ajusta los parámetros de búsqueda o limpiando los filtros actuales.</p>
+        <div class="catalogo-empty">
+            <i class="bi bi-search-heart"></i>
+            <h3>No se encuentran productos disponibles</h3>
+            <p>Ajusta los parámetros de búsqueda o limpiando los filtros actuales.</p>
             {% if query_busqueda or categoria_seleccionada %}
-            <a href="{% url 'inventario:catalogo' %}" class="btn-limpiar" style="margin-top: 20px; border-color: var(--primario); color: var(--primario);">
+            <a href="{% url 'inventario:catalogo' %}" class="btn btn-outline catalogo-empty-btn">
                 <i class="bi bi-eye"></i> Ver catálogo completo
             </a>
             {% endif %}
@@ -238,11 +192,12 @@
         </div>
         <div id="cart-items"><div class="cart-empty"><i class="bi bi-bag"></i><p>Tu carrito está vacío</p></div></div>
         <div id="cart-footer">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="cart-footer-total">
                 <span>Total:</span>
                 <span id="cart-total">$0.00</span>
             </div>
             <button id="cart-checkout" class="btn-submit"><i class="bi bi-whatsapp"></i> Finalizar pedido por WhatsApp</button>
+            <p class="cart-disclaimer">🔒 No guardamos tus datos de pago. Recibirás el resumen por WhatsApp.</p>
         </div>
     </div>
 </div>

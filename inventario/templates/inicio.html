@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Bloque de Presentación Principal (Hero) -->
+<!-- Hero Section -->
 <section class="hero fade-in">
     <h1>Soluciones Tecnológicas</h1>
     <p>Expertos en reparación a nivel de componentes electrónicos y venta de hardware de todas las gamas. Transparencia y confiabilidad en cada uno de nuestros trabajos.</p>
@@ -18,14 +18,14 @@
     </div>
 </section>
 
-<!-- Bloque de Servicios Comerciales y Soporte -->
+<!-- Services Section -->
 <section class="servicios-container fade-in">
     <div class="servicios-grid">
         <div class="card-servicio">
             <span class="card-servicio-icono"><i class="bi bi-tools"></i></span>
             <h3>Servicio Técnico Especializado</h3>
             <p>Diagnóstico y reparación avanzada de equipos electrónicos (PCs, Laptops, Tarjetas Madre, Gráficas e Impresoras).</p>
-            <a href="{% url 'inventario:solicitar_reparacion' %}" class="btn btn-primario btn-interno-p">
+            <a href="{% url 'inventario:solicitar_reparacion' %}" class="btn btn-interno-p">
                 <i class="bi bi-file-earmark-plus"></i> Solicitar Reparación
             </a>
         </div>
@@ -40,7 +40,70 @@
     </div>
 </section>
 
-<!-- Indicadores de Confianza y Métricas Técnicas -->
+{% if user.is_authenticated %}
+{% with total_ordenes=ordenes|length total_importaciones=importaciones|length total_compras=pedidos_catalogo|length %}
+<section class="user-dashboard-section fade-in">
+    <div class="user-dashboard-container">
+        <h2 class="user-dashboard-title">Mi Actividad Reciente</h2>
+        <p class="user-dashboard-subtitle">Bienvenido de nuevo. Aquí tienes el resumen de tu cuenta:</p>
+        
+        <div class="user-dashboard-grid">
+            <div class="user-dashboard-card">
+                <i class="bi bi-tools"></i>
+                <h3>{{ total_ordenes }}</h3>
+                <p>Reparaciones</p>
+            </div>
+            <div class="user-dashboard-card">
+                <i class="bi bi-box-seam"></i>
+                <h3>{{ total_importaciones }}</h3>
+                <p>Importaciones</p>
+            </div>
+            <div class="user-dashboard-card">
+                <i class="bi bi-cart-check"></i>
+                <h3>{{ total_compras }}</h3>
+                <p>Compras</p>
+            </div>
+        </div>
+
+        {% if total_ordenes > 0 or total_importaciones > 0 or total_compras > 0 %}
+        <div class="activity-section-inner">
+            <h3 class="activity-title">Movimientos Recientes</h3>
+            <div class="activity-list">
+                {% for o in ordenes|slice:":3" %}
+                <div class="activity-item">
+                    <span class="activity-badge reparacion">Reparac.</span>
+                    <span class="activity-code">{{ o.codigo_rastreo }}</span>
+                    <span class="activity-status">{{ o.get_estado_display }}</span>
+                    <a href="{% url 'inventario:rastrear_ticket' %}?codigo={{ o.codigo_rastreo }}" class="activity-link"><i class="bi bi-arrow-right"></i></a>
+                </div>
+                {% endfor %}
+                {% for p in importaciones|slice:":3" %}
+                <div class="activity-item">
+                    <span class="activity-badge importacion">Import.</span>
+                    <span class="activity-code">{{ p.codigo_seguimiento }}</span>
+                    <span class="activity-status">{{ p.get_estado_display }}</span>
+                    <a href="{% url 'inventario:detalle_importacion' p.pk %}" class="activity-link"><i class="bi bi-arrow-right"></i></a>
+                </div>
+                {% endfor %}
+                {% for p in pedidos_catalogo|slice:":3" %}
+                <div class="activity-item">
+                    <span class="activity-badge compra">Compra</span>
+                    <span class="activity-code">{{ p.codigo_seguimiento }}</span>
+                    <span class="activity-status">{{ p.get_estado_display }}</span>
+                </div>
+                {% endfor %}
+                <div class="activity-footer">
+                    <a href="{% url 'inventario:perfil_cliente' %}" class="btn btn-outline">Ver todos mis movimientos</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endwith %}
+{% endif %}
+
+<!-- Trust Section -->
 <section class="trust-section fade-in">
     <div class="trust-grid">
         <div class="trust-item">
@@ -61,7 +124,7 @@
     </div>
 </section>
 
-<!-- Canales de Comunidad y Redes Sociales -->
+<!-- Social Section -->
 <section class="social-section fade-in">
     <h2>Nuestra Comunidad Digital</h2>
     <p>Conoce nuestros laboratorios de cerca, aprende tips técnicos y revisa stock en tiempo real.</p>
@@ -86,7 +149,7 @@
     </div>
 </section>
 
-<!-- Información Operativa e Integración Geomapa -->
+<!-- Location Section -->
 <section class="ubicacion fade-in">
     <div class="ubicacion-container">
         <div class="ubicacion-info">

@@ -91,26 +91,7 @@
 
 .auth-box .btn-submit {
     width: 100%;
-    padding: 13px;
-    background: var(--acento);
-    color: var(--blanco);
-    border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition-smooth);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
     margin-top: 0.5rem;
-}
-
-.auth-box .btn-submit:hover {
-    background: var(--acento-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
 }
 
 .auth-link {
@@ -168,4 +149,16 @@
 .auth-error-box i {
     color: var(--rojo);
     margin-top: 2px;
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 2rem 0.5rem;
+    }
+    .auth-box {
+        padding: 1.5rem 1rem;
+    }
+    .auth-box h2 {
+        font-size: 1.1rem;
+    }
 }

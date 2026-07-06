@@ -1,3 +1,8 @@
+function abrirModalLogin() {
+    var overlay = document.getElementById('login-modal-overlay');
+    if (overlay) overlay.classList.add('active');
+}
+
 function showToast(message, type) {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -70,4 +75,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var fadeElements = document.querySelectorAll('.fade-in');
     fadeElements.forEach(function (el) { observer.observe(el); });
+
+    /* Login modal */
+    var loginBtn = document.getElementById('btn-login-modal');
+    var loginOverlay = document.getElementById('login-modal-overlay');
+    var loginClose = document.getElementById('login-modal-close');
+    var loginForm = document.getElementById('login-modal-form');
+    var loginError = document.getElementById('login-modal-error');
+    if (loginBtn && loginOverlay) {
+        loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginOverlay.classList.add('active');
+        });
+        function closeLoginModal() { loginOverlay.classList.remove('active'); if (loginError) loginError.style.display = 'none'; }
+        if (loginClose) loginClose.addEventListener('click', closeLoginModal);
+        loginOverlay.addEventListener('click', function(e) { if (e.target === loginOverlay) closeLoginModal(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && loginOverlay.classList.contains('active')) closeLoginModal(); });
+    }
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(loginForm);
+            loginForm.querySelector('.btn-submit').classList.add('btn-loading');
+            fetch(loginForm.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(function(r) { return r.json(); }).then(function(data) {
+                loginForm.querySelector('.btn-submit').classList.remove('btn-loading');
+                if (data.success) {
+                    window.location.href = loginForm.dataset.next || '/perfil/';
+                } else {
+                    loginError.style.display = 'flex';
+                    loginError.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> ' + (data.error || 'Credenciales inválidas');
+                }
+            }).catch(function() {
+                loginForm.querySelector('.btn-submit').classList.remove('btn-loading');
+                loginError.style.display = 'flex';
+                loginError.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> Error de conexión';
+            });
+        });
+    }
 });

@@ -109,3 +109,30 @@
     border-bottom: 1px solid var(--borde);
     font-size: 0.9rem;
 }
+
+.dash-table-wrap {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1.5rem 0.8rem;
+    }
+    .dashboard-title {
+        font-size: 1.2rem;
+    }
+    .dash-card {
+        padding: 1rem;
+    }
+    .dash-card h3 {
+        font-size: 1.4rem;
+    }
+    .dash-section {
+        padding: 1rem;
+    }
+    .dash-table th,
+    .dash-table td {
+        padding: 0.5rem 0.4rem;
+        font-size: 0.82rem;
+    }
+}

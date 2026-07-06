@@ -223,6 +223,14 @@ function actualizarTotales() {
     lineasMensaje.push("");
     lineasMensaje.push("⚠️ _Acepto que los valores son estimados y la cotización final puede variar de acuerdo al pesaje y cubicaje definitivo medido en el almacén de origen._");
 
+    let nombre = document.getElementById('user-nombre-data')?.value || '';
+    let telefono = document.getElementById('user-telefono-data')?.value || '';
+    if (nombre && telefono) {
+        lineasMensaje.push("");
+        lineasMensaje.push(`👤 *Nombre:* ${nombre}`);
+        lineasMensaje.push(`📞 *Teléfono:* ${telefono}`);
+    }
+
     let mensajeCodificado = encodeURIComponent(lineasMensaje.join("\n"));
     document.getElementById('btn-ws-import').href = `https://wa.me/${telefonoMTech}?text=${mensajeCodificado}`;
 }
@@ -237,6 +245,28 @@ function validarEnvio(e) {
         }
         return false;
     }
+    
+    var nombre = document.getElementById('user-nombre-data')?.value || '';
+    var telefono = document.getElementById('user-telefono-data')?.value || '';
+    if (!nombre) nombre = prompt("Tu nombre:");
+    if (!telefono) telefono = prompt("Tu teléfono:");
+    
+    if (!nombre || !telefono) {
+        e.preventDefault();
+        if (typeof showToast === 'function') {
+            showToast('Nombre y teléfono son requeridos para procesar la cotización', 'error');
+        } else {
+            alert('Nombre y teléfono son requeridos para procesar la cotización.');
+        }
+        return false;
+    }
+    
+    var elNombre = document.getElementById('user-nombre-data');
+    var elTelefono = document.getElementById('user-telefono-data');
+    if (elNombre) elNombre.value = nombre;
+    if (elTelefono) elTelefono.value = telefono;
+    
+    actualizarTotales();
     return true;
 }
 
@@ -248,7 +278,16 @@ function guardarPedidoImportacion() {
     if (carritoProductos.length === 0) return;
     var totalFob = carritoProductos.reduce(function(s, i) { return s + i.precio; }, 0);
     var totalFlete = carritoProductos.reduce(function(s, i) { return s + i.peso * TARIFA_LIBRA; }, 0);
-    var totalGeneral = totalFob + totalFlete;
+    
+    var porcentajeComision = 0.10;
+    if (totalFob >= 200 && totalFob <= 1000) {
+        porcentajeComision = 0.075;
+    } else if (totalFob > 1000) {
+        porcentajeComision = 0.05;
+    }
+    var totalComision = Math.max(totalFob * porcentajeComision, COMISION_MINIMA);
+    var totalGeneral = totalFob + totalFlete + totalComision;
+    
     var nombre = document.getElementById('user-nombre-data')?.value || '';
     var telefono = document.getElementById('user-telefono-data')?.value || '';
     fetch('/guardar-importacion/', {
@@ -261,7 +300,7 @@ function guardarPedidoImportacion() {
             localStorage.removeItem(STORAGE_KEY);
             renderizarTabla();
             if (typeof showToast === 'function') {
-                showToast('Pedido de importacion #' + data.codigo + ' registrado', 'success');
+                showToast('Pedido de importación #' + data.codigo + ' registrado', 'success');
             }
         }
     }).catch(function() {});
@@ -276,7 +315,11 @@ document.addEventListener("DOMContentLoaded", function() {
     var btnWs = document.getElementById("btn-ws-import");
     if (btnWs) {
         btnWs.addEventListener("click", function() {
-            setTimeout(guardarPedidoImportacion, 500);
+            this.classList.add('btn-loading');
+            setTimeout(function() {
+                guardarPedidoImportacion();
+                if (btnWs) btnWs.classList.remove('btn-loading');
+            }, 500);
         });
     }
 });

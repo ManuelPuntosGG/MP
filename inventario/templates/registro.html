@@ -11,7 +11,7 @@
 <div class="auth-container">
     <div class="auth-box">
         <h2><i class="bi bi-person-plus"></i> Crear Cuenta</h2>
-        <p class="auth-desc">Regístrate con tu correo electrónico para gestionar tus reparaciones, importaciones y pedidos.</p>
+        <p class="auth-desc">Crea tu cuenta en segundos y accede a tus pedidos, reparaciones e importaciones.</p>
 
         {% if form.non_field_errors %}
         <div class="auth-error-box">
@@ -41,7 +41,9 @@
             </button>
         </form>
 
-        <p class="auth-link">¿Ya tienes cuenta? <a href="{% url 'inventario:iniciar_sesion' %}">Inicia sesión</a></p>
+        <div class="auth-separator">o</div>
+
+        <p class="auth-link">¿Ya tienes cuenta? <a href="{% url 'inventario:iniciar_sesion' %}"><strong>Inicia sesión</strong></a></p>
     </div>
 </div>
 {% endblock %}

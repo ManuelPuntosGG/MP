@@ -109,30 +109,6 @@
     resize: vertical;
 }
 
-.btn-submit {
-    background: var(--acento);
-    color: white;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85rem;
-    transition: var(--transition-smooth);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.btn-submit:hover {
-    background: var(--acento-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
-}
-
 .form-group {
     margin-bottom: 1.4rem;
     text-align: left;
@@ -570,6 +546,20 @@
 }
 
 @media (max-width: 768px) {
+    .presupuesto-box {
+        overflow-x: auto;
+    }
+    .presupuesto-box table {
+        min-width: 400px;
+    }
+    .resultado-body {
+        padding: 1.5rem 1rem;
+    }
+    .timeline-img {
+        max-width: 100%;
+        height: auto;
+    }
+
     .stepper-container {
         flex-direction: column;
         gap: 24px;

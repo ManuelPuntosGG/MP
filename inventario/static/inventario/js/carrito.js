@@ -101,8 +101,10 @@ document.addEventListener("DOMContentLoaded", function() {
         var productoId = parseInt(btn.dataset.id);
         var nombre = btn.dataset.name;
         var precio = parseFloat(btn.dataset.price) || 0;
-        var nombreCliente = getNombreUsuario() || prompt("Tu nombre:");
-        var telefonoCliente = getTelefonoUsuario() || prompt("Tu teléfono:");
+        var nombreCliente = getNombreUsuario();
+        var telefonoCliente = getTelefonoUsuario();
+        if (!nombreCliente) nombreCliente = prompt("Tu nombre:");
+        if (!telefonoCliente) telefonoCliente = prompt("Tu teléfono:");
         if (!nombreCliente || !telefonoCliente) {
             showToast('Nombre y teléfono son requeridos', 'error');
             return;
@@ -158,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     actualizarBadge();
 
-    function buildWhatsAppMensaje(carrito, total, nombre, telefono) {
+    function buildWhatsAppMensaje(carrito, total, nombre, telefono, codigo) {
         var lineas = [
             "¡Hola *MP Tech*!",
             "",
@@ -172,7 +174,13 @@ document.addEventListener("DOMContentLoaded", function() {
             lineas.push("");
         });
         lineas.push("----------------------------------");
-        lineas.push("💰 *TOTAL ESTIMADO:* $" + total.toFixed(2));
+        lineas.push("💰 *TOTAL:* $" + total.toFixed(2));
+        lineas.push("");
+        lineas.push("👤 *Nombre:* " + nombre);
+        lineas.push("📞 *Teléfono:* " + telefono);
+        if (codigo) {
+            lineas.push("📍 *Código:* " + codigo);
+        }
         return lineas.join("\n");
     }
 
@@ -191,17 +199,16 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        var nombre = getNombreUsuario() || prompt("Tu nombre:");
-        var telefono = getTelefonoUsuario() || prompt("Tu teléfono:");
+        var nombre = getNombreUsuario();
+        var telefono = getTelefonoUsuario();
+        if (!nombre) nombre = prompt("Tu nombre:");
+        if (!telefono) telefono = prompt("Tu teléfono:");
         if (!nombre || !telefono) {
             showToast('Nombre y teléfono son requeridos', 'error');
             return;
         }
 
         var total = carrito.reduce(function(sum, item) { return sum + item.precio * item.cantidad; }, 0);
-        var mensaje = buildWhatsAppMensaje(carrito, total, nombre, telefono);
-        var wsUrl = "https://wa.me/584245022292?text=" + encodeURIComponent(mensaje);
-        window.open(wsUrl, '_blank');
 
         cartCheckout.classList.add('btn-loading');
         fetch('/guardar-pedido-catalogo/', {
@@ -210,11 +217,20 @@ document.addEventListener("DOMContentLoaded", function() {
             body: JSON.stringify({ productos: carrito, total: total, nombre: nombre, telefono: telefono })
         }).then(function(r) { return r.json(); }).then(function(data) {
             if (data.success) {
+                var mensaje = buildWhatsAppMensaje(carrito, total, nombre, telefono, data.codigo);
+                var wsUrl = "https://wa.me/584245022292?text=" + encodeURIComponent(mensaje);
+                window.open(wsUrl, '_blank');
+                
                 sessionStorage.setItem('mp_carrito', '[]');
                 renderCart();
                 showToast('Pedido #' + data.codigo + ' registrado', 'success');
+                closeCart();
+            } else {
+                showToast(data.error || 'Error al crear pedido', 'error');
             }
-        }).catch(function() {})
+        }).catch(function() {
+            showToast('Error de conexión', 'error');
+        })
         .finally(function() { cartCheckout.classList.remove('btn-loading'); });
     });
 });

@@ -1,36 +1,55 @@
 import json
-import secrets
+import logging
 import os
+import secrets
 import urllib.parse
 from io import BytesIO
-from PIL import Image
-import qrcode
 
-from django.db import models
-from django.utils import timezone
-from django.core.files.base import ContentFile
+import qrcode
+from PIL import Image
+
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
+from django.db import models
+from django.utils import timezone
+
+logger = logging.getLogger(__name__)
+
 
 def generar_codigo_unico():
+    """Genera un código alfanumérico de 8 caracteres para seguimiento."""
     return secrets.token_hex(4).upper()
 
+
 def optimizar_imagen(imagen_campo, tamaño_max=(1024, 1024), calidad=75):
-    """Recibe un archivo de imagen, lo redimensiona y lo comprime en JPEG."""
-    img = Image.open(imagen_campo)
+    """
+    Redimensiona y comprime una imagen a JPEG.
     
-    if img.mode in ("RGBA", "P"):
-        img = img.convert("RGB")
-        
-    img.thumbnail(tamaño_max, Image.Resampling.LANCZOS)
+    Args:
+        imagen_campo: Campo de imagen de Django.
+        tamaño_max: Tupla (ancho, alto) máximo.
+        calidad: Calidad JPEG (1-100).
     
-    buffer = BytesIO()
-    img.save(buffer, format='JPEG', quality=calidad, optimize=True)
-    
-    nombre_base = os.path.basename(os.path.splitext(imagen_campo.name)[0])
-    nuevo_nombre = f"{nombre_base}.jpg"
-    
-    return ContentFile(buffer.getvalue(), name=nuevo_nombre)
+    Returns:
+        ContentFile con la imagen optimizada o None si falla.
+    """
+    try:
+        img = Image.open(imagen_campo)
+
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+
+        img.thumbnail(tamaño_max, Image.Resampling.LANCZOS)
+
+        buffer = BytesIO()
+        img.save(buffer, format='JPEG', quality=calidad, optimize=True)
+
+        nombre_base = os.path.basename(os.path.splitext(imagen_campo.name)[0])
+        return ContentFile(buffer.getvalue(), name=f"{nombre_base}.jpg")
+    except Exception as e:
+        logger.error("Error al optimizar imagen %s: %s", imagen_campo.name, e)
+        return None
 
 
 class Categoria(models.Model):
@@ -57,13 +76,17 @@ class Producto(models.Model):
     def save(self, *args, **kwargs):
         if self.imagen:
             es_nueva = True
-            if self.pk: 
-                obj_previo = Producto.objects.get(pk=self.pk)
-                if obj_previo.imagen == self.imagen:
-                    es_nueva = False
-            
+            if self.pk:
+                try:
+                    obj_previo = Producto.objects.get(pk=self.pk)
+                    es_nueva = obj_previo.imagen != self.imagen
+                except Producto.DoesNotExist:
+                    es_nueva = True
+
             if es_nueva:
-                self.imagen = optimizar_imagen(self.imagen)
+                imagen_optimizada = optimizar_imagen(self.imagen)
+                if imagen_optimizada:
+                    self.imagen = imagen_optimizada
 
         super().save(*args, **kwargs)
 
@@ -93,45 +116,52 @@ class OrdenServicio(models.Model):
         ('APROBADO', 'Aprobado por el Cliente'),
         ('RECHAZADO', 'Rechazado por el Cliente'),
     ]
-    
+
     presupuesto_estado = models.CharField(
-        max_length=20, 
-        choices=ESTADOS_PRESUPUESTO, 
+        max_length=20,
+        choices=ESTADOS_PRESUPUESTO,
         default='SIN_PRESUPUESTO',
         verbose_name="Estado del Presupuesto",
-        db_index=True
+        db_index=True,
     )
-
-    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuario")
+    usuario = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name="Usuario"
+    )
     cliente_nombre = models.CharField(max_length=150, verbose_name="Nombre")
     cliente_telefono = models.CharField(max_length=20, verbose_name="Teléfono")
-    equipo = models.CharField(max_length=200, help_text="Ej. RTX 3060 EVGA XC GAMING, Laptop HP Pavilion 15, etc.")
+    equipo = models.CharField(
+        max_length=200,
+        help_text="Ej. RTX 3060 EVGA XC GAMING, Laptop HP Pavilion 15, etc."
+    )
     falla_reportada = models.TextField()
-    
+
     codigo_rastreo = models.CharField(
-        max_length=12, 
-        unique=True, 
-        default=generar_codigo_unico, 
-        editable=False
+        max_length=12,
+        unique=True,
+        default=generar_codigo_unico,
+        editable=False,
     )
 
     qr_code = models.ImageField(upload_to='qrs/', blank=True, null=True)
-    
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='ESPERANDO', db_index=True)
-    
+
+    estado = models.CharField(
+        max_length=20, choices=ESTADOS, default='ESPERANDO', db_index=True
+    )
+
     fecha_ingreso = models.DateTimeField(default=timezone.now, db_index=True)
     fecha_entrega = models.DateTimeField(blank=True, null=True)
 
     def generar_qr(self):
-        """Genera el QR y lo guarda en el campo qr_code"""
+        """Genera el código QR con la URL de seguimiento."""
         base_url = getattr(settings, 'SITE_BASE_URL', 'http://127.0.0.1:8000')
         url_seguimiento = f"{base_url}/rastreo/?codigo={self.codigo_rastreo}"
-        
+
         qr = qrcode.QRCode(version=1, box_size=5, border=1)
         qr.add_data(url_seguimiento)
         qr.make(fit=True)
         img = qr.make_image(fill='black', back_color='white')
-        
+
         buffer = BytesIO()
         img.save(buffer, 'PNG')
         filename = f'qr_{self.codigo_rastreo}.png'
@@ -142,16 +172,23 @@ class OrdenServicio(models.Model):
             self.fecha_entrega = timezone.now()
         elif self.estado != 'ENTREGADO':
             self.fecha_entrega = None
-            
+
         if not self.qr_code:
-            self.generar_qr()
-            
+            try:
+                self.generar_qr()
+            except Exception as e:
+                logger.error("Error generando QR para orden %s: %s", self.codigo_rastreo, e)
+
         super().save(*args, **kwargs)
 
-    @property # 🚀 MEJORA: Ahora puedes usar {{ ticket.enlace_whatsapp }} en tus HTML
+    @property
     def enlace_whatsapp(self):
+        """Genera enlace de WhatsApp con mensaje predefinido."""
         numero_limpio = ''.join(filter(str.isdigit, self.cliente_telefono))
-        
+
+        if not numero_limpio:
+            return ''
+
         if numero_limpio.startswith('0'):
             numero_limpio = '58' + numero_limpio[1:]
         elif not numero_limpio.startswith('58'):
@@ -171,7 +208,9 @@ class OrdenServicio(models.Model):
 
 
 class AvanceOrden(models.Model):
-    orden = models.ForeignKey(OrdenServicio, related_name='avances', on_delete=models.CASCADE)
+    orden = models.ForeignKey(
+        OrdenServicio, related_name='avances', on_delete=models.CASCADE
+    )
     fecha = models.DateTimeField(auto_now_add=True, db_index=True)
     descripcion = models.TextField(help_text="Ej: Se finalizó el diagnóstico...")
     imagen = models.ImageField(upload_to='avances/', null=True, blank=True)
@@ -184,14 +223,18 @@ class AvanceOrden(models.Model):
     def save(self, *args, **kwargs):
         if self.imagen:
             es_nueva = True
-            if self.pk: 
-                obj_previo = AvanceOrden.objects.get(pk=self.pk)
-                if obj_previo.imagen == self.imagen:
-                    es_nueva = False
-            
+            if self.pk:
+                try:
+                    obj_previo = AvanceOrden.objects.get(pk=self.pk)
+                    es_nueva = obj_previo.imagen != self.imagen
+                except AvanceOrden.DoesNotExist:
+                    es_nueva = True
+
             if es_nueva:
-                self.imagen = optimizar_imagen(self.imagen)
-                
+                imagen_optimizada = optimizar_imagen(self.imagen)
+                if imagen_optimizada:
+                    self.imagen = imagen_optimizada
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -199,7 +242,9 @@ class AvanceOrden(models.Model):
 
 
 class LineaPresupuesto(models.Model):
-    orden = models.ForeignKey(OrdenServicio, on_delete=models.CASCADE, related_name='lineas_presupuesto')
+    orden = models.ForeignKey(
+        OrdenServicio, on_delete=models.CASCADE, related_name='lineas_presupuesto'
+    )
     concepto = models.CharField(max_length=255, verbose_name="Repuesto o Concepto")
     monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto ($)")
 
@@ -212,10 +257,14 @@ class LineaPresupuesto(models.Model):
 
 
 class UserProfile(models.Model):
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    usuario = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='perfil'
+    )
     telefono = models.CharField(max_length=20, blank=True, verbose_name="Teléfono")
     direccion = models.TextField(blank=True, verbose_name="Dirección")
-    nombre_completo = models.CharField(max_length=150, blank=True, verbose_name="Nombre completo")
+    nombre_completo = models.CharField(
+        max_length=150, blank=True, verbose_name="Nombre completo"
+    )
 
     def __str__(self):
         return f"Perfil de {self.usuario.email}"
@@ -231,7 +280,10 @@ class PedidoImportacion(models.Model):
         ('ENTREGADO', 'Entregado'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario", null=True, blank=True)
+    usuario = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="Usuario",
+        null=True, blank=True
+    )
     cliente_nombre = models.CharField(max_length=150, blank=True, verbose_name="Nombre")
     cliente_telefono = models.CharField(max_length=20, blank=True, verbose_name="Teléfono")
     fecha = models.DateTimeField(auto_now_add=True)
@@ -239,16 +291,36 @@ class PedidoImportacion(models.Model):
     total_usd = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     total_ves = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     productos_json = models.TextField(blank=True, verbose_name="Productos (JSON)")
-    codigo_seguimiento = models.CharField(max_length=20, unique=True, default=generar_codigo_unico, editable=False)
+    codigo_seguimiento = models.CharField(
+        max_length=20, unique=True, default=generar_codigo_unico, editable=False
+    )
     carrier_nombre = models.CharField(max_length=100, blank=True, verbose_name="Carrier / Courier")
     carrier_tracking = models.CharField(max_length=100, blank=True, verbose_name="N° de Seguimiento")
     nota = models.TextField(blank=True)
-    tasa_confirmacion = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Tasa Bs/$ al confirmar")
-    pago_inicial_usd = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Pago inicial (USD)")
-    pago_inicial_ves = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Pago inicial (Bs)")
-    saldo_pendiente_usd = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Saldo pendiente (USD)")
-    tasa_entrega = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Tasa Bs/$ al entregar")
-    saldo_pendiente_ves = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Saldo pendiente (Bs al entregar)")
+    tasa_confirmacion = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,
+        verbose_name="Tasa Bs/$ al confirmar"
+    )
+    pago_inicial_usd = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True,
+        verbose_name="Pago inicial (USD)"
+    )
+    pago_inicial_ves = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True,
+        verbose_name="Pago inicial (Bs)"
+    )
+    saldo_pendiente_usd = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True,
+        verbose_name="Saldo pendiente (USD)"
+    )
+    tasa_entrega = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,
+        verbose_name="Tasa Bs/$ al entregar"
+    )
+    saldo_pendiente_ves = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True,
+        verbose_name="Saldo pendiente (Bs al entregar)"
+    )
 
     class Meta:
         ordering = ['-fecha']
@@ -256,9 +328,11 @@ class PedidoImportacion(models.Model):
         verbose_name_plural = "Pedidos de Importación"
 
     def productos_parsed(self):
+        """Retorna la lista de productos parseada desde JSON."""
         try:
             return json.loads(self.productos_json) if self.productos_json else []
         except (json.JSONDecodeError, TypeError):
+            logger.warning("Error parseando productos_json en PedidoImportacion %s", self.pk)
             return []
 
     def __str__(self):
@@ -272,14 +346,19 @@ class PedidoCatalogo(models.Model):
         ('CERRADA', 'Cerrada'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario", null=True, blank=True)
+    usuario = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="Usuario",
+        null=True, blank=True
+    )
     cliente_nombre = models.CharField(max_length=150, blank=True, verbose_name="Nombre")
     cliente_telefono = models.CharField(max_length=20, blank=True, verbose_name="Teléfono")
     fecha = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE')
     total_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     productos_json = models.TextField(blank=True, verbose_name="Productos (JSON)")
-    codigo_seguimiento = models.CharField(max_length=20, unique=True, default=generar_codigo_unico, editable=False)
+    codigo_seguimiento = models.CharField(
+        max_length=20, unique=True, default=generar_codigo_unico, editable=False
+    )
 
     class Meta:
         ordering = ['-fecha']
@@ -287,9 +366,11 @@ class PedidoCatalogo(models.Model):
         verbose_name_plural = "Pedidos de Catálogo"
 
     def productos_parsed(self):
+        """Retorna la lista de productos parseada desde JSON."""
         try:
             return json.loads(self.productos_json) if self.productos_json else []
         except (json.JSONDecodeError, TypeError):
+            logger.warning("Error parseando productos_json en PedidoCatalogo %s", self.pk)
             return []
 
     def __str__(self):

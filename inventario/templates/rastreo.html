@@ -13,38 +13,31 @@
     <div id="errors-hook" data-has-errors="{% if form.errors %}true{% else %}false{% endif %}" style="display: none;"></div>
 
     <div class="rastreo-box" id="panel-principal" {% if ticket %}style="display:none;"{% endif %}>
-        <h2>Sistema de Rastreos y Solicitudes</h2>
+        <h2>Rastrear Reparación</h2>
+        <p style="color: var(--texto-mutado); font-size: 0.95rem; margin-bottom: 1rem;">Ingresa tu código de seguimiento para ver el estado y presupuesto en tiempo real.</p>
+        
+        <form class="formulario-rastreo" method="GET">
+            <input type="text" name="codigo" placeholder="CÓDIGO DE ORDEN" value="{{ codigo }}" class="input-rastreo" oninput="this.value = this.value.toUpperCase()" required>
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </form>
 
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('rastreo')" id="btn-rastreo">
-                <i class="bi bi-search"></i> Rastrear Equipo
-            </button>
-            <button class="tab-btn" onclick="switchTab('ingreso')" id="btn-ingreso">
-                <i class="bi bi-tools"></i> Nueva Solicitud
-            </button>
+        {% if error and not ticket %}
+        <div class="alert-box alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--borde);text-align:center;">
+            <p style="color:var(--texto-mutado);font-size:0.9rem;">¿No tienes código? Solicita una reparación nueva.</p>
+            <button type="button" class="btn-outline" id="btn-nueva-solicitud" onclick="toggleSolicitarForm()"><i class="bi bi-tools"></i> Nueva Solicitud</button>
         </div>
 
-        <div class="tab-content active" id="content-rastreo">
-            <p style="color: var(--texto-mutado); font-size: 0.95rem; margin-bottom: 1rem;">Ingresa tu código único de seguimiento para auditar el estado físico y presupuesto en tiempo real.</p>
-            
-            <form class="formulario-rastreo" method="GET">
-                <input type="text" name="codigo" placeholder="CÓDIGO DE ORDEN" value="{{ codigo }}" class="input-rastreo" oninput="this.value = this.value.toUpperCase()" required>
-                <button type="submit" class="btn-submit">
-                    <i class="bi bi-search"></i> Buscar
-                </button>
-            </form>
+        <div id="content-solicitar" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--borde);">
+            <p style="color: var(--texto-mutado); font-size: 0.9rem; margin-bottom: 25px;">Completa los datos y tu equipo será registrado en nuestro sistema. El diagnóstico no genera cargos.</p>
 
-            {% if error and not ticket %}
-            <div class="alert-box alert-error">
-                <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="tab-content" id="content-ingreso">
-            <p style="color: var(--texto-mutado); font-size: 0.95rem; margin-bottom: 25px;">Completa los parámetros técnicos para emitir la orden de ingreso en cola. NOTA: Nuestra revisión diagnóstica no genera cargos.</p>
-
-            <form method="POST" action="{% url 'inventario:solicitar_reparacion' %}">
+            <form method="POST" action="{% url 'inventario:solicitar_reparacion' %}" id="form-solicitar-reparacion">
                 {% csrf_token %}
                 {% for field in form %}
                 <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -59,16 +52,21 @@
                 {% endfor %}
 
                 <button type="submit" class="btn-submit" style="width: 100%;">
-                    <i class="bi bi-hdd-network"></i> Registrar Solicitud en Sistema
+                    <i class="bi bi-hdd-network"></i> Registrar Solicitud
                 </button>
             </form>
         </div>
     </div>
 
     {% if ticket %}
-        <button class="btn-volver" onclick="document.getElementById('panel-principal').style.display='block'; this.style.display='none'; document.querySelector('.resultado-card').style.display='none';">
-            <i class="bi bi-arrow-left"></i> Consultar otra orden
-        </button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;">
+            <button class="btn-volver" onclick="document.getElementById('panel-principal').style.display='block'; this.style.display='none'; document.querySelector('.resultado-card').style.display='none';">
+                <i class="bi bi-arrow-left"></i> Consultar otra orden
+            </button>
+            <button class="btn-volver" onclick="window.print()">
+                <i class="bi bi-printer"></i> Imprimir ticket
+            </button>
+        </div>
 
         <div class="resultado-card">
             <div class="resultado-header">

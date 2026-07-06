@@ -11,20 +11,22 @@
 {% block content %}
 <div class="perfil-container">
     <div class="perfil-header">
-        <div class="perfil-avatar-wrapper">
-            <i class="bi bi-person-circle perfil-avatar"></i>
-        </div>
-        <div class="perfil-header-info">
-            <h2>{{ user.perfil.nombre_completo|default:user.email }}</h2>
-            <p class="perfil-subtitle">
-                <i class="bi bi-envelope"></i> {{ user.email }}
-                {% if user.perfil.telefono %}
-                    &middot; <i class="bi bi-telephone"></i> {{ user.perfil.telefono }}
-                {% endif %}
-            </p>
-            <a href="{% url 'inventario:perfil_editar' %}" class="perfil-edit-btn">
-                <i class="bi bi-pencil"></i> Editar perfil
-            </a>
+        <div class="perfil-user-card">
+            <div class="perfil-avatar-wrapper">
+                <i class="bi bi-person-circle perfil-avatar"></i>
+            </div>
+            <div class="perfil-header-info">
+                <h2>{{ user.perfil.nombre_completo|default:user.email }}</h2>
+                <p class="perfil-subtitle">
+                    <i class="bi bi-envelope"></i> {{ user.email }}
+                    {% if user.perfil.telefono %}
+                        &middot; <i class="bi bi-telephone"></i> {{ user.perfil.telefono }}
+                    {% endif %}
+                </p>
+                <a href="{% url 'inventario:perfil_editar' %}" class="perfil-edit-btn">
+                    <i class="bi bi-pencil"></i> Editar perfil
+                </a>
+            </div>
         </div>
         <div class="perfil-stats">
             <div class="stat-item">
@@ -66,7 +68,7 @@
             <div class="perfil-empty">
                 <i class="bi bi-tools"></i>
                 <p>No tienes reparaciones registradas.</p>
-                <a href="{% url 'inventario:solicitar_reparacion' %}" class="btn-submit">Solicitar Reparación</a>
+                <a href="{% url 'inventario:solicitar_reparacion' %}" class="btn-outline">Solicitar Reparación</a>
             </div>
         {% endif %}
     </div>
@@ -113,7 +115,7 @@
             <div class="perfil-empty">
                 <i class="bi bi-box-seam"></i>
                 <p>No tienes pedidos de importación.</p>
-                <a href="{% url 'inventario:cotizador_auto' %}" class="btn-submit">Cotizar Importación</a>
+                <a href="{% url 'inventario:cotizador_auto' %}" class="btn-outline">Cotizar Importación</a>
             </div>
         {% endif %}
     </div>
@@ -150,7 +152,7 @@
             <div class="perfil-empty">
                 <i class="bi bi-cart-check"></i>
                 <p>No tienes compras en el catálogo.</p>
-                <a href="{% url 'inventario:catalogo' %}" class="btn-submit">Explorar Catálogo</a>
+                <a href="{% url 'inventario:catalogo' %}" class="btn-outline">Explorar Catálogo</a>
             </div>
         {% endif %}
     </div>

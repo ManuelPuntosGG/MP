@@ -288,7 +288,7 @@ class ViewSolicitarReparacionTest(TestCase):
     def test_solicitar_post_invalid(self):
         response = self.client.post(reverse('inventario:solicitar_reparacion'), {})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Sistema de Rastreos")
+        self.assertContains(response, "Rastrear Reparación")
 
 
 class ViewResponderPresupuestoTest(TestCase):
@@ -388,8 +388,12 @@ class ViewLoginTest(TestCase):
 class ViewDashboardTest(TestCase):
     def setUp(self):
         self.client = Client()
+        self.user = User.objects.create_user('test@test.com', 'test@test.com', 'testpass')
+        self.user.email = 'test@test.com'
+        self.user.save()
 
     def test_dashboard_status(self):
+        self.client.login(username='test@test.com', password='testpass')
         response = self.client.get(reverse('inventario:dashboard'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'dashboard.html')
@@ -548,7 +552,7 @@ class ViewGuardarImportacionTest(TestCase):
         self.user.save()
 
     def test_requires_login(self):
-        response = self.client.post(reverse('inventario:guardar_importacion'), json.dumps({'total_usd': 100, 'productos': [{'nombre': 'Test'}]}), content_type='application/json')
+        response = self.client.post(reverse('inventario:guardar_importacion'), json.dumps({'total_usd': 100, 'productos': [{'nombre': 'Test'}], 'nombre': 'Juan'}), content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['success'])
 
@@ -558,6 +562,7 @@ class ViewGuardarImportacionTest(TestCase):
             'total_usd': 200,
             'total_ves': 160000,
             'productos': [{'nombre': 'GPU', 'precio': 200}],
+            'nombre': 'Juan',
             'nota': 'Test'
         }), content_type='application/json')
         self.assertEqual(response.status_code, 200)

@@ -43,14 +43,15 @@
 
             <div class="nav-user">
                 {% if user.is_authenticated %}
-                <a href="{% url 'inventario:perfil_cliente' %}" class="{% if request.resolver_match.url_name == 'perfil_cliente' %}active{% endif %}">
+                <a href="{% url 'inventario:perfil_cliente' %}" class="{% if request.resolver_match.url_name == 'perfil_cliente' or request.resolver_match.url_name == 'perfil_editar' %}active{% endif %}">
                     <i class="bi bi-person-circle"></i> {{ user.username }}
                 </a>
                 <a href="{% url 'inventario:cerrar_sesion' %}"><i class="bi bi-box-arrow-right"></i></a>
                 {% else %}
-                <a href="{% url 'inventario:iniciar_sesion' %}" class="{% if request.resolver_match.url_name == 'iniciar_sesion' or request.resolver_match.url_name == 'registrar_cliente' %}active{% endif %}">
+                <a href="#" id="btn-login-modal" onclick="abrirModalLogin();return false;" class="{% if request.resolver_match.url_name == 'iniciar_sesion' or request.resolver_match.url_name == 'registrar_cliente' %}active{% endif %}">
                     <i class="bi bi-person"></i> Entrar
                 </a>
+                <a href="{% url 'inventario:registrar_cliente' %}"><i class="bi bi-person-plus"></i> Registrarse</a>
                 {% endif %}
             </div>
         </nav>
@@ -71,6 +72,31 @@
 
     <div class="toast-container" id="toast-container"></div>
 
+    <div id="login-modal-overlay" class="modal-overlay">
+        <div class="modal-box" id="login-modal-box">
+            <button class="modal-close" id="login-modal-close" onclick="cerrarModalLogin()">&times;</button>
+            <h2><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</h2>
+            <p class="auth-desc">Accede a tu cuenta para gestionar reparaciones, pedidos e importaciones.</p>
+            <form method="POST" action="{% url 'inventario:iniciar_sesion' %}" id="login-modal-form" data-next="{% url 'inventario:perfil_cliente' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_login_email">Correo electrónico</label>
+                    <input type="email" name="email" id="id_login_email" class="form-input" placeholder="tu@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_login_password">Contraseña</label>
+                    <input type="password" name="password" id="id_login_password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <div class="modal-error-msg" id="login-modal-error" style="display:none;"></div>
+                <button type="submit" class="btn-submit btn-full">Iniciar Sesión</button>
+            </form>
+            <div class="auth-link modal-auth-link">
+                <a href="{% url 'inventario:password_reset' %}">¿Olvidaste tu contraseña?</a><br>
+                ¿No tienes cuenta? <a href="{% url 'inventario:registrar_cliente' %}"><strong>Regístrate</strong></a>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <div class="footer-content">
             <div class="footer-col">
@@ -81,12 +107,6 @@
                     <a href="https://www.youtube.com/@manuelpuntos/" target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
                     <a href="https://www.instagram.com/mp_tech_vzla/" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
                 </div>
-            </div>
-            <div class="footer-col">
-                <h4>Servicios</h4>
-                <a href="{% url 'inventario:catalogo' %}">Cat&aacute;logo de Hardware</a>
-                <a href="{% url 'inventario:rastrear_ticket' %}">Reparaciones</a>
-                <a href="{% url 'inventario:cotizador_auto' %}">Pedidos (BETA)</a>
             </div>
             <div class="footer-col">
                 <h4>Contacto</h4>

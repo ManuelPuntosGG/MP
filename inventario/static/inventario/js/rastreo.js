@@ -1,22 +1,9 @@
-function switchTab(tabId) {
-    ['content-rastreo', 'content-ingreso', 'btn-rastreo', 'btn-ingreso'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) el.classList.remove('active');
-    });
-
-    var contentEl = document.getElementById('content-' + tabId);
-    var btnEl = document.getElementById('btn-' + tabId);
-    
-    if (contentEl) contentEl.classList.add('active');
-    if (btnEl) btnEl.classList.add('active');
+function toggleSolicitarForm() {
+    var el = document.getElementById('content-solicitar');
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    var errorsHook = document.getElementById('errors-hook');
-    if (errorsHook && errorsHook.dataset.hasErrors === 'true') {
-        switchTab('ingreso');
-    }
-
     document.querySelectorAll('form').forEach(function(form) {
         form.addEventListener('submit', function() {
             var btn = this.querySelector('.btn-submit');
@@ -31,14 +18,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var lightbox = document.getElementById("imageLightbox");
     var lightboxImg = document.getElementById("lightboxImage");
-    var timelineImages = document.querySelectorAll('.timeline-img');
     var closeBtn = document.querySelector('.lightbox-close');
 
-    timelineImages.forEach(function(img) {
-        img.addEventListener('click', function() {
+    // Usar delegación de eventos para soportar refresco dinámico de la tarjeta
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('timeline-img')) {
             lightbox.style.display = "block";
-            lightboxImg.src = this.src;
-        });
+            lightboxImg.src = e.target.src;
+        }
     });
 
     if (closeBtn) {
@@ -47,14 +34,16 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    lightbox.addEventListener('click', function(e) {
-        if (e.target === lightbox) {
-            lightbox.style.display = "none";
-        }
-    });
+    if (lightbox) {
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                lightbox.style.display = "none";
+            }
+        });
+    }
 
     document.addEventListener('keydown', function(e) {
-        if (e.key === "Escape" && lightbox.style.display === "block") {
+        if (e.key === "Escape" && lightbox && lightbox.style.display === "block") {
             lightbox.style.display = "none";
         }
     });
