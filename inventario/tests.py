@@ -775,3 +775,77 @@ class StockDecrementAndTransactionsTest(TestCase):
         self.producto.refresh_from_db()
         self.assertEqual(self.producto.stock, 2)
 
+    def test_cancel_order_restores_stock(self):
+        # Crear un pedido directamente en PENDIENTE (que restaría stock, supongamos que ya restamos stock)
+        # Para simular, inicialmente tenemos el stock en 3.
+        # Creamos un pedido de 2 unidades.
+        self.producto.stock = 1
+        self.producto.save()
+        
+        pedido = PedidoCatalogo.objects.create(
+            cliente_nombre="Test Cancelar",
+            total_usd=700.00,
+            estado='PENDIENTE',
+            productos_json=json.dumps([{
+                'producto_id': self.producto.id,
+                'nombre': self.producto.nombre,
+                'precio': 350.00,
+                'cantidad': 2
+            }])
+        )
+        
+        # Cambiamos estado a CANCELADO
+        pedido.estado = 'CANCELADO'
+        pedido.save()
+        
+        # El stock debe retornar de 1 a 3
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 3)
+
+    def test_delete_pending_order_restores_stock(self):
+        self.producto.stock = 1
+        self.producto.save()
+        
+        pedido = PedidoCatalogo.objects.create(
+            cliente_nombre="Test Borrar",
+            total_usd=700.00,
+            estado='PENDIENTE',
+            productos_json=json.dumps([{
+                'producto_id': self.producto.id,
+                'nombre': self.producto.nombre,
+                'precio': 350.00,
+                'cantidad': 2
+            }])
+        )
+        
+        # Eliminar el pedido pendiente
+        pedido.delete()
+        
+        # El stock debe retornar de 1 a 3
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 3)
+
+    def test_delete_non_pending_order_does_not_restore_stock(self):
+        self.producto.stock = 1
+        self.producto.save()
+        
+        pedido = PedidoCatalogo.objects.create(
+            cliente_nombre="Test Entregado",
+            total_usd=700.00,
+            estado='ENTREGADO', # Ya fue entregado
+            productos_json=json.dumps([{
+                'producto_id': self.producto.id,
+                'nombre': self.producto.nombre,
+                'precio': 350.00,
+                'cantidad': 2
+            }])
+        )
+        
+        # Eliminar el pedido entregado (no debe restaurar stock)
+        pedido.delete()
+        
+        # El stock debe seguir en 1
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 1)
+
+

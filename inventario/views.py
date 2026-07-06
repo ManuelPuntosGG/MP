@@ -90,20 +90,37 @@ def imprimir_ticket(request, pk):
     return render(request, 'imprimir_ticket.html', {'ticket': orden})
 
 
-def _fetch_tasa_coingecko():
-    """Obtiene la tasa USDT/VES desde CoinGecko."""
-    url = "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ves"
-    headers = {"accept": "application/json"}
-
-    api_key = os.environ.get('COINGECKO_API_KEY')
-    if api_key:
-        headers["x-cg-demo-api-key"] = api_key
-
-    response = requests.get(url, headers=headers, timeout=5)
+def _fetch_tasa_binance_p2p():
+    """Obtiene la tasa promedio de los primeros 10 anuncios de compra de USDT/VES en Binance P2P."""
+    url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
+    payload = {
+        "asset": "USDT",
+        "fiat": "VES",
+        "merchantCheck": False,
+        "page": 1,
+        "payTypes": [],
+        "publisherType": None,
+        "rows": 10,
+        "tradeType": "BUY"
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    response = requests.post(url, json=payload, headers=headers, timeout=5)
     response.raise_for_status()
 
-    data = response.json()
-    return float(data['tether']['ves'])
+    res_json = response.json()
+    ads = res_json.get('data', [])
+    if not ads:
+        raise ValueError("No se obtuvieron anuncios de Binance P2P")
+
+    prices = [float(ad['adv']['price']) for ad in ads if 'adv' in ad and 'price' in ad['adv']]
+    if not prices:
+        raise ValueError("No se encontraron precios en los anuncios de Binance P2P")
+
+    promedio = sum(prices) / len(prices)
+    return round(promedio, 2)
 
 
 def _fetch_tasa_bcv():
@@ -127,7 +144,7 @@ def _actualizar_tasa_async():
                 return
 
             fuentes = [
-                ('CoinGecko', _fetch_tasa_coingecko),
+                ('Binance P2P', _fetch_tasa_binance_p2p),
                 ('ExchangeRate-API', _fetch_tasa_bcv),
             ]
 

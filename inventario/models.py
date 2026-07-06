@@ -343,6 +343,7 @@ class PedidoCatalogo(models.Model):
     ESTADOS = [
         ('PENDIENTE', 'Pendiente'),
         ('ENTREGADO', 'Entregado'),
+        ('CANCELADO', 'Cancelado / Rechazado'),
         ('CERRADA', 'Cerrada'),
     ]
 
@@ -372,6 +373,37 @@ class PedidoCatalogo(models.Model):
         except (json.JSONDecodeError, TypeError):
             logger.warning("Error parseando productos_json en PedidoCatalogo %s", self.pk)
             return []
+
+    def devolver_unidades_al_stock(self):
+        """Devuelve las unidades reservadas en este pedido al stock de los productos."""
+        productos = self.productos_parsed()
+        for item in productos:
+            try:
+                prod_id = int(item.get('producto_id'))
+                cantidad = int(item.get('cantidad', 1))
+                Producto.objects.filter(pk=prod_id).update(stock=models.F('stock') + cantidad)
+            except (ValueError, TypeError, KeyError) as e:
+                logger.error("Error al devolver unidades al stock del producto %s: %s", item.get('producto_id'), e)
+
+    def save(self, *args, **kwargs):
+        restaurar_stock = False
+        if self.pk:
+            try:
+                old_self = PedidoCatalogo.objects.get(pk=self.pk)
+                if old_self.estado == 'PENDIENTE' and self.estado in ['CANCELADO', 'CERRADA']:
+                    restaurar_stock = True
+            except PedidoCatalogo.DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+        if restaurar_stock:
+            self.devolver_unidades_al_stock()
+
+    def delete(self, *args, **kwargs):
+        if self.estado == 'PENDIENTE':
+            self.devolver_unidades_al_stock()
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"Pedido {self.codigo_seguimiento}"
