@@ -110,11 +110,7 @@
                             {% endif %}
                         </div>
                         
-                        {% if p.pago_inicial_usd %}
-                            <h2 class="pago-monto-usd">${{ p.pago_inicial_usd|floatformat:2 }}</h2>
-                        {% else %}
-                            <h2 class="pago-monto-usd">${{ p.total_usd|floatformat:2 }} <span class="fob-badge">FOB</span></h2>
-                        {% endif %}
+                        <h2 class="pago-monto-usd">${{ p.pago_inicial_usd_estimado|floatformat:2 }} <span class="fob-badge">FOB</span></h2>
 
                         {% if p.pago_inicial_ves %}
                             <p class="pago-monto-ves"><i class="bi bi-cash-stack"></i> {{ p.pago_inicial_ves|floatformat:2 }} Bs</p>
@@ -145,11 +141,7 @@
                             {% endif %}
                         </div>
 
-                        {% if p.saldo_pendiente_usd %}
-                            <h2 class="pago-monto-usd">${{ p.saldo_pendiente_usd|floatformat:2 }}</h2>
-                        {% else %}
-                            <h2 class="pago-monto-usd">$0.00</h2>
-                        {% endif %}
+                        <h2 class="pago-monto-usd">${{ p.saldo_pendiente_usd_estimado|floatformat:2 }}</h2>
 
                         {% if p.estado == 'LISTO_RETIRAR' and p.saldo_pendiente_ves_actual %}
                             <p class="pago-monto-ves"><i class="bi bi-lightning-charge"></i> {{ p.saldo_pendiente_ves_actual|floatformat:2 }} Bs</p>

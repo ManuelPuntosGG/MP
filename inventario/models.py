@@ -337,6 +337,20 @@ class PedidoImportacion(models.Model):
             logger.warning("Error parseando productos_json en PedidoImportacion %s", self.pk)
             return []
 
+    @property
+    def pago_inicial_usd_estimado(self):
+        import decimal
+        if self.pago_inicial_usd is not None:
+            return self.pago_inicial_usd
+        return self.total_usd / decimal.Decimal('2')
+
+    @property
+    def saldo_pendiente_usd_estimado(self):
+        import decimal
+        if self.saldo_pendiente_usd is not None:
+            return self.saldo_pendiente_usd
+        return self.total_usd / decimal.Decimal('2')
+
     def __str__(self):
         return f"Importación {self.codigo_seguimiento} - {self.cliente_nombre or self.usuario}"
 

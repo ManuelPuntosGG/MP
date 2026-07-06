@@ -142,7 +142,7 @@
         justify-content: space-between; 
         align-items: center; 
         padding: 0.65rem 0; 
-        border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+        border-bottom: 1px dashed var(--borde);
         text-align: right;
         width: 100% !important;
         box-sizing: border-box;
@@ -161,14 +161,40 @@
     }
 
     .tabla-productos td:last-child {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        border: none;
-        width: auto !important;
-        padding: 0;
+        border-bottom: none;
+        padding-top: 0.75rem !important;
+        margin-top: 0.25rem;
+        border-top: 1px dashed var(--borde);
+        display: flex;
+        justify-content: flex-end;
+        width: 100% !important;
     }
-    .btn-eliminar { background: #fef2f2; padding: 0.4rem; border-radius: 6px; }
+    
+    .btn-eliminar {
+        background: transparent !important;
+        color: var(--peligro) !important;
+        padding: 0.4rem;
+        border-radius: 6px;
+        transition: var(--transition-smooth);
+    }
+    
+    .btn-eliminar:hover {
+        background: rgba(239, 68, 68, 0.1) !important;
+        color: var(--peligro) !important;
+    }
+
+    .tabla-productos .fila-vacia-td {
+        display: block;
+        text-align: center;
+        padding: 3rem 1.5rem;
+        width: 100% !important;
+        box-sizing: border-box;
+        border-bottom: none;
+    }
+
+    .tabla-productos .fila-vacia-td::before {
+        display: none;
+    }
 
     .input-tabla { width: 110px; padding: 0.4rem; text-align: right; }
 }

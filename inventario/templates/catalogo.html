@@ -181,6 +181,8 @@
     <input type="hidden" id="user-telefono-data" value="">
     {% endif %}
 
+    <input type="hidden" id="tasa-ves-data" value="{{ tasa_ves }}">
+
     <button id="cart-toggle"><i class="bi bi-cart"></i><span id="cart-count">0</span></button>
 
     <div id="cart-overlay"></div>
@@ -194,7 +196,10 @@
         <div id="cart-footer">
             <div class="cart-footer-total">
                 <span>Total:</span>
-                <span id="cart-total">$0.00</span>
+                <div class="cart-total-container">
+                    <span id="cart-total">$0.00</span>
+                    <span id="cart-total-ves" class="cart-total-ves-label">Ref: 0.00 Bs</span>
+                </div>
             </div>
             <button id="cart-checkout" class="btn-submit"><i class="bi bi-whatsapp"></i> Finalizar pedido por WhatsApp</button>
             <p class="cart-disclaimer">🔒 No guardamos tus datos de pago. Recibirás el resumen por WhatsApp.</p>

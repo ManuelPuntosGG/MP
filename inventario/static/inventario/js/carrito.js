@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var cartItems = document.getElementById("cart-items");
     var cartTotal = document.getElementById("cart-total");
     var cartCheckout = document.getElementById("cart-checkout");
+    var cartTotalVes = document.getElementById("cart-total-ves");
+    var tasaVes = parseFloat(document.getElementById("tasa-ves-data")?.value) || 0;
 
     if (!cartSidebar) return;
 
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (carrito.length === 0) {
             cartItems.innerHTML = '<div class="cart-empty"><i class="bi bi-bag"></i><p>Tu carrito está vacío</p></div>';
             cartTotal.textContent = '$0.00';
+            if (cartTotalVes) cartTotalVes.textContent = 'Ref: 0.00 Bs';
             cartCount.textContent = '0';
             return;
         }
@@ -71,6 +74,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         cartItems.innerHTML = html;
         cartTotal.textContent = '$' + total.toFixed(2);
+        if (cartTotalVes && tasaVes > 0) {
+            var totalVes = total * tasaVes;
+            cartTotalVes.textContent = 'Ref: ' + totalVes.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Bs';
+        } else if (cartTotalVes) {
+            cartTotalVes.textContent = 'Ref: 0.00 Bs';
+        }
         cartCount.textContent = carrito.length;
         actualizarBadge();
     }
