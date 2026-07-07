@@ -32,6 +32,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     # API
     path('api/productos/', views.api_productos, name='api_productos'),
+    path('api/categorias/', views.api_categorias, name='api_categorias'),
+    path('api/tasa/', views.api_tasa, name='api_tasa'),
     path('api/ordenes/', views.api_ordenes, name='api_ordenes'),
     path('api/ordenes/<str:codigo>/', views.api_ordenes, name='api_orden_detalle'),
 ]

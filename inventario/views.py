@@ -484,14 +484,29 @@ def dashboard(request):
 # ==============================================================================
 
 def api_productos(request):
-    productos = (
-        Producto.objects
-        .filter(disponible=True)
-        .select_related('categoria')
-        .values('id', 'nombre', 'descripcion', 'precio', 'stock', 'categoria__nombre')
-    )
-    return JsonResponse(list(productos), safe=False)
+    productos = Producto.objects.filter(disponible=True).select_related('categoria')
+    data = []
+    for p in productos:
+        data.append({
+            'id': p.id,
+            'nombre': p.nombre,
+            'descripcion': p.descripcion,
+            'precio': str(p.precio),
+            'stock': p.stock,
+            'categoria_id': p.categoria.id if p.categoria else None,
+            'categoria__nombre': p.categoria.nombre if p.categoria else None,
+            'imagen': p.imagen.url if p.imagen else None,
+        })
+    return JsonResponse(data, safe=False)
 
+def api_categorias(request):
+    categorias = Categoria.objects.values('id', 'nombre')
+    return JsonResponse(list(categorias), safe=False)
+
+def api_tasa(request):
+    from .utils import obtener_tasa_binance
+    tasa = obtener_tasa_binance()
+    return JsonResponse({'tasa_ves': tasa})
 
 def api_ordenes(request, codigo=None):
     if not codigo:

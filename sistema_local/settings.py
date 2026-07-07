@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',          # Para permitir peticiones desde Vite
+    'rest_framework',       # Para construir la API
     'storages',             # ¡Corregido! Ya no se fusiona con admin
     'inventario',
 ]
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # Vital para archivos estáticos
+    'corsheaders.middleware.CorsMiddleware', # Habilitar CORS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -194,4 +197,25 @@ UNFOLD = {
             "950": "76, 5, 25",
         },
     },
+}
+
+# ==============================================================================
+# 🚀 CONFIGURACIÓN DE REACT, CORS Y API (DRF)
+# ==============================================================================
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# Agregar orígenes de Vite a CSRF
+CSRF_TRUSTED_ORIGINS += ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny', # Permite lectura pública por defecto
+    ],
 }
