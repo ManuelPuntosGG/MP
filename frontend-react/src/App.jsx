@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Catalogo from './pages/Catalogo';
 import Carrito from './pages/Carrito';
+import Login from './pages/Login';
+import Perfil from './pages/Perfil';
+import Importaciones from './pages/Importaciones';
 
 // Placeholders para futuras páginas
 const Placeholder = ({ title }) => (
@@ -16,10 +19,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Catalogo />} />
-          <Route path="importaciones" element={<Placeholder title="Importaciones" />} />
+          <Route path="importaciones" element={<Importaciones />} />
           <Route path="rastrear" element={<Placeholder title="Rastrear Orden" />} />
           <Route path="carrito" element={<Carrito />} />
-          <Route path="login" element={<Placeholder title="Ingresar" />} />
+          <Route path="login" element={<Login />} />
+          <Route path="perfil" element={<Perfil />} />
         </Route>
       </Routes>
     </BrowserRouter>

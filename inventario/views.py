@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import (
     EmailAuthenticationForm,
@@ -444,6 +445,10 @@ def guardar_pedido_importacion(request):
 
     return JsonResponse({'success': True, 'codigo': pedido.codigo_seguimiento})
 
+@csrf_exempt
+def api_guardar_importacion(request):
+    return guardar_pedido_importacion(request)
+
 
 def detalle_importacion(request, pk):
     pedido = get_object_or_404(PedidoImportacion, pk=pk)
@@ -505,7 +510,10 @@ def api_categorias(request):
 
 def api_tasa(request):
     from .utils import obtener_tasa_binance
-    tasa = obtener_tasa_binance()
+    try:
+        tasa = float(obtener_tasa_binance())
+    except Exception:
+        tasa = 760.00  # Fallback en caso de error
     return JsonResponse({'tasa_ves': tasa})
 
 def api_ordenes(request, codigo=None):
@@ -534,3 +542,150 @@ def api_ordenes(request, codigo=None):
         'lineas_presupuesto': list(orden.lineas_presupuesto.values('concepto', 'monto')),
         'avances': list(orden.avances.values('fecha', 'descripcion')),
     })
+
+
+@csrf_exempt
+def api_login(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        data = request.POST
+
+    form = EmailAuthenticationForm(request, data=data)
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user, backend='inventario.auth_backend.EmailBackend')
+        try:
+            nombre = user.perfil.nombre_completo
+            telefono = user.perfil.telefono
+        except UserProfile.DoesNotExist:
+            nombre = ""
+            telefono = ""
+        return JsonResponse({
+            'success': True,
+            'user': {
+                'email': user.email,
+                'nombre_completo': nombre,
+                'telefono': telefono
+            }
+        })
+    else:
+        error_msg = form.errors.get('__all__', ['Credenciales inválidas'])[0]
+        return JsonResponse({'success': False, 'error': error_msg}, status=400)
+
+
+@csrf_exempt
+def api_register(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        data = request.POST
+
+    form = EmailUserCreationForm(data)
+    if form.is_valid():
+        user = form.save()
+        login(request, user, backend='inventario.auth_backend.EmailBackend')
+        return JsonResponse({
+            'success': True,
+            'user': {
+                'email': user.email,
+                'nombre_completo': '',
+                'telefono': data.get('telefono', '')
+            }
+        })
+    else:
+        errors = {field: msgs[0] for field, msgs in form.errors.items()}
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+
+@csrf_exempt
+def api_logout(request):
+    logout(request)
+    return JsonResponse({'success': True})
+
+
+def api_user(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'authenticated': False})
+    
+    user = request.user
+    try:
+        nombre = user.perfil.nombre_completo
+        telefono = user.perfil.telefono
+    except UserProfile.DoesNotExist:
+        nombre = ""
+        telefono = ""
+
+    # Peticiones de catálogo
+    pedidos_qs = PedidoCatalogo.objects.filter(usuario=user).order_by('-fecha')
+    pedidos = []
+    for p in pedidos_qs:
+        pedidos.append({
+            'codigo': p.codigo_seguimiento,
+            'fecha': p.fecha.isoformat(),
+            'total': float(p.total_usd),
+            'productos': json.loads(p.productos_json)
+        })
+
+    # Reparaciones (Ordenes de Servicio)
+    ordenes_qs = OrdenServicio.objects.filter(usuario=user).order_by('-fecha_ingreso')
+    ordenes = []
+    for o in ordenes_qs:
+        ordenes.append({
+            'codigo': o.codigo_rastreo,
+            'equipo': o.equipo,
+            'falla': o.falla_reportada,
+            'estado': o.get_estado_display(),
+            'fecha_ingreso': o.fecha_ingreso.isoformat()
+        })
+
+    # Importaciones
+    importaciones_qs = PedidoImportacion.objects.filter(usuario=user).order_by('-fecha')
+    importaciones = []
+    for i in importaciones_qs:
+        importaciones.append({
+            'codigo': i.codigo_seguimiento,
+            'fecha': i.fecha.isoformat(),
+            'total_usd': float(i.total_usd),
+            'total_ves': float(i.total_ves),
+            'productos': json.loads(i.productos_json)
+        })
+
+    return JsonResponse({
+        'authenticated': True,
+        'user': {
+            'email': user.email,
+            'nombre_completo': nombre,
+            'telefono': telefono
+        },
+        'pedidos_catalogo': pedidos,
+        'ordenes': ordenes,
+        'importaciones': importaciones
+    })
+
+
+@csrf_exempt
+def api_editar_perfil(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'No autorizado'}, status=401)
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        data = request.POST
+
+    form = PerfilForm(data, instance=request.user)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'success': True})
+    else:
+        errors = {field: msgs[0] for field, msgs in form.errors.items()}
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+

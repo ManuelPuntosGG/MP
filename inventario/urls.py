@@ -34,6 +34,12 @@ urlpatterns = [
     path('api/productos/', views.api_productos, name='api_productos'),
     path('api/categorias/', views.api_categorias, name='api_categorias'),
     path('api/tasa/', views.api_tasa, name='api_tasa'),
+    path('api/login/', views.api_login, name='api_login'),
+    path('api/register/', views.api_register, name='api_register'),
+    path('api/logout/', views.api_logout, name='api_logout'),
+    path('api/user/', views.api_user, name='api_user'),
+    path('api/editar-perfil/', views.api_editar_perfil, name='api_editar_perfil'),
+    path('api/guardar-importacion/', views.api_guardar_importacion, name='api_guardar_importacion'),
     path('api/ordenes/', views.api_ordenes, name='api_ordenes'),
     path('api/ordenes/<str:codigo>/', views.api_ordenes, name='api_orden_detalle'),
 ]
