@@ -211,18 +211,11 @@ export default function Catalogo() {
                 Por defecto
               </button>
               <button
-                onClick={() => setSortBy('price-asc')}
-                aria-pressed={sortBy === 'price-asc'}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${sortBy === 'price-asc' ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                onClick={() => setSortBy(sortBy === 'price-asc' ? 'price-desc' : 'price-asc')}
+                aria-pressed={sortBy === 'price-asc' || sortBy === 'price-desc'}
+                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${sortBy === 'price-asc' || sortBy === 'price-desc' ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'}`}
               >
-                <span>Precio</span> <span className="text-xs font-black">↑</span>
-              </button>
-              <button
-                onClick={() => setSortBy('price-desc')}
-                aria-pressed={sortBy === 'price-desc'}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${sortBy === 'price-desc' ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'}`}
-              >
-                <span>Precio</span> <span className="text-xs font-black">↓</span>
+                <span>Precio</span> {sortBy === 'price-desc' ? <span className="text-xs font-black">↓</span> : <span className="text-xs font-black">↑</span>}
               </button>
             </div>
 

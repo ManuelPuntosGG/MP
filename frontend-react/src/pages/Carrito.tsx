@@ -142,11 +142,11 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
                     )}
                   </div>
 
-                  <div className="ml-6 flex flex-1 flex-col">
+                  <div className="ml-4 sm:ml-6 flex flex-1 flex-col min-w-0">
                     <div>
-                      <div className="flex justify-between text-base font-bold text-gray-900 dark:text-white">
-                        <h3 className="line-clamp-2 pr-4">{item.nombre}</h3>
-                        <p className="ml-4 font-black">${(Number(item.precio) * item.cantidad).toFixed(2)}</p>
+                      <div className="flex justify-between text-base font-bold text-gray-900 dark:text-white gap-4">
+                        <h3 className="line-clamp-2">{item.nombre}</h3>
+                        <p className="font-black flex-shrink-0 whitespace-nowrap">${(Number(item.precio) * item.cantidad).toFixed(2)}</p>
                       </div>
                     </div>
                     <div className="flex flex-1 items-end justify-between text-sm mt-6">

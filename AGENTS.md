@@ -40,7 +40,8 @@ El proyecto está compuesto por los siguientes componentes clave y dependencias:
 
 ## 📁 Estructura del Repositorio
 
-- `/sistema_local/`: Configuración central de Django (configuración de CORS, seguridad, bases de datos y apps de terceros).
-- `/inventario/`: Aplicación Django que contiene los modelos de base de datos, lógica de la API REST, y formularios de validación.
+- `/backend/`: Carpeta principal que contiene todo el código y configuración de Django.
+  - `/backend/sistema_local/`: Configuración central de Django (CORS, seguridad, base de datos).
+  - `/backend/inventario/`: Aplicación Django (API REST, modelos, validaciones).
+  - `/backend/media/`: Directorio de archivos cargados por los usuarios.
 - `/frontend-react/`: Código fuente de la SPA de React (Vite).
-- `/media/`: Directorio de archivos cargados por los usuarios (imágenes de productos, QRs, evidencias de reparación).

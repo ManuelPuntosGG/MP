@@ -155,7 +155,7 @@ export default function Layout() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-md">
+          <div className="md:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-md animate-slide-down origin-top">
             <div className="pt-2 pb-3 space-y-1 px-4">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path;
