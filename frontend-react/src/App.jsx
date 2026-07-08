@@ -9,12 +9,7 @@ import Rastreo from './pages/Rastreo';
 import Inicio from './pages/Inicio';
 import DetalleImportacion from './pages/DetalleImportacion';
 
-// Placeholders para futuras páginas
-const Placeholder = ({ title }) => (
-  <div className="flex items-center justify-center h-[60vh]">
-    <h1 className="text-3xl font-bold text-gray-500">{title} - En construcción</h1>
-  </div>
-);
+
 
 function App() {
   return (
