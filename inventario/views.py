@@ -292,6 +292,7 @@ def _serializar_producto(producto):
     }
 
 
+@csrf_exempt
 @require_POST
 def finalizar_pedido_catalogo(request):
     try:
@@ -532,15 +533,45 @@ def api_ordenes(request, codigo=None):
     except OrdenServicio.DoesNotExist:
         return JsonResponse({'error': 'Orden no encontrada'}, status=404)
 
+    # Calcular totales del presupuesto
+    total_usd = decimal.Decimal('0.00')
+    if orden.presupuesto_estado != 'SIN_PRESUPUESTO':
+        resultado = orden.lineas_presupuesto.aggregate(total=Sum('monto'))
+        total_usd = resultado['total'] or decimal.Decimal('0.00')
+
+    from .utils import obtener_tasa_binance
+    try:
+        tasa_usdt = float(obtener_tasa_binance())
+    except Exception:
+        tasa_usdt = 760.00
+    
+    total_ves = total_usd * decimal.Decimal(str(tasa_usdt))
+
+    # Formatear avances con imágenes adjuntas
+    avances_data = []
+    for av in orden.avances.all():
+        avances_data.append({
+            'fecha': av.fecha.isoformat(),
+            'descripcion': av.descripcion,
+            'imagen': av.imagen.url if av.imagen else None
+        })
+
     return JsonResponse({
+        'id': orden.pk,
         'codigo': orden.codigo_rastreo,
         'cliente': orden.cliente_nombre,
         'equipo': orden.equipo,
+        'estado_raw': orden.estado,
         'estado': orden.get_estado_display(),
+        'presupuesto_estado_raw': orden.presupuesto_estado,
         'presupuesto_estado': orden.get_presupuesto_estado_display(),
+        'falla_reportada': orden.falla_reportada,
         'fecha_ingreso': orden.fecha_ingreso.isoformat(),
         'lineas_presupuesto': list(orden.lineas_presupuesto.values('concepto', 'monto')),
-        'avances': list(orden.avances.values('fecha', 'descripcion')),
+        'avances': avances_data,
+        'total_usd': float(total_usd),
+        'total_ves': float(total_ves),
+        'tasa_ves': tasa_usdt
     })
 
 
@@ -688,4 +719,96 @@ def api_editar_perfil(request):
     else:
         errors = {field: msgs[0] for field, msgs in form.errors.items()}
         return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+
+@csrf_exempt
+def api_solicitar_reparacion(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+        
+    form = SolicitudReparacionForm(data)
+    if form.is_valid():
+        nueva_orden = form.save(commit=False)
+        if request.user.is_authenticated:
+            nueva_orden.usuario = request.user
+        nueva_orden.save()
+        
+        return JsonResponse({
+            'success': True,
+            'codigo': nueva_orden.codigo_rastreo,
+            'cliente_nombre': nueva_orden.cliente_nombre,
+            'equipo': nueva_orden.equipo,
+        })
+    else:
+        errors = {field: errs[0] for field, errs in form.errors.items()}
+        return JsonResponse({'error': 'Datos inválidos', 'errors': errors}, status=400)
+
+
+@csrf_exempt
+def api_responder_presupuesto(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+        
+    try:
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        accion = data.get('accion')
+    except Exception:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+        
+    if not codigo or not accion:
+        return JsonResponse({'error': 'Faltan parámetros'}, status=400)
+        
+    orden = get_object_or_404(OrdenServicio, codigo_rastreo=codigo)
+    
+    if accion == 'aprobar':
+        orden.presupuesto_estado = 'APROBADO'
+        orden.estado = 'REPUESTOS'
+        AvanceOrden.objects.create(
+            orden=orden,
+            descripcion="✅ Presupuesto aprobado. Iniciando proceso de reparación."
+        )
+    elif accion == 'rechazar':
+        orden.presupuesto_estado = 'RECHAZADO'
+        orden.estado = 'CANCELADO'
+        AvanceOrden.objects.create(
+            orden=orden,
+            descripcion="❌ Presupuesto rechazado. Equipo en espera de retiro."
+        )
+    else:
+        return JsonResponse({'error': 'Acción no válida'}, status=400)
+        
+    orden.save()
+    return JsonResponse({'success': True})
+
+
+def api_importacion_detalle(request, codigo):
+    pedido = get_object_or_404(PedidoImportacion, codigo_seguimiento=codigo)
+    
+    if pedido.usuario and pedido.usuario != request.user:
+        return JsonResponse({'error': 'No autorizado'}, status=403)
+        
+    return JsonResponse({
+        'codigo': pedido.codigo_seguimiento,
+        'fecha': pedido.fecha.isoformat(),
+        'estado_raw': pedido.estado,
+        'estado': pedido.get_estado_display(),
+        'total_usd': float(pedido.total_usd),
+        'total_ves': float(pedido.total_ves),
+        'productos': json.loads(pedido.productos_json),
+        'nota': pedido.nota,
+        'carrier_nombre': pedido.carrier_nombre,
+        'carrier_tracking': pedido.carrier_tracking,
+        'tasa_confirmacion': float(pedido.tasa_confirmacion) if pedido.tasa_confirmacion else None,
+        'tasa_entrega': float(pedido.tasa_entrega) if pedido.tasa_entrega else None,
+        'pago_inicial_usd_estimado': float(pedido.pago_inicial_usd_estimado),
+        'pago_inicial_ves': float(pedido.pago_inicial_ves) if pedido.pago_inicial_ves else None,
+        'saldo_pendiente_usd_estimado': float(pedido.saldo_pendiente_usd_estimado),
+        'saldo_pendiente_ves': float(pedido.saldo_pendiente_ves) if pedido.saldo_pendiente_ves else None,
+    })
 

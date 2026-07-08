@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
 export default function Carrito() {
   const { cart, removeFromCart, updateQuantity, totalAmount, clearCart } = useCart();
+  const { user } = useAuth();
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [tasaVes, setTasaVes] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      if (user.nombre_completo && !nombre) {
+        setNombre(user.nombre_completo);
+      }
+      if (user.telefono && !telefono) {
+        setTelefono(user.telefono);
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchTasa = async () => {
@@ -57,16 +70,16 @@ export default function Carrito() {
   if (success) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-6 bg-gray-50/50 dark:bg-gray-950/20">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300">
           <div className="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100 dark:border-green-900/50">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
           </div>
           <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">¡Pedido Confirmado!</h2>
-          <p className="text-gray-505 dark:text-gray-400 mb-6">Tu código de seguimiento es:</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">Tu código de seguimiento es:</p>
           <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 py-4 px-6 rounded-2xl mb-8">
-            <span className="text-3xl font-mono font-black tracking-widest text-rose-655 dark:text-rose-450">{success}</span>
+            <span className="text-3xl font-mono font-black tracking-widest text-rose-600 dark:text-rose-400">{success}</span>
           </div>
           <Link to="/" className="block w-full py-4 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white transition-colors shadow-md">
             Volver al Catálogo
@@ -106,7 +119,7 @@ export default function Carrito() {
                     {item.imagen ? (
                       <img src={item.imagen} alt={item.nombre} className="h-full w-full object-contain" />
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-600 text-2xl">🔧</span>
+                      <i className="bi bi-tools text-gray-400 dark:text-gray-600 text-2xl"></i>
                     )}
                   </div>
 

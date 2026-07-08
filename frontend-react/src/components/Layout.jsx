@@ -15,7 +15,8 @@ export default function Layout() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Catálogo', path: '/' },
+    { name: 'Inicio', path: '/' },
+    { name: 'Catálogo', path: '/catalogo' },
     { name: 'Importaciones', path: '/importaciones' },
     { name: 'Rastrear Orden', path: '/rastrear' },
   ];
@@ -101,7 +102,7 @@ export default function Layout() {
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                     className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-305 hover:text-gray-900 dark:hover:text-white focus:outline-none"
                   >
-                    <span className="h-8 w-8 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900 flex items-center justify-center text-rose-600 dark:text-rose-450 font-bold text-sm">
+                    <span className="h-8 w-8 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900 flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold text-sm">
                       {user.email[0].toUpperCase()}
                     </span>
                     <span className="max-w-[120px] truncate">{user.nombre_completo || user.email}</span>
@@ -129,7 +130,7 @@ export default function Layout() {
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="hidden md:inline-flex items-center justify-center px-5 py-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-rose-600 dark:bg-gray-850 dark:hover:bg-rose-650 transition-colors">
+                <Link to="/login" className="hidden md:inline-flex items-center justify-center px-5 py-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-rose-600 dark:bg-gray-800 dark:hover:bg-rose-700 transition-colors">
                   Ingresar
                 </Link>
               )}
@@ -168,7 +169,7 @@ export default function Layout() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                       isActive
-                        ? 'border-rose-600 text-rose-700 dark:text-rose-450 bg-rose-50 dark:bg-rose-950/20'
+                        ? 'border-rose-600 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20'
                         : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >

@@ -148,7 +148,6 @@ export default function Importaciones() {
   const processOrder = async (nombre, telefono) => {
     setSubmitting(true);
     
-    // 1. Enviar datos de registro a Django
     try {
       const response = await api.post('/guardar-importacion/', {
         productos: items,
@@ -160,7 +159,6 @@ export default function Importaciones() {
 
       if (response.data.success) {
         setSuccessCode(response.data.codigo);
-        // 2. Formular mensaje de WhatsApp
         sendWhatsAppMessage(nombre, telefono);
         setItems([]);
         localStorage.removeItem(STORAGE_KEY);
@@ -220,16 +218,16 @@ export default function Importaciones() {
   if (successCode) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-6 bg-gray-50/50 dark:bg-gray-950/20">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300">
           <div className="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100 dark:border-green-900/50">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
           </div>
           <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">¡Cotización Registrada!</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Tu código de seguimiento de importación es:</p>
+          <p className="text-gray-505 dark:text-gray-400 mb-6">Tu código de seguimiento de importación es:</p>
           <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 py-4 px-6 rounded-2xl mb-8">
-            <span className="text-3xl font-mono font-black tracking-widest text-rose-600 dark:text-rose-450">{successCode}</span>
+            <span className="text-3xl font-mono font-black tracking-widest text-rose-600 dark:text-rose-400">{successCode}</span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
             Hemos abierto una pestaña de WhatsApp para que envíes el desglose a nuestro agente logístico y concretar tu pedido.
@@ -280,7 +278,7 @@ export default function Importaciones() {
               required
               value={url}
               onChange={e => setUrl(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:border-rose-500 focus:bg-white outline-none transition-all text-sm"
+              className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:border-rose-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all text-sm"
               placeholder="https://www.amazon.com/dp/..."
             />
           </div>
@@ -294,7 +292,7 @@ export default function Importaciones() {
               required
               value={precio}
               onChange={e => setPrecio(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:border-rose-500 focus:bg-white outline-none transition-all text-sm"
+              className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:border-rose-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all text-sm"
               placeholder="0.00"
             />
           </div>
@@ -308,14 +306,14 @@ export default function Importaciones() {
               required
               value={peso}
               onChange={e => setPeso(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:border-rose-500 focus:bg-white outline-none transition-all text-sm"
+              className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:focus:border-rose-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all text-sm"
             />
           </div>
 
           <div className="md:col-span-2">
             <button
               type="submit"
-              className="w-full bg-gray-900 dark:bg-white hover:bg-rose-650 dark:hover:bg-rose-600 text-white dark:text-gray-900 dark:hover:text-white font-bold py-3.5 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm"
+              className="w-full bg-gray-900 hover:bg-rose-600 dark:bg-gray-800 dark:hover:bg-rose-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -327,7 +325,7 @@ export default function Importaciones() {
         </form>
       </div>
 
-      {/* Tabla de Artículos */}
+      {/* Tabla / Lista de Artículos */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm mb-8 transition-colors duration-300">
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 dark:border-gray-800">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Artículos Cotizados ({items.length})</h2>
@@ -344,7 +342,8 @@ export default function Importaciones() {
           )}
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Vista Desktop (Tabla) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-950/45 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
@@ -359,8 +358,8 @@ export default function Importaciones() {
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-16 text-center text-gray-500 dark:text-gray-400">
-                    <span className="text-4xl mb-3 block">📦</span>
+                  <td colSpan="6" className="px-6 py-16 text-center text-gray-505 dark:text-gray-400">
+                    <i className="bi bi-box-seam text-gray-400 dark:text-gray-600 text-5xl mb-4 block"></i>
                     No has añadido ningún producto a tu lista de cotización todavía.
                   </td>
                 </tr>
@@ -373,9 +372,9 @@ export default function Importaciones() {
                     <tr key={item.id} className="border-b border-gray-100 dark:border-gray-800/60 hover:bg-gray-50/40 dark:hover:bg-gray-950/20 transition-colors">
                       <td className="px-6 py-4">
                         <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider
-                          ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
-                          ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-850 dark:bg-orange-950/30 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
-                          ${item.tienda === 'eBay' ? 'bg-blue-105 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
+                          ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-955/35 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
+                          ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-850 dark:bg-orange-955/35 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
+                          ${item.tienda === 'eBay' ? 'bg-blue-100 text-blue-800 dark:bg-blue-955/35 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
                           ${item.tienda === 'Otro' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700' : ''}
                         `}>
                           {item.tienda}
@@ -384,7 +383,7 @@ export default function Importaciones() {
                       <td className="px-6 py-4 max-w-[200px] truncate">
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1">
                           Ver Artículo
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                         </a>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -414,7 +413,7 @@ export default function Importaciones() {
                       <td className="px-6 py-4 text-center">
                         <button
                           onClick={() => handleRemoveItem(item.id)}
-                          className="text-rose-600 hover:text-rose-700 p-1.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-lg transition-colors"
+                          className="text-rose-600 hover:text-rose-700 p-1.5 bg-rose-50 dark:bg-rose-955/20 border border-rose-100 dark:border-rose-900/50 rounded-lg transition-colors"
                           title="Eliminar artículo"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -427,16 +426,95 @@ export default function Importaciones() {
             </tbody>
           </table>
         </div>
+
+        {/* Vista Móvil (Cards Apilados Verticalmente) */}
+        <div className="block md:hidden divide-y divide-gray-100 dark:divide-gray-800/65">
+          {items.length === 0 ? (
+            <div className="px-6 py-16 text-center text-gray-550 dark:text-gray-400">
+              <i className="bi bi-box-seam text-gray-400 dark:text-gray-600 text-5xl mb-4 block"></i>
+              No has añadido ningún producto a tu lista de cotización todavía.
+            </div>
+          ) : (
+            items.map(item => {
+              const flete = item.peso * TARIFA_LIBRA;
+              const fleteBs = tasaVes ? flete * parseFloat(tasaVes) : 0;
+              
+              return (
+                <div key={item.id} className="p-5 space-y-4 hover:bg-gray-50/20 dark:hover:bg-gray-950/10 transition-colors">
+                  <div className="flex justify-between items-center">
+                    <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider
+                      ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-955/35 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
+                      ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-850 dark:bg-orange-955/35 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
+                      ${item.tienda === 'eBay' ? 'bg-blue-100 text-blue-800 dark:bg-blue-955/35 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
+                      ${item.tienda === 'Otro' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700' : ''}
+                    `}>
+                      {item.tienda}
+                    </span>
+                    <button
+                      onClick={() => handleRemoveItem(item.id)}
+                      className="text-rose-600 hover:text-rose-700 p-2 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-lg transition-colors"
+                      title="Eliminar artículo"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Enlace</span>
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-500 hover:underline flex items-center gap-1">
+                      Ver Artículo original
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Precio ($)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={item.precio}
+                        onChange={e => handleModifyItem(item.id, 'precio', e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl py-2 px-3 text-sm font-bold text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Peso (Lbs)</label>
+                      <input
+                        type="number"
+                        step="1"
+                        value={item.peso}
+                        onChange={e => handleModifyItem(item.id, 'peso', e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl py-2 px-3 text-sm font-bold text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-gray-800/40">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Flete Estimado:</span>
+                    <div className="text-right">
+                      <span className="font-bold text-gray-900 dark:text-white">${flete.toFixed(2)}</span>
+                      {tasaVes && (
+                        <span className="block text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">≈ {fleteBs.toFixed(2)} Bs</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
       </div>
 
       {/* Políticas */}
       <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 flex items-start gap-4 mb-8">
-        <div className="p-3 bg-rose-50 dark:bg-rose-950/30 text-rose-600 rounded-2xl flex-shrink-0">
+        <div className="p-3 bg-rose-50 dark:bg-rose-955/20 text-rose-600 rounded-2xl flex-shrink-0">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <div>
           <strong className="text-gray-900 dark:text-white font-black block mb-2">Condiciones generales de cotización logística:</strong>
-          <ul className="list-disc pl-4 space-y-1.5 text-sm text-gray-550 dark:text-gray-400 font-medium">
+          <ul className="list-disc pl-4 space-y-1.5 text-sm text-gray-550 dark:text-gray-405 font-medium">
             <li><strong>Comisión de gestión variable:</strong> Minimizas costos a mayor volumen de compra. Aplicamos de forma automática 10% (&lt; $200), 7.5% (entre $200 y $1000) y apenas 5% para presupuestos superiores a $1000.</li>
             <li><strong>Cálculo definitivo:</strong> El costo final del flete aéreo se ajustará de acuerdo con las medidas (volumen) y el peso neto real del paquete medido en nuestro almacén receptor de Miami.</li>
           </ul>
@@ -480,12 +558,12 @@ export default function Importaciones() {
             <span className="text-lg font-bold text-gray-900 dark:text-white">Total General Estimado:</span>
             <div className="text-right">
               <p className="text-2xl font-black text-rose-600 dark:text-rose-500">${totals.totalUsd.toFixed(2)}</p>
-              {tasaVes && <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mt-0.5">≈ {totals.totalBs.toFixed(2)} Bs</p>}
+              {tasaVes && <p className="text-sm font-bold text-gray-750 dark:text-gray-300 mt-0.5">≈ {totals.totalBs.toFixed(2)} Bs</p>}
             </div>
           </div>
 
-          <div className="bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100/50 dark:border-rose-900/40 rounded-2xl p-4 text-center text-sm font-bold text-rose-700 dark:text-rose-400 mb-8 leading-relaxed">
-            📌 Financiamiento: Inicial 50% <span className="underline">${totals.inicialUsd.toFixed(2)} ({totals.inicialBs.toFixed(2)} Bs)</span> · Saldo contra entrega <span className="underline">${totals.inicialUsd.toFixed(2)} ({totals.inicialBs.toFixed(2)} Bs)</span>
+          <div className="bg-rose-50/50 dark:bg-rose-955/20 border border-rose-100/50 dark:border-rose-900/40 rounded-2xl p-4 text-center text-sm font-bold text-rose-700 dark:text-rose-400 mb-8 leading-relaxed">
+            <i className="bi bi-info-circle-fill mr-1.5"></i> Financiamiento: Inicial 50% <span className="underline">${totals.inicialUsd.toFixed(2)} ({totals.inicialBs.toFixed(2)} Bs)</span> · Saldo contra entrega <span className="underline">${totals.inicialUsd.toFixed(2)} ({totals.inicialBs.toFixed(2)} Bs)</span>
           </div>
 
           <button

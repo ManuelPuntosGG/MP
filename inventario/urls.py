@@ -42,4 +42,8 @@ urlpatterns = [
     path('api/guardar-importacion/', views.api_guardar_importacion, name='api_guardar_importacion'),
     path('api/ordenes/', views.api_ordenes, name='api_ordenes'),
     path('api/ordenes/<str:codigo>/', views.api_ordenes, name='api_orden_detalle'),
+    path('api/solicitar-reparacion/', views.api_solicitar_reparacion, name='api_solicitar_reparacion'),
+    path('api/responder-presupuesto/', views.api_responder_presupuesto, name='api_responder_presupuesto'),
+    path('api/importaciones/<str:codigo>/', views.api_importacion_detalle, name='api_importacion_detalle'),
+    path('api/guardar-pedido-catalogo/', views.finalizar_pedido_catalogo, name='api_finalizar_catalogo'),
 ]

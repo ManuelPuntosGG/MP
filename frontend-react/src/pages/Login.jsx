@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -9,8 +9,14 @@ export default function Login() {
   
   const from = location.state?.from?.pathname || '/perfil';
 
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
+
   if (user) {
-    navigate(from, { replace: true });
+    return null;
   }
 
   const [isRegister, setIsRegister] = useState(false);
@@ -51,7 +57,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-955/20 transition-colors duration-300">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300">
       <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 shadow-xl shadow-rose-150/10 dark:shadow-black/30 hover:shadow-rose-250/20 dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.2)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-305">
         
         {/* Encabezado */}

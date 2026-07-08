@@ -59,19 +59,21 @@ export default function Perfil() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-955/20 transition-colors duration-300">
+    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300">
       
       {/* Header Perfil */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center space-x-6">
-          <div className="h-20 w-20 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-450 text-3xl font-black shadow-sm">
+          <div className="h-20 w-20 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 text-3xl font-black shadow-sm">
             {user.email[0].toUpperCase()}
           </div>
           <div>
             <h1 className="text-3xl font-black text-gray-900 dark:text-white">{user.nombre_completo || 'Cliente MP Tech'}</h1>
             <p className="text-gray-500 dark:text-gray-400 font-medium">{user.email}</p>
             {user.telefono && (
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">📞 {user.telefono}</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                <i className="bi bi-telephone-fill mr-1.5 text-gray-400 dark:text-gray-500"></i> {user.telefono}
+              </p>
             )}
           </div>
         </div>
@@ -97,7 +99,7 @@ export default function Perfil() {
 
       {/* Formulario de Edición */}
       {editing && (
-        <div className="bg-white dark:bg-gray-905 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-md mb-10 max-w-xl transition-all duration-300">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-md mb-10 max-w-xl transition-all duration-300">
           <h2 className="text-xl font-black text-gray-950 dark:text-white mb-6">Modificar datos personales</h2>
           <form onSubmit={handleEditProfile} className="space-y-4">
             <div>
@@ -149,23 +151,25 @@ export default function Perfil() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Reparaciones / Órdenes de Servicio */}
-        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
-            <span className="mr-2">🔧</span> Reparaciones Solicitadas
+            <i className="bi bi-tools mr-2 text-rose-600 dark:text-rose-400"></i> Reparaciones Solicitadas
           </h2>
           {orders.ordenes.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm py-4">No has solicitado reparaciones de equipos.</p>
           ) : (
             <div className="space-y-4">
               {orders.ordenes.map(o => (
-                <div key={o.codigo} className="p-4 bg-gray-55 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl flex justify-between items-center hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
-                  <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white">{o.equipo}</h3>
+                <div key={o.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-900 dark:text-white truncate">{o.equipo}</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Falla: {o.falla}</p>
-                    <span className="inline-block mt-2 text-xs font-mono font-bold text-rose-600 dark:text-rose-450 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50">{o.codigo}</span>
+                    <Link to={`/rastrear?codigo=${o.codigo}`} className="inline-block mt-2 text-xs font-mono font-bold text-rose-600 dark:text-rose-400 hover:underline bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50">
+                      {o.codigo} <i className="bi bi-search ml-1"></i>
+                    </Link>
                   </div>
-                  <div className="text-right">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="flex-shrink-0">
+                    <span className="inline-block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
                       {o.estado}
                     </span>
                   </div>
@@ -176,19 +180,19 @@ export default function Perfil() {
         </div>
 
         {/* Pedidos de Catálogo */}
-        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
-            <span className="mr-2">🛍️</span> Pedidos de Catálogo
+            <i className="bi bi-bag-check mr-2 text-rose-600 dark:text-rose-400"></i> Pedidos de Catálogo
           </h2>
           {orders.pedidos_catalogo.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm py-4">Aún no tienes compras registradas en el catálogo.</p>
           ) : (
             <div className="space-y-4">
               {orders.pedidos_catalogo.map(p => (
-                <div key={p.codigo} className="p-4 bg-gray-55 dark:bg-gray-955 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
+                <div key={p.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <span className="font-mono font-bold text-rose-600 dark:text-rose-450 bg-rose-50 dark:bg-rose-955/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">{p.codigo}</span>
+                      <span className="font-mono font-bold text-rose-600 dark:text-rose-450 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">{p.codigo}</span>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{new Date(p.fecha).toLocaleDateString()}</p>
                     </div>
                     <span className="text-lg font-black text-gray-900 dark:text-white">${p.total.toFixed(2)}</span>
@@ -197,9 +201,9 @@ export default function Perfil() {
                   <div className="border-t border-gray-200/60 dark:border-gray-800 pt-3">
                     <ul className="space-y-1">
                       {p.productos.map((item, idx) => (
-                        <li key={idx} className="text-xs text-gray-650 dark:text-gray-400 flex justify-between font-medium">
-                          <span>{item.nombre} <span className="text-gray-400 dark:text-gray-505">x{item.cantidad}</span></span>
-                          <span className="text-gray-550 dark:text-gray-350">${(item.precio * item.cantidad).toFixed(2)}</span>
+                        <li key={idx} className="text-xs text-gray-600 dark:text-gray-400 flex justify-between font-medium">
+                          <span>{item.nombre} <span className="text-gray-400 dark:text-gray-500">x{item.cantidad}</span></span>
+                          <span className="text-gray-500 dark:text-gray-300">${(item.precio * item.cantidad).toFixed(2)}</span>
                         </li>
                       ))}
                     </ul>
@@ -211,31 +215,33 @@ export default function Perfil() {
         </div>
 
         {/* Pedidos de Importación */}
-        <div className="lg:col-span-12 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="lg:col-span-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
-            <span className="mr-2">✈️</span> Pedidos de Importación
+            <i className="bi bi-airplane mr-2 text-rose-600 dark:text-rose-400 font-bold"></i> Pedidos de Importación
           </h2>
           {orders.importaciones.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm py-4">No has realizado cotizaciones de importación.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {orders.importaciones.map(i => (
-                <div key={i.codigo} className="p-4 bg-gray-55 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
+                <div key={i.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <span className="font-mono font-bold text-rose-600 dark:text-rose-450 bg-rose-50 dark:bg-rose-955/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">{i.codigo}</span>
-                      <p className="text-xs text-gray-400 dark:text-gray-505 mt-1">{new Date(i.fecha).toLocaleDateString()}</p>
+                      <Link to={`/importacion/${i.codigo}`} className="inline-block font-mono font-bold text-rose-600 dark:text-rose-455 hover:underline bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">
+                        {i.codigo} <i className="bi bi-search ml-1"></i>
+                      </Link>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{new Date(i.fecha).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right">
                       <span className="text-md font-bold text-gray-950 dark:text-white">${i.total_usd.toFixed(2)}</span>
-                      <p className="text-xs text-gray-500 dark:text-gray-450 mt-0.5">≈ {i.total_ves.toFixed(2)} Bs.</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">≈ {i.total_ves.toFixed(2)} Bs.</p>
                     </div>
                   </div>
                   
                   <div className="border-t border-gray-200/60 dark:border-gray-800 pt-3">
                     <ul className="space-y-1">
                       {i.productos.map((prod, idx) => (
-                        <li key={idx} className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                        <li key={idx} className="text-xs text-gray-650 dark:text-gray-400 font-medium">
                           • {prod.nombre || prod.url}
                         </li>
                       ))}
