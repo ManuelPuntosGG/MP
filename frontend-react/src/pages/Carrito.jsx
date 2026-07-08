@@ -86,7 +86,7 @@ export default function Carrito({ onBackToCatalog }) {
             onClick={() => {
               if (onBackToCatalog) onBackToCatalog();
             }}
-            className="block w-full py-4 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white transition-colors shadow-md"
+            className="block w-full py-4 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01]"
           >
             Volver al Catálogo
           </button>
@@ -115,7 +115,7 @@ export default function Carrito({ onBackToCatalog }) {
                 onClick={() => {
                   if (onBackToCatalog) onBackToCatalog();
                 }}
-                className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 transition-colors shadow-md"
+                className="inline-block px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01]"
               >
                 Explorar productos
               </button>
@@ -232,7 +232,7 @@ export default function Carrito({ onBackToCatalog }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gray-900 dark:bg-white hover:bg-rose-600 dark:hover:bg-rose-600 text-white dark:text-gray-900 dark:hover:text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+                className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
               >
                 {loading ? (
                   <span className="animate-pulse">Procesando...</span>

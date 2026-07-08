@@ -23,22 +23,22 @@ export default function Catalogo() {
   const { addToCart, totalItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('productos');
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Sincronizar pestaña activa con la URL
+  // Sincronizar modal del carrito con la URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tabParam = params.get('tab');
     if (tabParam === 'carrito') {
-      setActiveTab('carrito');
+      setIsCartOpen(true);
     } else {
-      setActiveTab('productos');
+      setIsCartOpen(false);
     }
   }, [location.search]);
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    if (tab === 'carrito') {
+  const handleCartOpen = (open) => {
+    setIsCartOpen(open);
+    if (open) {
       navigate('?tab=carrito', { replace: true });
     } else {
       navigate('?tab=productos', { replace: true });
@@ -137,33 +137,7 @@ export default function Catalogo() {
           )}
         </div>
 
-        {/* Selector de Pestañas */}
-        <div className="flex space-x-1 bg-gray-150/80 dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800 p-1 rounded-xl max-w-xs mb-8 shadow-sm">
-          <button
-            type="button"
-            onClick={() => handleTabChange('productos')}
-            className={`flex-1 py-2 text-center text-xs sm:text-sm font-bold rounded-lg transition-all ${activeTab === 'productos' ? 'bg-white dark:bg-gray-805 text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700/50' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
-          >
-            Productos
-          </button>
-          <button
-            type="button"
-            onClick={() => handleTabChange('carrito')}
-            className={`flex-1 py-2 text-center text-xs sm:text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${activeTab === 'carrito' ? 'bg-white dark:bg-gray-805 text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700/50' : 'text-gray-505 hover:text-gray-900 dark:hover:text-white'}`}
-          >
-            <span>Carrito</span>
-            {totalItems > 0 && (
-              <span className="bg-rose-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-black animate-pulse">
-                {totalItems}
-              </span>
-            )}
-          </button>
-        </div>
 
-        {activeTab === 'carrito' ? (
-          <Carrito onBackToCatalog={() => handleTabChange('productos')} />
-        ) : (
-          <>
             {/* Barra de Filtros Minimalista */}
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-2 sm:p-4 mb-8 shadow-sm hover:shadow-md dark:shadow-black/20 transition-all duration-300">
               <div className="flex flex-col md:flex-row gap-3 items-center">
@@ -363,7 +337,7 @@ export default function Catalogo() {
                               className={`flex-1 justify-center rounded-xl flex items-center font-bold transition-all duration-300 text-xs sm:text-sm h-11 px-4 whitespace-nowrap
                                 ${agotado
                                   ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
-                                  : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-205 shadow-md'
+                                  : 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01]'
                                 }`}
                             >
                               Comprar
@@ -419,9 +393,46 @@ export default function Catalogo() {
                 </nav>
               </div>
             )}
-          </>
-        )}
-      </div>
+        </div>
+
+      {/* Botón Flotante del Carrito */}
+      {!isCartOpen && totalItems > 0 && (
+        <button
+          type="button"
+          onClick={() => handleCartOpen(true)}
+          className="fixed bottom-6 right-6 z-40 p-4 bg-rose-600 hover:bg-rose-500 text-white rounded-full shadow-lg shadow-rose-600/30 hover:shadow-rose-600/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center animate-scale-in"
+          title="Ver Carrito de Compras"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          </svg>
+          <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-gray-900 border border-white dark:border-gray-900 rounded-full">
+            {totalItems}
+          </span>
+        </button>
+      )}
+
+      {/* Modal del Carrito */}
+      {isCartOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300">
+          <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl max-w-5xl w-full shadow-2xl relative animate-scale-in max-h-[90vh] overflow-y-auto p-2 sm:p-6">
+            
+            {/* Botón de Cerrar */}
+            <button
+              type="button"
+              onClick={() => handleCartOpen(false)}
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-805 transition-all z-10"
+              title="Cerrar Carrito"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <Carrito onBackToCatalog={() => handleCartOpen(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

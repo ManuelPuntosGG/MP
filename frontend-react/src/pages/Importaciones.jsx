@@ -234,7 +234,7 @@ export default function Importaciones() {
           </p>
           <button 
             onClick={() => setSuccessCode(null)}
-            className="block w-full py-4 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white transition-colors shadow-md"
+            className="block w-full py-4 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01]"
           >
             Nueva Cotización
           </button>
@@ -313,7 +313,7 @@ export default function Importaciones() {
           <div className="md:col-span-2">
             <button
               type="submit"
-              className="w-full bg-gray-900 hover:bg-rose-600 dark:bg-gray-800 dark:hover:bg-rose-700 text-white font-bold py-3.5 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm"
+              className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

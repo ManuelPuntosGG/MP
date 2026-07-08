@@ -196,7 +196,7 @@ export default function Rastreo() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-gray-900 hover:bg-rose-600 dark:bg-white dark:text-gray-900 dark:hover:bg-rose-600 dark:hover:text-white text-white font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+              className="bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] disabled:opacity-50"
             >
               {loading ? (
                 <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -468,7 +468,7 @@ export default function Rastreo() {
                     setSolicitudExito(null);
                     setShowSolicitar(false);
                   }}
-                  className="flex-1 py-3.5 bg-gray-900 hover:bg-rose-600 dark:bg-white dark:text-gray-900 dark:hover:bg-rose-600 dark:hover:text-white text-white font-bold rounded-xl transition-all shadow-sm text-center text-xs sm:text-sm"
+                  className="flex-1 py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] text-center text-xs sm:text-sm"
                 >
                   Rastrear mi orden de servicio
                 </button>

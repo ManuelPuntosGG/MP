@@ -888,4 +888,40 @@ class StockDecrementAndTransactionsTest(TestCase):
         self.producto.refresh_from_db()
         self.assertEqual(self.producto.stock, 1)
 
+    def test_bulk_delete_pending_orders_restores_stock(self):
+        self.producto.stock = 1
+        self.producto.save()
+        
+        # Crear dos pedidos pendientes
+        pedido1 = PedidoCatalogo.objects.create(
+            cliente_nombre="Test Borrar Masivo 1",
+            total_usd=350.00,
+            estado='PENDIENTE',
+            productos_json=json.dumps([{
+                'producto_id': self.producto.id,
+                'nombre': self.producto.nombre,
+                'precio': 350.00,
+                'cantidad': 1
+            }])
+        )
+        pedido2 = PedidoCatalogo.objects.create(
+            cliente_nombre="Test Borrar Masivo 2",
+            total_usd=350.00,
+            estado='PENDIENTE',
+            productos_json=json.dumps([{
+                'producto_id': self.producto.id,
+                'nombre': self.producto.nombre,
+                'precio': 350.00,
+                'cantidad': 2
+            }])
+        )
+        
+        # Realizar eliminación en lote (bulk delete) via queryset
+        PedidoCatalogo.objects.filter(id__in=[pedido1.id, pedido2.id]).delete()
+        
+        # El stock debe retornar de 1 a 4 (1 + 1 + 2)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 4)
+
+
 

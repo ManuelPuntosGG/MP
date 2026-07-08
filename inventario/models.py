@@ -465,10 +465,17 @@ class PedidoCatalogo(models.Model):
         if restaurar_stock:
             self.devolver_unidades_al_stock()
 
-    def delete(self, *args, **kwargs):
-        if self.estado == 'PENDIENTE':
-            self.devolver_unidades_al_stock()
-        super().delete(*args, **kwargs)
-
     def __str__(self):
         return f"Pedido {self.codigo_seguimiento}"
+
+
+# Signals para restaurar stock en eliminación (incluso masiva)
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+
+@receiver(pre_delete, sender=PedidoCatalogo)
+def restaurar_stock_al_eliminar_pedido(sender, instance, **kwargs):
+    """Devuelve las unidades reservadas del pedido pendiente al stock al ser eliminado (incluso en eliminación masiva)."""
+    if instance.estado == 'PENDIENTE':
+        instance.devolver_unidades_al_stock()
+

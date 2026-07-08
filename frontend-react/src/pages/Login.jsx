@@ -134,7 +134,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-900 dark:bg-white hover:bg-rose-600 dark:hover:bg-rose-600 text-white dark:text-gray-900 dark:hover:text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md disabled:opacity-50 flex justify-center items-center"
+            className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] disabled:opacity-50 flex justify-center items-center"
           >
             {loading ? (
               <span className="animate-pulse">Procesando...</span>

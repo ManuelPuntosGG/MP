@@ -28,13 +28,13 @@ export default function Inicio() {
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
           <Link
             to="/catalogo"
-            className="w-full sm:w-auto px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 text-sm"
+            className="w-full sm:w-auto px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] flex items-center justify-center gap-2 text-sm"
           >
             <i className="bi bi-cpu text-lg"></i> Catálogo de Hardware
           </Link>
           <Link
             to="/rastrear"
-            className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-250 font-bold rounded-2xl hover:bg-rose-50/20 dark:hover:bg-rose-955/20 hover:border-rose-250 dark:hover:border-rose-800 hover:text-rose-655 dark:hover:text-rose-450 transition-all flex items-center justify-center gap-2 text-sm shadow-sm"
+            className="w-full sm:w-auto px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] flex items-center justify-center gap-2 text-sm"
           >
             <i className="bi bi-search text-base"></i> Gestionar Mi Reparación
           </Link>
@@ -58,7 +58,7 @@ export default function Inicio() {
             </div>
             <Link
               to="/rastrear?solicitar=true"
-              className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-gray-900 hover:bg-rose-600 dark:bg-gray-850 dark:hover:bg-rose-600 text-white font-bold rounded-xl transition-colors text-sm"
+              className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] text-sm"
             >
               <i className="bi bi-file-earmark-plus"></i> Solicitar Reparación
             </Link>
@@ -77,7 +77,7 @@ export default function Inicio() {
             </div>
             <Link
               to="/catalogo"
-              className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-gray-900 hover:bg-rose-600 dark:bg-gray-850 dark:hover:bg-rose-600 text-white font-bold rounded-xl transition-colors text-sm"
+              className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md shadow-rose-600/20 hover:shadow-rose-500/50 hover:scale-[1.01] text-sm"
             >
               Explorar Tienda <i className="bi bi-arrow-right"></i>
             </Link>
@@ -94,23 +94,22 @@ export default function Inicio() {
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5 font-medium">
               Hola, <span className="font-bold text-rose-600 dark:text-rose-450">{user.nombre_completo || user.email}</span>. Aquí tienes el resumen de tus operaciones activas:
             </p>
-
-            {/* Metricas Grid */}
-            <div className="grid grid-cols-3 gap-4 mt-8">
+               {/* Metricas Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
               <div className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl text-center">
                 <i className="bi bi-tools text-xl text-rose-600 dark:text-rose-450 mb-1 block"></i>
                 <span className="text-2xl font-black text-gray-950 dark:text-white block mt-1">{totalOrdenes}</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider block mt-0.5">Reparaciones</span>
+                <span className="text-xs text-gray-450 dark:text-gray-500 font-bold uppercase tracking-wider block mt-0.5">Reparaciones</span>
               </div>
               <div className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl text-center">
                 <i className="bi bi-box-seam text-xl text-rose-600 dark:text-rose-450 mb-1 block"></i>
                 <span className="text-2xl font-black text-gray-950 dark:text-white block mt-1">{totalImportaciones}</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider block mt-0.5">Importaciones</span>
+                <span className="text-xs text-gray-450 dark:text-gray-500 font-bold uppercase tracking-wider block mt-0.5">Importaciones</span>
               </div>
               <div className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-2xl text-center">
                 <i className="bi bi-cart-check text-xl text-rose-600 dark:text-rose-455 mb-1 block"></i>
                 <span className="text-2xl font-black text-gray-950 dark:text-white block mt-1">{totalCompras}</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider block mt-0.5">Compras</span>
+                <span className="text-xs text-gray-450 dark:text-gray-500 font-bold uppercase tracking-wider block mt-0.5">Compras</span>
               </div>
             </div>
 
@@ -122,14 +121,14 @@ export default function Inicio() {
                   
                   {/* Ultimas 3 Reparaciones */}
                   {orders.ordenes?.slice(0, 3).map((o) => (
-                    <div key={o.codigo} className="flex justify-between items-center p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200/50 dark:border-gray-800/80 rounded-xl hover:border-rose-100 dark:hover:border-rose-900/30 transition-colors">
+                    <div key={o.codigo} className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200/50 dark:border-gray-800/80 rounded-xl hover:border-rose-100 dark:hover:border-rose-900/30 transition-colors">
                       <div className="flex items-center space-x-3">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-455 border border-rose-100/50 dark:border-rose-900/40">Reparac.</span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-455 border border-rose-100/50 dark:border-rose-900/40">Reparac.</span>
                         <span className="font-mono text-sm font-black text-gray-900 dark:text-white">{o.codigo}</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <span className="text-xs text-gray-550 dark:text-gray-450 font-bold uppercase">{o.estado}</span>
-                        <Link to={`/rastrear?codigo=${o.codigo}`} className="text-rose-605 dark:text-rose-400 hover:text-rose-700 font-bold text-sm">
+                      <div className="flex items-center justify-between sm:justify-end space-x-3 border-t border-gray-100 dark:border-gray-800/40 pt-2 sm:pt-0 sm:border-0">
+                        <span className="text-xs text-gray-550 dark:text-gray-450 font-bold uppercase tracking-wide text-right break-words max-w-[220px] sm:max-w-xs">{o.estado}</span>
+                        <Link to={`/rastrear?codigo=${o.codigo}`} className="text-rose-605 dark:text-rose-400 hover:text-rose-700 font-bold text-sm p-1">
                           <i className="bi bi-arrow-right"></i>
                         </Link>
                       </div>
@@ -138,14 +137,14 @@ export default function Inicio() {
 
                   {/* Ultimas 3 Importaciones */}
                   {orders.importaciones?.slice(0, 3).map((i) => (
-                    <div key={i.codigo} className="flex justify-between items-center p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200/50 dark:border-gray-800/80 rounded-xl hover:border-rose-100 dark:hover:border-rose-900/30 transition-colors">
+                    <div key={i.codigo} className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200/50 dark:border-gray-800/80 rounded-xl hover:border-rose-100 dark:hover:border-rose-900/30 transition-colors">
                       <div className="flex items-center space-x-3">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-indigo-50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/40">Import.</span>
                         <span className="font-mono text-sm font-black text-gray-900 dark:text-white">{i.codigo}</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <span className="text-xs text-gray-550 dark:text-gray-455 font-bold">${i.total_usd.toFixed(2)}</span>
-                        <Link to={`/importacion/${i.codigo}`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-bold text-sm">
+                      <div className="flex items-center justify-between sm:justify-end space-x-3 border-t border-gray-100 dark:border-gray-800/40 pt-2 sm:pt-0 sm:border-0">
+                        <span className="text-xs text-gray-555 dark:text-gray-450 font-bold">${i.total_usd.toFixed(2)}</span>
+                        <Link to={`/importacion/${i.codigo}`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-bold text-sm p-1">
                           <i className="bi bi-arrow-right"></i>
                         </Link>
                       </div>
@@ -154,14 +153,14 @@ export default function Inicio() {
 
                   {/* Ultimos 3 Pedidos de Catálogo */}
                   {orders.pedidos_catalogo?.slice(0, 3).map((p) => (
-                    <div key={p.codigo} className="flex justify-between items-center p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200/50 dark:border-gray-800/80 rounded-xl hover:border-rose-100 dark:hover:border-rose-900/30 transition-colors">
+                    <div key={p.codigo} className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 p-3.5 bg-gray-50 dark:bg-gray-950 border border-gray-200/50 dark:border-gray-800/80 rounded-xl hover:border-rose-100 dark:hover:border-rose-900/30 transition-colors">
                       <div className="flex items-center space-x-3">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 dark:bg-emerald-950/20 text-emerald-650 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/40">Compra</span>
                         <span className="font-mono text-sm font-black text-gray-900 dark:text-white">{p.codigo}</span>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <span className="text-xs text-gray-550 dark:text-gray-450 font-bold">${p.total.toFixed(2)}</span>
-                        <Link to="/perfil" className="text-emerald-650 dark:text-emerald-400 hover:text-emerald-700 font-bold text-sm">
+                      <div className="flex items-center justify-between sm:justify-end space-x-3 border-t border-gray-100 dark:border-gray-800/40 pt-2 sm:pt-0 sm:border-0">
+                        <span className="text-xs text-gray-555 dark:text-gray-450 font-bold">${p.total.toFixed(2)}</span>
+                        <Link to="/perfil" className="text-emerald-650 dark:text-emerald-400 hover:text-emerald-700 font-bold text-sm p-1">
                           <i className="bi bi-arrow-right"></i>
                         </Link>
                       </div>

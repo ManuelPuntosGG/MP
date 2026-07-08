@@ -197,6 +197,18 @@ class PedidoCatalogoAdmin(ModelAdmin):
         ('Detalles del Pedido', {'fields': ['estado', 'total_usd', 'productos_json']}),
         ('Seguimiento', {'fields': ['codigo_seguimiento', 'fecha']}),
     ]
+    actions = ['cancelar_pedidos']
+
+    @action(description="Cancelar pedidos seleccionados (Restaurando stock)")
+    def cancelar_pedidos(self, request, queryset):
+        pedidos_pendientes = queryset.filter(estado='PENDIENTE')
+        contador = 0
+        for pedido in pedidos_pendientes:
+            pedido.estado = 'CANCELADO'
+            pedido.save()
+            contador += 1
+        
+        self.message_user(request, f"Se han cancelado {contador} pedidos y se ha restaurado su stock con éxito.")
 
 
 class UserProfileAdmin(ModelAdmin):
