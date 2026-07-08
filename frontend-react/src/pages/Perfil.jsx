@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom'; // <-- Corregido aquí
 import api from '../api/axios';
 
 export default function Perfil() {
@@ -59,37 +59,43 @@ export default function Perfil() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
+    <div className="w-full max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in overflow-hidden">
       
-      {/* Header Perfil */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 animate-slide-up">
-        <div className="flex items-center space-x-6">
-          <div className="h-20 w-20 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 text-3xl font-black shadow-sm">
+      {/* Header Perfil - Corregido para Mobile */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 animate-slide-up">
+        <div className="flex items-center gap-4 sm:gap-6 min-w-0 w-full">
+          {/* Avatar con flex-shrink-0 para que no se deforme */}
+          <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 text-2xl sm:text-3xl font-black shadow-sm flex-shrink-0">
             {user.email[0].toUpperCase()}
           </div>
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white">{user.nombre_completo || 'Cliente MP Tech'}</h1>
-            <p className="text-gray-500 dark:text-gray-400 font-medium">{user.email}</p>
+          {/* Contenedor de texto con min-w-0 y break-words para evitar desbordamientos */}
+          <div className="min-w-0 flex-1 break-words">
+            <h1 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white leading-tight">
+              {user.nombre_completo || 'Cliente MP Tech'}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 font-medium text-sm sm:text-base break-all">
+              {user.email}
+            </p>
             {user.telefono && (
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+              <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-1">
                 <i className="bi bi-telephone-fill mr-1.5 text-gray-400 dark:text-gray-500"></i> {user.telefono}
               </p>
             )}
           </div>
         </div>
 
-        <div>
+        <div className="w-full md:w-auto flex-shrink-0">
           {!editing ? (
             <button
               onClick={startEditing}
-              className="px-6 py-3 border border-gray-200 dark:border-gray-700 hover:border-rose-250 dark:hover:border-rose-600/50 text-gray-700 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-500 font-bold rounded-xl transition-all hover:bg-rose-50/30 dark:hover:bg-rose-950/20 text-sm shadow-sm"
+              className="w-full md:w-auto px-6 py-3 border border-gray-200 dark:border-gray-700 hover:border-rose-300 dark:hover:border-rose-600/50 text-gray-700 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-500 font-bold rounded-xl transition-all hover:bg-rose-50/30 dark:hover:bg-rose-950/20 text-sm shadow-sm"
             >
               Editar Perfil
             </button>
           ) : (
             <button
               onClick={() => setEditing(false)}
-              className="px-6 py-3 text-gray-500 hover:text-gray-300 font-bold text-sm"
+              className="w-full md:w-auto px-6 py-3 text-gray-500 hover:text-gray-300 font-bold text-sm text-center"
             >
               Cancelar
             </button>
@@ -99,7 +105,7 @@ export default function Perfil() {
 
       {/* Formulario de Edición */}
       {editing && (
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-md mb-10 max-w-xl transition-all duration-300">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-md mb-10 max-w-xl w-full transition-all duration-300">
           <h2 className="text-xl font-black text-gray-950 dark:text-white mb-6">Modificar datos personales</h2>
           <form onSubmit={handleEditProfile} className="space-y-4">
             <div>
@@ -125,7 +131,7 @@ export default function Perfil() {
             </div>
 
             {editError && (
-              <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 text-red-650 dark:text-red-400 p-4 rounded-xl text-sm font-medium">
+              <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium">
                 {editError}
               </div>
             )}
@@ -133,7 +139,7 @@ export default function Perfil() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 bg-gray-900 dark:bg-white hover:bg-rose-600 dark:hover:bg-rose-600 text-white dark:text-gray-900 dark:hover:text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-50 text-sm"
+              className="w-full sm:w-auto px-6 py-3 bg-gray-900 dark:bg-white hover:bg-rose-600 dark:hover:bg-rose-600 text-white dark:text-gray-900 dark:hover:text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-50 text-sm"
             >
               {saving ? 'Guardando...' : 'Guardar Cambios'}
             </button>
@@ -148,10 +154,10 @@ export default function Perfil() {
       )}
 
       {/* Historiales / Pestañas de Órdenes */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
         
         {/* Reparaciones / Órdenes de Servicio */}
-        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-100">
+        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-100 min-w-0 w-full">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
             <i className="bi bi-tools mr-2 text-rose-600 dark:text-rose-400"></i> Reparaciones Solicitadas
           </h2>
@@ -160,16 +166,16 @@ export default function Perfil() {
           ) : (
             <div className="space-y-4">
               {orders.ordenes.map(o => (
-                <div key={o.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
+                <div key={o.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors min-w-0">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-gray-900 dark:text-white truncate">{o.equipo}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Falla: {o.falla}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">Falla: {o.falla}</p>
                     <Link to={`/rastrear?codigo=${o.codigo}`} className="inline-block mt-2 text-xs font-mono font-bold text-rose-600 dark:text-rose-400 hover:underline bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50">
                       {o.codigo} <i className="bi bi-search ml-1"></i>
                     </Link>
                   </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="flex-shrink-0 w-full sm:w-auto text-left sm:text-right">
+                    <span className="inline-block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 w-full sm:w-auto text-center">
                       {o.estado}
                     </span>
                   </div>
@@ -180,7 +186,7 @@ export default function Perfil() {
         </div>
 
         {/* Pedidos de Catálogo */}
-        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-150">
+        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-150 min-w-0 w-full">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
             <i className="bi bi-bag-check mr-2 text-rose-600 dark:text-rose-400"></i> Pedidos de Catálogo
           </h2>
@@ -189,21 +195,21 @@ export default function Perfil() {
           ) : (
             <div className="space-y-4">
               {orders.pedidos_catalogo.map(p => (
-                <div key={p.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <span className="font-mono font-bold text-rose-600 dark:text-rose-450 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">{p.codigo}</span>
+                <div key={p.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors min-w-0">
+                  <div className="flex justify-between items-start gap-2 mb-3">
+                    <div className="min-w-0">
+                      <span className="font-mono font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">{p.codigo}</span>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{new Date(p.fecha).toLocaleDateString()}</p>
                     </div>
-                    <span className="text-lg font-black text-gray-900 dark:text-white">${p.total.toFixed(2)}</span>
+                    <span className="text-lg font-black text-gray-900 dark:text-white flex-shrink-0">${p.total.toFixed(2)}</span>
                   </div>
                   
                   <div className="border-t border-gray-200/60 dark:border-gray-800 pt-3">
                     <ul className="space-y-1">
                       {p.productos.map((item, idx) => (
-                        <li key={idx} className="text-xs text-gray-600 dark:text-gray-400 flex justify-between font-medium">
-                          <span>{item.nombre} <span className="text-gray-400 dark:text-gray-500">x{item.cantidad}</span></span>
-                          <span className="text-gray-500 dark:text-gray-300">${(item.precio * item.cantidad).toFixed(2)}</span>
+                        <li key={idx} className="text-xs text-gray-650 dark:text-gray-400 flex justify-between font-medium gap-4">
+                          <span className="truncate">{item.nombre} <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">x{item.cantidad}</span></span>
+                          <span className="text-gray-500 dark:text-gray-300 flex-shrink-0">${(item.precio * item.cantidad).toFixed(2)}</span>
                         </li>
                       ))}
                     </ul>
@@ -215,24 +221,24 @@ export default function Perfil() {
         </div>
 
         {/* Pedidos de Importación */}
-        <div className="lg:col-span-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-200">
+        <div className="lg:col-span-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-200 min-w-0 w-full">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
             <i className="bi bi-airplane mr-2 text-rose-600 dark:text-rose-400 font-bold"></i> Pedidos de Importación
           </h2>
           {orders.importaciones.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm py-4">No has realizado cotizaciones de importación.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               {orders.importaciones.map(i => (
-                <div key={i.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <Link to={`/importacion/${i.codigo}`} className="inline-block font-mono font-bold text-rose-600 dark:text-rose-455 hover:underline bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs">
+                <div key={i.codigo} className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200/60 dark:border-gray-800/80 rounded-2xl hover:border-rose-100 dark:hover:border-rose-900/50 transition-colors min-w-0">
+                  <div className="flex justify-between items-start gap-4 mb-3">
+                    <div className="min-w-0">
+                      <Link to={`/importacion/${i.codigo}`} className="inline-block font-mono font-bold text-rose-600 dark:text-rose-400 hover:underline bg-rose-50 dark:bg-rose-950/20 px-2.5 py-0.5 rounded-full border border-rose-100 dark:border-rose-900/50 text-xs truncate max-w-full">
                         {i.codigo} <i className="bi bi-search ml-1"></i>
                       </Link>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{new Date(i.fecha).toLocaleDateString()}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0">
                       <span className="text-md font-bold text-gray-950 dark:text-white">${i.total_usd.toFixed(2)}</span>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">≈ {i.total_ves.toFixed(2)} Bs.</p>
                     </div>
@@ -241,7 +247,7 @@ export default function Perfil() {
                   <div className="border-t border-gray-200/60 dark:border-gray-800 pt-3">
                     <ul className="space-y-1">
                       {i.productos.map((prod, idx) => (
-                        <li key={idx} className="text-xs text-gray-650 dark:text-gray-400 font-medium">
+                        <li key={idx} className="text-xs text-gray-650 dark:text-gray-400 font-medium truncate" title={prod.nombre || prod.url}>
                           • {prod.nombre || prod.url}
                         </li>
                       ))}

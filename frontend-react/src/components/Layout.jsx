@@ -280,7 +280,7 @@ export default function Layout() {
           <div className="border-t border-gray-100 dark:border-gray-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-400 uppercase tracking-widest">
             <p>&copy; {new Date().getFullYear()} MP Tech. Todos los derechos reservados.</p>
             <p className="flex items-center gap-1">
-              Desarrollado con <i className="bi bi-heart-fill text-rose-600 dark:text-rose-500 animate-pulse"></i> para hardware enthusiasts
+              Desarrollado con <i className="bi bi-heart-fill text-rose-600 dark:text-rose-500 animate-pulse"></i> por ManuelPuntos
             </p>
           </div>
         </div>

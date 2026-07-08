@@ -172,7 +172,7 @@ export default function Rastreo() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Rastrear Reparación</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              Ingresa tu código de seguimiento para ver el estado de tu equipo y presupuesto en tiempo real.
+              Ingresa tu código de seguimiento para consultar los avances técnicos de tu equipo en el taller.
             </p>
           </div>
 
@@ -183,7 +183,7 @@ export default function Rastreo() {
               value={buscarCodigo}
               onChange={e => setBuscarCodigo(e.target.value.toUpperCase())}
               className="flex-grow bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3.5 text-gray-900 dark:text-white placeholder-gray-400 font-mono font-bold tracking-widest text-center focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all"
-              placeholder="CÓDIGO DE ORDEN"
+              placeholder="(Ej. ABC123)"
             />
             <button
               type="submit"
@@ -217,14 +217,14 @@ export default function Rastreo() {
               onClick={() => { setShowSolicitar(!showSolicitar); setSolicitudExito(null); }}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-800 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:border-rose-100 dark:hover:border-rose-900/50 hover:text-rose-600 dark:hover:text-rose-400 transition-all"
             >
-              <i className="bi bi-tools mr-1"></i> Registrar Equipo en Línea
+              <i className="bi bi-tools mr-1"></i> Registrar Solicitud en Línea
             </button>
           </div>
 
           {/* Formulario de nueva solicitud de reparación */}
           {showSolicitar && !solicitudExito && (
             <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 animate-slide-up">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-registrar Equipo</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Solicitar Reparación</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
                 Completa los datos técnicos del equipo para pre-registrarlo. El diagnóstico inicial en taller no genera cargos.
               </p>
@@ -299,8 +299,8 @@ export default function Rastreo() {
               <div className="w-16 h-16 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100 dark:border-green-900/50">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">¡Equipo Registrado!</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Usa este código para rastrear los avances técnicos y autorizar presupuestos:</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">¡Solicitud Registrada!</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Usa este código para rastrear los avances técnicos:</p>
               <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 py-3.5 px-6 rounded-2xl mb-6 inline-block">
                 <span className="text-2xl font-mono font-black tracking-widest text-rose-650 dark:text-rose-400">{solicitudExito}</span>
               </div>
@@ -313,7 +313,7 @@ export default function Rastreo() {
                 }}
                 className="block w-full py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-650 dark:hover:bg-rose-600 dark:hover:text-white transition-all shadow-sm text-sm"
               >
-                Ver Tracker de Equipo
+                Rastrear mi orden de servicio
               </button>
             </div>
           )}
@@ -564,7 +564,7 @@ export default function Rastreo() {
 
                 {ticket.presupuesto_estado_raw === 'RECHAZADO' && (
                   <div className="bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 p-4 rounded-xl text-center text-sm font-bold text-rose-700 dark:text-rose-455 flex items-center justify-center gap-1.5 leading-relaxed">
-                    <i className="bi bi-x-circle-fill mr-1.5"></i> Presupuesto Rechazado. Las reparaciones están suspendidas. Por favor, comunícate con soporte para coordinar el retiro de tu dispositivo.
+                    <i className="bi bi-x-circle-fill mr-1.5"></i> Presupuesto Rechazado. Las reparaciones están suspendidas. Por favor, comunícate con soporte para coordinar el retiro de tu equipo.
                   </div>
                 )}
               </div>
