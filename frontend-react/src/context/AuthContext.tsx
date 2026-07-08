@@ -1,12 +1,54 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import api from '../api/axios';
 
-const AuthContext = createContext();
+export interface User {
+  id: number;
+  email: string;
+  nombre_completo?: string;
+  telefono?: string;
+  [key: string]: any;
+}
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [orders, setOrders] = useState({ pedidos_catalogo: [], ordenes: [], importaciones: [] });
-  const [loading, setLoading] = useState(true);
+export interface Order {
+  codigo: string;
+  estado: string;
+  [key: string]: any;
+}
+
+export interface Importation {
+  codigo: string;
+  total_usd: number;
+  [key: string]: any;
+}
+
+export interface CatalogOrder {
+  codigo: string;
+  total: number;
+  [key: string]: any;
+}
+
+export interface OrdersState {
+  pedidos_catalogo: CatalogOrder[];
+  ordenes: Order[];
+  importaciones: Importation[];
+}
+
+export interface AuthContextType {
+  user: User | null;
+  orders: OrdersState;
+  loading: boolean;
+  loginUser: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  registerUser: (email: string, password1: string, password2: string, telefono: string) => Promise<{ success: boolean; error?: string }>;
+  logoutUser: () => Promise<{ success: boolean }>;
+  refreshUser: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [orders, setOrders] = useState<OrdersState>({ pedidos_catalogo: [], ordenes: [], importaciones: [] });
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUser = async () => {
     try {
@@ -35,7 +77,7 @@ export function AuthProvider({ children }) {
     fetchUser();
   }, []);
 
-  const loginUser = async (email, password) => {
+  const loginUser = async (email: string, password: string) => {
     try {
       const res = await api.post('/login/', { email, password });
       if (res.data.success) {
@@ -43,7 +85,7 @@ export function AuthProvider({ children }) {
         return { success: true };
       }
       return { success: false, error: 'Credenciales incorrectas' };
-    } catch (error) {
+    } catch (error: any) {
       return { 
         success: false, 
         error: error.response?.data?.error || 'Error al iniciar sesión' 
@@ -51,7 +93,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const registerUser = async (email, password1, password2, telefono) => {
+  const registerUser = async (email: string, password1: string, password2: string, telefono: string) => {
     try {
       const res = await api.post('/register/', { 
         email, 
@@ -64,12 +106,12 @@ export function AuthProvider({ children }) {
         return { success: true };
       }
       return { success: false, error: 'Error al registrar' };
-    } catch (error) {
+    } catch (error: any) {
       const fieldErrors = error.response?.data?.errors;
       const genericError = error.response?.data?.error;
       return { 
         success: false, 
-        error: genericError || (fieldErrors ? Object.values(fieldErrors)[0] : 'Error en el registro')
+        error: genericError || (fieldErrors ? Object.values(fieldErrors)[0] as string : 'Error en el registro')
       };
     }
   };
@@ -102,5 +144,9 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }

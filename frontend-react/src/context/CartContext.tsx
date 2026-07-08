@@ -1,9 +1,28 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-const CartContext = createContext();
+export interface CartItem {
+  producto_id: number;
+  nombre: string;
+  precio: string | number;
+  imagen?: string;
+  cantidad: number;
+  stock: number;
+}
 
-export function CartProvider({ children }) {
-  const [cart, setCart] = useState(() => {
+export interface CartContextType {
+  cart: CartItem[];
+  addToCart: (product: any) => void;
+  removeFromCart: (productId: number) => void;
+  updateQuantity: (productId: number, newQuantity: number) => void;
+  clearCart: () => void;
+  totalItems: number;
+  totalAmount: number;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [cart, setCart] = useState<CartItem[]>(() => {
     const savedCart = localStorage.getItem('mptech_cart');
     return savedCart ? JSON.parse(savedCart) : [];
   });
@@ -12,7 +31,7 @@ export function CartProvider({ children }) {
     localStorage.setItem('mptech_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product) => {
+  const addToCart = (product: any) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.producto_id === product.id);
       if (existingItem) {
@@ -33,11 +52,11 @@ export function CartProvider({ children }) {
     });
   };
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = (productId: number) => {
     setCart(prevCart => prevCart.filter(item => item.producto_id !== productId));
   };
 
-  const updateQuantity = (productId, newQuantity) => {
+  const updateQuantity = (productId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
     setCart(prevCart => prevCart.map(item => 
       item.producto_id === productId 
@@ -49,7 +68,7 @@ export function CartProvider({ children }) {
   const clearCart = () => setCart([]);
 
   const totalItems = cart.reduce((sum, item) => sum + item.cantidad, 0);
-  const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.precio) * item.cantidad), 0);
+  const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.precio.toString()) * item.cantidad), 0);
 
   return (
     <CartContext.Provider value={{
@@ -67,5 +86,9 @@ export function CartProvider({ children }) {
 }
 
 export function useCart() {
-  return useContext(CartContext);
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
 }
