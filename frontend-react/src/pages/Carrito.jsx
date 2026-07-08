@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 
-export default function Carrito() {
+export default function Carrito({ onBackToCatalog }) {
   const { cart, removeFromCart, updateQuantity, totalAmount, clearCart } = useCart();
   const { user } = useAuth();
   const [nombre, setNombre] = useState('');
@@ -81,9 +81,15 @@ export default function Carrito() {
           <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 py-4 px-6 rounded-2xl mb-8">
             <span className="text-3xl font-mono font-black tracking-widest text-rose-600 dark:text-rose-400">{success}</span>
           </div>
-          <Link to="/" className="block w-full py-4 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white transition-colors shadow-md">
+          <button 
+            type="button"
+            onClick={() => {
+              if (onBackToCatalog) onBackToCatalog();
+            }}
+            className="block w-full py-4 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 dark:hover:bg-rose-600 dark:hover:text-white transition-colors shadow-md"
+          >
             Volver al Catálogo
-          </Link>
+          </button>
         </div>
       </div>
     );
@@ -104,9 +110,15 @@ export default function Carrito() {
                 </svg>
               </div>
               <p className="text-gray-505 dark:text-gray-450 text-lg mb-6">Tu carrito está vacío.</p>
-              <Link to="/" className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 transition-colors shadow-md">
+              <button 
+                type="button"
+                onClick={() => {
+                  if (onBackToCatalog) onBackToCatalog();
+                }}
+                className="inline-block px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-600 transition-colors shadow-md"
+              >
                 Explorar productos
-              </Link>
+              </button>
             </div>
           ) : (
             <ul className="space-y-4">
