@@ -70,7 +70,7 @@ export default function DetalleImportacion() {
   const currentStageIndex = IMPORT_STAGES.findIndex(s => s.key === pedido.estado_raw);
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300">
+    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
       
       {/* Botón Volver */}
       <Link 
@@ -81,7 +81,7 @@ export default function DetalleImportacion() {
       </Link>
 
       {/* Tarjeta de Contenedor de Resultados */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.1)] transition-all duration-300">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.1)] transition-all duration-300 animate-slide-up">
         
         {/* Encabezado */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 dark:border-gray-800 pb-6 mb-8 gap-4">

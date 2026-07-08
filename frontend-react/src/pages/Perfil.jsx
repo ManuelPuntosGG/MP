@@ -59,10 +59,10 @@ export default function Perfil() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300">
+    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
       
       {/* Header Perfil */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 animate-slide-up">
         <div className="flex items-center space-x-6">
           <div className="h-20 w-20 rounded-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 text-3xl font-black shadow-sm">
             {user.email[0].toUpperCase()}
@@ -151,7 +151,7 @@ export default function Perfil() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Reparaciones / Órdenes de Servicio */}
-        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-100">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
             <i className="bi bi-tools mr-2 text-rose-600 dark:text-rose-400"></i> Reparaciones Solicitadas
           </h2>
@@ -180,7 +180,7 @@ export default function Perfil() {
         </div>
 
         {/* Pedidos de Catálogo */}
-        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-150">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
             <i className="bi bi-bag-check mr-2 text-rose-600 dark:text-rose-400"></i> Pedidos de Catálogo
           </h2>
@@ -215,7 +215,7 @@ export default function Perfil() {
         </div>
 
         {/* Pedidos de Importación */}
-        <div className="lg:col-span-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="lg:col-span-12 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/50 transition-all duration-300 animate-slide-up delay-200">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
             <i className="bi bi-airplane mr-2 text-rose-600 dark:text-rose-400 font-bold"></i> Pedidos de Importación
           </h2>

@@ -168,7 +168,7 @@ export default function Rastreo() {
       
       {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
       {!ticket && (
-        <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-300">
+        <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-300 animate-scale-in">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Rastrear Reparación</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -223,7 +223,7 @@ export default function Rastreo() {
 
           {/* Formulario de nueva solicitud de reparación */}
           {showSolicitar && !solicitudExito && (
-            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 animate-fadeIn">
+            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 animate-slide-up">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-registrar Equipo</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
                 Completa los datos técnicos del equipo para pre-registrarlo. El diagnóstico inicial en taller no genera cargos.
@@ -295,7 +295,7 @@ export default function Rastreo() {
 
           {/* Éxito de pre-registro */}
           {solicitudExito && (
-            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 text-center animate-fadeIn">
+            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 text-center animate-scale-in">
               <div className="w-16 h-16 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100 dark:border-green-900/50">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
               </div>
@@ -322,7 +322,7 @@ export default function Rastreo() {
 
       {/* 2. Detalle del Ticket Encontrado */}
       {ticket && (
-        <div className="space-y-6 max-w-4xl mx-auto animate-fadeIn">
+        <div className="space-y-6 max-w-4xl mx-auto animate-slide-up">
           
           {/* Botón Volver */}
           <button
@@ -584,7 +584,7 @@ export default function Rastreo() {
               ) : (
                 <div className="relative pl-6 border-l-2 border-gray-100 dark:border-gray-800 space-y-6">
                   {ticket.avances.map((avance, idx) => (
-                    <div key={idx} className="relative group animate-fadeIn">
+                    <div key={idx} style={{ animationDelay: `${idx * 80}ms` }} className="relative group animate-slide-up">
                       
                       {/* Timeline Dot */}
                       <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-rose-600 border-4 border-white dark:border-gray-900 transition-transform group-hover:scale-125 duration-300" />
@@ -622,7 +622,7 @@ export default function Rastreo() {
       {lightboxImg && (
         <div 
           onClick={() => setLightboxImg(null)}
-          className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 cursor-zoom-out animate-fadeIn"
+          className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 cursor-zoom-out animate-fade-in"
         >
           <button
             onClick={() => setLightboxImg(null)}
@@ -634,7 +634,7 @@ export default function Rastreo() {
           <img
             src={lightboxImg}
             alt="Microfotografía de hardware ampliada"
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-scaleUp"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-scale-in"
           />
         </div>
       )}

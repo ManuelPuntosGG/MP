@@ -97,7 +97,7 @@ export default function Catalogo() {
       {/* Background glow just for Dark Mode */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[500px] bg-rose-600/10 dark:bg-rose-600/20 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
         
         {/* Cabecera y Tasa */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
@@ -208,7 +208,7 @@ export default function Catalogo() {
             ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
             : "flex flex-col space-y-4"
           }>
-            {paginatedProducts.map(producto => {
+            {paginatedProducts.map((producto, index) => {
               const precioFloat = parseFloat(producto.precio);
               const precioVes = tasaVes ? (precioFloat * parseFloat(tasaVes)).toFixed(2) : '0.00';
               const agotado = producto.stock === 0;
@@ -216,7 +216,8 @@ export default function Catalogo() {
               return (
                 <div 
                   key={producto.id} 
-                  className={`group bg-white dark:bg-gray-900 rounded-3xl transition-all duration-300 border border-gray-100 dark:border-gray-800/60
+                  style={{ animationDelay: `${(index % 12) * 50}ms` }}
+                  className={`group bg-white dark:bg-gray-900 rounded-3xl transition-all duration-300 border border-gray-100 dark:border-gray-800/60 animate-scale-in
                     hover:-translate-y-1.5 hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.35)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.45)] hover:border-rose-200 dark:hover:border-rose-900/60
                     ${viewMode === 'list' ? 'flex flex-col sm:flex-row p-4 gap-6 items-center' : 'relative flex flex-col'}
                     ${agotado ? 'opacity-75 grayscale-[0.3]' : ''}

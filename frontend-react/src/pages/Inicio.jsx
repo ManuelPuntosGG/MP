@@ -17,7 +17,7 @@ export default function Inicio() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[450px] bg-rose-600/10 dark:bg-rose-600/15 blur-[120px] rounded-full pointer-events-none" />
 
       {/* 1. Hero Section */}
-      <section className="relative max-w-5xl mx-auto pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-center animate-fadeIn">
+      <section className="relative max-w-5xl mx-auto pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-tight">
           Soluciones <span className="text-rose-650 dark:text-rose-500">Tecnológicas</span>
         </h1>
@@ -46,7 +46,7 @@ export default function Inicio() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Card Servicio Técnico */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 flex flex-col justify-between">
+          <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 flex flex-col justify-between animate-slide-up delay-100">
             <div>
               <div className="h-14 w-14 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-450 text-2xl shadow-sm mb-6">
                 <i className="bi bi-tools"></i>
@@ -65,7 +65,7 @@ export default function Inicio() {
           </div>
 
           {/* Card Tienda */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 flex flex-col justify-between">
+          <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-150 dark:hover:border-rose-900/50 transition-all duration-300 flex flex-col justify-between animate-slide-up delay-150">
             <div>
               <div className="h-14 w-14 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-450 text-2xl shadow-sm mb-6">
                 <i className="bi bi-gpu-card"></i>
@@ -88,7 +88,7 @@ export default function Inicio() {
 
       {/* 3. User Dashboard Section (Only when Logged In) */}
       {user && (
-        <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-fadeIn">
+        <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-slide-up delay-200">
           <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:border-rose-150 dark:hover:border-rose-900/40 hover:shadow-[0_15px_30px_-10px_rgba(225,29,72,0.1)] transition-all duration-300">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white">Mi Actividad Reciente</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5 font-medium">
@@ -187,7 +187,7 @@ export default function Inicio() {
       )}
 
       {/* 4. Trust / Value Proposition Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-slide-up delay-250">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm text-center">
           
           <div className="p-4 flex flex-col items-center">
@@ -218,7 +218,7 @@ export default function Inicio() {
       </section>
 
       {/* 5. Community Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center animate-slide-up delay-300">
         <h2 className="text-3xl font-black text-gray-900 dark:text-white">Nuestra Comunidad Digital</h2>
         <p className="text-sm text-gray-505 dark:text-gray-400 mt-2 font-medium max-w-md mx-auto">
           Conoce nuestros laboratorios de reparación de cerca, aprende con videos técnicos y revisa stock físico al momento.
@@ -266,52 +266,60 @@ export default function Inicio() {
       </section>
 
       {/* 6. Contact & Location Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 mb-8">
+      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 mb-8 animate-slide-up delay-350">
         <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col lg:flex-row gap-8 items-stretch">
           
           {/* Info Contacto */}
           <div className="flex-1 flex flex-col justify-between py-2">
             <div>
               <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Contacto y Ubicación</h2>
-              <div className="space-y-4">
+              <div className="flex flex-col divide-y divide-gray-100 dark:divide-gray-800/60">
                 
-                <div className="flex items-start gap-3">
-                  <i className="bi bi-geo-alt-fill text-lg text-rose-600 dark:text-rose-455 mt-0.5 flex-shrink-0"></i>
-                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 leading-relaxed text-left">
-                    <strong>Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1, Valencia, Carabobo.
+                <div className="flex items-center gap-4 py-4">
+                  <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-geo-alt-fill text-lg text-rose-600 dark:text-rose-400"></i>
+                  </div>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 leading-relaxed text-left">
+                    <strong className="text-gray-900 dark:text-white block sm:inline">Dirección:</strong> Naguanagua, Tazajal, Residencias Terrazas de Monte Alegre 1, Valencia, Carabobo.
                   </span>
                 </div>
 
-                <div className="flex items-start gap-3 border-t border-gray-100 dark:border-gray-800 pt-3">
-                  <i className="bi bi-clock-history text-lg text-rose-600 dark:text-rose-455 mt-0.5 flex-shrink-0"></i>
-                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 text-left">
-                    <strong>Lunes a Viernes:</strong> 5:00 PM a 10:00 PM
+                <div className="flex items-center gap-4 py-4">
+                  <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-clock-history text-lg text-rose-600 dark:text-rose-400"></i>
+                  </div>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-left">
+                    <strong className="text-gray-900 dark:text-white block sm:inline">Lunes a Viernes:</strong> 5:00 PM a 10:00 PM
                   </span>
                 </div>
 
-                <div className="flex items-start gap-3 border-t border-gray-100 dark:border-gray-800 pt-3">
-                  <i className="bi bi-calendar-week text-lg text-rose-600 dark:text-rose-455 mt-0.5 flex-shrink-0"></i>
-                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 text-left">
-                    <strong>Fines de Semana:</strong> Sábado y Domingo de 9:00 AM a 10:00 PM
+                <div className="flex items-center gap-4 py-4">
+                  <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-calendar-week text-lg text-rose-600 dark:text-rose-400"></i>
+                  </div>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-left">
+                    <strong className="text-gray-900 dark:text-white block sm:inline">Fines de Semana:</strong> Sábado y Domingo de 9:00 AM a 10:00 PM
                   </span>
                 </div>
 
-                <div className="flex items-start gap-3 border-t border-gray-100 dark:border-gray-800 pt-3">
-                  <i className="bi bi-phone text-lg text-rose-600 dark:text-rose-455 mt-0.5 flex-shrink-0"></i>
-                  <span className="text-sm font-semibold text-gray-600 dark:text-gray-400 text-left">
-                    <strong>Soporte Directo (WhatsApp):</strong> +58 424-5022292
+                <div className="flex items-center gap-4 py-4">
+                  <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-phone text-lg text-rose-600 dark:text-rose-400"></i>
+                  </div>
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 text-left">
+                    <strong className="text-gray-900 dark:text-white block sm:inline">Soporte Directo (WhatsApp):</strong> +58 424-5022292
                   </span>
                 </div>
 
               </div>
             </div>
 
-            <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
+            <div className="mt-4 pt-4">
               <a
                 href="https://wa.me/584245022292"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-md shadow-emerald-600/35 text-sm"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-md shadow-emerald-600/20 text-sm w-full sm:w-auto"
               >
                 <i className="bi bi-whatsapp"></i> Chatear con Soporte Técnico
               </a>
@@ -319,7 +327,7 @@ export default function Inicio() {
           </div>
 
           {/* Mapa de Google */}
-          <div className="flex-1 min-h-[300px] sm:min-h-[380px] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-850 shadow-inner relative">
+          <div className="flex-1 min-h-[300px] sm:min-h-[380px] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-inner relative">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.093263064714!2d-67.9988419!3d10.2540618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e805de9950f9af7%3A0x29ff89c68666a5bc!2sMP%20Tech!5e0!3m2!1ses!2sve!4v1779739157376!5m2!1ses!2sve"
               width="100%"

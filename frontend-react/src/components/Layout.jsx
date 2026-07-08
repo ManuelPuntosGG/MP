@@ -216,9 +216,73 @@ export default function Layout() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-900 mt-auto py-8 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} MP Tech. Todos los derechos reservados.</p>
+      <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+            {/* Columna 1: MP Tech Info */}
+            <div className="flex flex-col items-center text-center space-y-4">
+              <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">MP Tech</h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium max-w-md leading-relaxed mx-auto">
+                Especialistas en reparación y venta de hardware. Diagnóstico de componentes electrónicos.
+              </p>
+              <div className="flex items-center justify-center space-x-4 pt-2">
+                <a 
+                  href="https://www.tiktok.com/@manuelpuntos" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="TikTok"
+                  className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-gray-700 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 flex items-center justify-center border border-gray-100 dark:border-gray-800 hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 shadow-sm"
+                >
+                  <i className="bi bi-tiktok text-lg"></i>
+                </a>
+                <a 
+                  href="https://www.youtube.com/@manuelpuntos/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="YouTube"
+                  className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-gray-700 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 flex items-center justify-center border border-gray-100 dark:border-gray-800 hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 shadow-sm"
+                >
+                  <i className="bi bi-youtube text-lg"></i>
+                </a>
+                <a 
+                  href="https://www.instagram.com/mp_tech_vzla/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="Instagram"
+                  className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-gray-700 dark:text-gray-300 hover:text-rose-600 dark:hover:text-rose-400 flex items-center justify-center border border-gray-100 dark:border-gray-800 hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 shadow-sm"
+                >
+                  <i className="bi bi-instagram text-lg"></i>
+                </a>
+              </div>
+            </div>
+
+            {/* Columna 2: Contacto */}
+            <div className="flex flex-col items-center text-center space-y-4">
+              <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">Contacto</h4>
+              <ul className="space-y-3 flex flex-col items-center">
+                <li className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <i className="bi bi-geo-alt text-rose-600 dark:text-rose-400 text-lg flex-shrink-0"></i>
+                  <span>Naguanagua, Valencia</span>
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <i className="bi bi-clock text-rose-600 dark:text-rose-400 text-lg flex-shrink-0"></i>
+                  <span>Lun-Vie 5PM-10PM / Sáb-Dom 9AM-10PM</span>
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <i className="bi bi-phone text-rose-600 dark:text-rose-400 text-lg flex-shrink-0"></i>
+                  <span>+58 424-5022292</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Línea Divisoria */}
+          <div className="border-t border-gray-100 dark:border-gray-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-400 uppercase tracking-widest">
+            <p>&copy; {new Date().getFullYear()} MP Tech. Todos los derechos reservados.</p>
+            <p className="flex items-center gap-1">
+              Desarrollado con <i className="bi bi-heart-fill text-rose-600 dark:text-rose-500 animate-pulse"></i> para hardware enthusiasts
+            </p>
+          </div>
         </div>
       </footer>
     </div>

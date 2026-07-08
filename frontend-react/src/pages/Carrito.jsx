@@ -70,7 +70,7 @@ export default function Carrito() {
   if (success) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-6 bg-gray-50/50 dark:bg-gray-950/20">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300 animate-scale-in">
           <div className="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100 dark:border-green-900/50">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -90,7 +90,7 @@ export default function Carrito() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20">
+    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 animate-fade-in">
       <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-10">Tu Carrito</h1>
       
       <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start">
@@ -110,10 +110,11 @@ export default function Carrito() {
             </div>
           ) : (
             <ul className="space-y-4">
-              {cart.map((item) => (
+              {cart.map((item, index) => (
                 <li 
                   key={item.producto_id} 
-                  className="group flex py-6 px-6 bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800/60 rounded-3xl items-center shadow-sm hover:shadow-[0_10px_30px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_10px_30px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/40 transition-all duration-300"
+                  style={{ animationDelay: `${index * 80}ms` }}
+                  className="group flex py-6 px-6 bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800/60 rounded-3xl items-center shadow-sm hover:shadow-[0_10px_30px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_10px_30px_-10px_rgba(225,29,72,0.25)] hover:border-rose-200 dark:hover:border-rose-900/40 transition-all duration-300 animate-scale-in"
                 >
                   <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-2 border border-gray-100 dark:border-gray-800/65">
                     {item.imagen ? (
@@ -164,7 +165,7 @@ export default function Carrito() {
 
         {/* Resumen y Checkout */}
         {cart.length > 0 && (
-          <div className="mt-16 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl px-6 py-8 sm:p-10 lg:col-span-5 lg:mt-0 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/40 transition-all duration-300 sticky top-24">
+          <div className="mt-16 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl px-6 py-8 sm:p-10 lg:col-span-5 lg:mt-0 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/40 transition-all duration-300 sticky top-24 animate-slide-up delay-100">
             <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6">Resumen del pedido</h2>
             
             <div className="flow-root mb-8">

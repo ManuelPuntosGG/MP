@@ -218,7 +218,7 @@ export default function Importaciones() {
   if (successCode) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-6 bg-gray-50/50 dark:bg-gray-950/20">
-        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300">
+        <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center shadow-xl shadow-rose-100/50 dark:shadow-black/25 hover:shadow-rose-200/50 dark:hover:border-rose-900/40 transition-all duration-300 animate-scale-in">
           <div className="w-20 h-20 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100 dark:border-green-900/50">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -244,7 +244,7 @@ export default function Importaciones() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300">
+    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
       
       {/* Cabecera y Tasa */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
@@ -267,7 +267,7 @@ export default function Importaciones() {
       </div>
 
       {/* Formulario Adicionar Artículo */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm mb-8 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm mb-8 transition-colors duration-300 animate-slide-up delay-75">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Añadir artículo a cotización</h2>
         <form onSubmit={handleAddItem} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           
@@ -326,7 +326,7 @@ export default function Importaciones() {
       </div>
 
       {/* Tabla / Lista de Artículos */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm mb-8 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden shadow-sm mb-8 transition-colors duration-300 animate-slide-up delay-150">
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 dark:border-gray-800">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Artículos Cotizados ({items.length})</h2>
           {items.length > 0 && (
@@ -372,9 +372,9 @@ export default function Importaciones() {
                     <tr key={item.id} className="border-b border-gray-100 dark:border-gray-800/60 hover:bg-gray-50/40 dark:hover:bg-gray-950/20 transition-colors">
                       <td className="px-6 py-4">
                         <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider
-                          ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-955/35 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
-                          ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-850 dark:bg-orange-955/35 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
-                          ${item.tienda === 'eBay' ? 'bg-blue-100 text-blue-800 dark:bg-blue-955/35 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
+                          ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
+                          ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-800 dark:bg-orange-950/30 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
+                          ${item.tienda === 'eBay' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
                           ${item.tienda === 'Otro' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700' : ''}
                         `}>
                           {item.tienda}
@@ -413,7 +413,7 @@ export default function Importaciones() {
                       <td className="px-6 py-4 text-center">
                         <button
                           onClick={() => handleRemoveItem(item.id)}
-                          className="text-rose-600 hover:text-rose-700 p-1.5 bg-rose-50 dark:bg-rose-955/20 border border-rose-100 dark:border-rose-900/50 rounded-lg transition-colors"
+                          className="text-rose-600 hover:text-rose-700 p-1.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 rounded-lg transition-colors"
                           title="Eliminar artículo"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -443,9 +443,9 @@ export default function Importaciones() {
                 <div key={item.id} className="p-5 space-y-4 hover:bg-gray-50/20 dark:hover:bg-gray-950/10 transition-colors">
                   <div className="flex justify-between items-center">
                     <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider
-                      ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-955/35 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
-                      ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-850 dark:bg-orange-955/35 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
-                      ${item.tienda === 'eBay' ? 'bg-blue-100 text-blue-800 dark:bg-blue-955/35 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
+                      ${item.tienda === 'Amazon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40' : ''}
+                      ${item.tienda === 'AliExpress' ? 'bg-orange-100 text-orange-800 dark:bg-orange-950/30 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40' : ''}
+                      ${item.tienda === 'eBay' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40' : ''}
                       ${item.tienda === 'Otro' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700' : ''}
                     `}>
                       {item.tienda}
@@ -508,8 +508,8 @@ export default function Importaciones() {
       </div>
 
       {/* Políticas */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 flex items-start gap-4 mb-8">
-        <div className="p-3 bg-rose-50 dark:bg-rose-955/20 text-rose-600 rounded-2xl flex-shrink-0">
+      <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 flex items-start gap-4 mb-8 animate-slide-up delay-200">
+        <div className="p-3 bg-rose-50 dark:bg-rose-950/20 text-rose-600 rounded-2xl flex-shrink-0">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </div>
         <div>
@@ -523,7 +523,7 @@ export default function Importaciones() {
 
       {/* Resumen Estimado */}
       {items.length > 0 && (
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-rose-100 dark:hover:border-rose-900/50 transition-all duration-300 animate-scale-in">
           <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6">Resumen Estimado de Importación</h3>
           
           <div className="space-y-4 border-b border-gray-100 dark:border-gray-800 pb-6 mb-6">
@@ -558,11 +558,11 @@ export default function Importaciones() {
             <span className="text-lg font-bold text-gray-900 dark:text-white">Total General Estimado:</span>
             <div className="text-right">
               <p className="text-2xl font-black text-rose-600 dark:text-rose-500">${totals.totalUsd.toFixed(2)}</p>
-              {tasaVes && <p className="text-sm font-bold text-gray-750 dark:text-gray-300 mt-0.5">≈ {totals.totalBs.toFixed(2)} Bs</p>}
+              {tasaVes && <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mt-0.5">≈ {totals.totalBs.toFixed(2)} Bs</p>}
             </div>
           </div>
 
-          <div className="bg-rose-50/50 dark:bg-rose-955/20 border border-rose-100/50 dark:border-rose-900/40 rounded-2xl p-4 text-center text-sm font-bold text-rose-700 dark:text-rose-400 mb-8 leading-relaxed">
+          <div className="bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100/50 dark:border-rose-900/40 rounded-2xl p-4 text-center text-sm font-bold text-rose-700 dark:text-rose-400 mb-8 leading-relaxed">
             <i className="bi bi-info-circle-fill mr-1.5"></i> Financiamiento: Inicial 50% <span className="underline">${totals.inicialUsd.toFixed(2)} ({totals.inicialBs.toFixed(2)} Bs)</span> · Saldo contra entrega <span className="underline">${totals.inicialUsd.toFixed(2)} ({totals.inicialBs.toFixed(2)} Bs)</span>
           </div>
 
