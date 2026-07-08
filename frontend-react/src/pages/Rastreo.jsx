@@ -31,6 +31,9 @@ export default function Rastreo() {
   const [submittingSolicitar, setSubmittingSolicitar] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [solicitudExito, setSolicitudExito] = useState(null);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedShipping, setCopiedShipping] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState(null); // 'taller', 'envio' or null
 
   // Lightbox State
   const [lightboxImg, setLightboxImg] = useState(null);
@@ -108,6 +111,7 @@ export default function Rastreo() {
     setSubmittingSolicitar(true);
     setFormErrors({});
     setSolicitudExito(null);
+    setDeliveryMethod(null);
 
     try {
       const response = await api.post('/solicitar-reparacion/', {
@@ -118,7 +122,11 @@ export default function Rastreo() {
       });
 
       if (response.data.success) {
-        setSolicitudExito(response.data.codigo);
+        setSolicitudExito({
+          codigo: response.data.codigo,
+          cliente_nombre: response.data.cliente_nombre,
+          equipo: response.data.equipo
+        });
         setEquipo('');
         setFallaReportada('');
       }
@@ -295,26 +303,187 @@ export default function Rastreo() {
 
           {/* Éxito de pre-registro */}
           {solicitudExito && (
-            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 text-center animate-scale-in">
-              <div className="w-16 h-16 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100 dark:border-green-900/50">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 animate-scale-in text-left">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-green-50 dark:bg-green-950/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100 dark:border-green-900/30">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">¡Ingreso Registrado con Éxito!</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed px-2">
+                  Estimado(a) <strong className="text-gray-800 dark:text-gray-200">{solicitudExito.cliente_nombre}</strong>, los parámetros técnicos de su equipo (<strong className="text-gray-800 dark:text-gray-200">{solicitudExito.equipo}</strong>) han sido cargados correctamente al ecosistema operativo de soporte.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">¡Solicitud Registrada!</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Usa este código para rastrear los avances técnicos:</p>
-              <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 py-3.5 px-6 rounded-2xl mb-6 inline-block">
-                <span className="text-2xl font-mono font-black tracking-widest text-rose-650 dark:text-rose-400">{solicitudExito}</span>
+
+              {/* Código destacado */}
+              <div className="text-center mb-6">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Código Único de Rastreo</p>
+                <div className="flex items-center justify-center gap-2 max-w-xs mx-auto bg-rose-50/50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 rounded-2xl p-3">
+                  <span className="font-mono text-2xl font-black tracking-widest text-rose-600 dark:text-rose-450">{solicitudExito.codigo}</span>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(solicitudExito.codigo);
+                      setCopiedCode(true);
+                      setTimeout(() => setCopiedCode(false), 2000);
+                    }}
+                    className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-lg text-rose-600 dark:text-rose-400 transition-colors"
+                    title="Copiar código"
+                  >
+                    {copiedCode ? <i className="bi bi-check2 text-green-500 font-bold"></i> : <i className="bi bi-clipboard"></i>}
+                  </button>
+                </div>
+                <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400 bg-rose-500/5 dark:bg-rose-500/10 px-3 py-1.5 rounded-full font-medium">
+                  <i className="bi bi-shield-exclamation"></i>
+                  Guarde este código para monitorear el diagnóstico técnico en vivo.
+                </div>
               </div>
-              <button
-                onClick={() => {
-                  setBuscarCodigo(solicitudExito);
-                  navigate(`?codigo=${solicitudExito}`);
-                  setSolicitudExito(null);
-                  setShowSolicitar(false);
-                }}
-                className="block w-full py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:bg-rose-650 dark:hover:bg-rose-600 dark:hover:text-white transition-all shadow-sm text-sm"
-              >
-                Rastrear mi orden de servicio
-              </button>
+
+              {/* Caja siguiente paso */}
+              <div className="bg-gray-50 dark:bg-gray-950/40 border border-gray-150 dark:border-gray-800/80 rounded-2xl p-4 sm:p-5 mb-6">
+                <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">
+                  <i className="bi bi-gear-fill text-rose-500 animate-spin-slow"></i>
+                  ¿Cómo vas a entregar tu equipo?
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">
+                  Selecciona la modalida que más te convenga para gestionar la consignación física de tu hardware en nuestro laboratorio central:
+                </p>
+
+                <div className="space-y-2.5">
+                  {/* Opción 1: Taller */}
+                  <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryMethod(deliveryMethod === 'taller' ? null : 'taller')}
+                      className={`w-full flex items-center justify-between p-3.5 text-sm font-bold text-left transition-colors ${deliveryMethod === 'taller' ? 'text-rose-600 bg-rose-50/20 dark:bg-rose-950/10' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <i className="bi bi-shop"></i> Traer directamente al Taller
+                      </span>
+                      <i className={`bi bi-chevron-down transition-transform duration-300 ${deliveryMethod === 'taller' ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    {deliveryMethod === 'taller' && (
+                      <div className="p-4 border-t border-gray-100 dark:border-gray-800 animate-slide-down">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                          Nos encontramos ubicados en el Estado Carabobo, municipio Naguanagua, Sector Tazajal.
+                        </p>
+                        <a 
+                          href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-bold transition-all border border-rose-100/50 dark:border-rose-900/30"
+                        >
+                          <i className="bi bi-geo-alt-fill"></i> Ver Ruta en Google Maps
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Opción 2: Envío */}
+                  <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryMethod(deliveryMethod === 'envio' ? null : 'envio')}
+                      className={`w-full flex items-center justify-between p-3.5 text-sm font-bold text-left transition-colors ${deliveryMethod === 'envio' ? 'text-rose-600 bg-rose-50/20 dark:bg-rose-950/10' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <i className="bi bi-truck"></i> Envío Nacional (Encomienda)
+                      </span>
+                      <i className={`bi bi-chevron-down transition-transform duration-300 ${deliveryMethod === 'envio' ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    {deliveryMethod === 'envio' && (
+                      <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-4 animate-slide-down">
+                        <div className="bg-gray-50 dark:bg-gray-950/60 border border-gray-150 dark:border-gray-800/80 rounded-xl p-3.5 relative">
+                          <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Datos del Receptor</span>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const datosTexto = "Receptor: Manuel García\nCédula: V-29685051\nTeléfono: 04245022292\nDestino: Valencia";
+                              navigator.clipboard.writeText(datosTexto);
+                              setCopiedShipping(true);
+                              setTimeout(() => setCopiedShipping(false), 2000);
+                            }}
+                            className={`absolute top-3 right-3 text-[11px] font-bold px-2.5 py-1 rounded-md border transition-all flex items-center gap-1 ${copiedShipping ? 'text-green-500 border-green-200 bg-green-50/50 dark:bg-green-950/20 dark:border-green-900/40' : 'text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 bg-white dark:bg-gray-900'}`}
+                          >
+                            {copiedShipping ? <><i className="bi bi-check-lg"></i> Copiado</> : <><i className="bi bi-files"></i> Copiar</>}
+                          </button>
+                          <div className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
+                            <p><strong>Nombre:</strong> Manuel García</p>
+                            <p><strong>Cédula:</strong> V-29685051</p>
+                            <p><strong>Teléfono:</strong> 04245022292</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2.5">Agencias de Envío (Destino Valencia)</span>
+                          <div className="space-y-2">
+                            <div className="flex items-start gap-2 text-xs">
+                              <i className="bi bi-caret-right-fill text-green-500 mt-0.5"></i>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <strong className="text-gray-900 dark:text-white">MRW</strong>
+                                  <span className="text-[9px] bg-green-500/10 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded-full font-bold border border-green-500/20">Recomendada</span>
+                                </div>
+                                <p className="text-gray-500 dark:text-gray-400 mt-0.5">Cód: 0816000 - Av. Bolivar Norte, Valencia</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-2 text-xs">
+                              <i className="bi bi-caret-right-fill text-gray-400 dark:text-gray-600 mt-0.5"></i>
+                              <div className="flex-1">
+                                <strong className="text-gray-900 dark:text-white">Tealca</strong>
+                                <p className="text-gray-500 dark:text-gray-400 mt-0.5">Zona Industrial Norte 5208, Valencia</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-2 text-xs">
+                              <i className="bi bi-caret-right-fill text-gray-400 dark:text-gray-600 mt-0.5"></i>
+                              <div className="flex-1">
+                                <strong className="text-gray-900 dark:text-white">Zoom</strong>
+                                <p className="text-gray-500 dark:text-gray-400 mt-0.5">Aliado ZOOM Omega Colors, Valencia</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Botón WhatsApp */}
+                <a
+                  href={`https://wa.me/584245022292?text=${encodeURIComponent(`Hola MP Tech, acabo de registrar una solicitud de soporte técnico. Código: ${solicitudExito.codigo}, Cliente: ${solicitudExito.cliente_nombre}, Equipo: ${solicitudExito.equipo}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-md shadow-green-600/20 text-xs sm:text-sm"
+                >
+                  <i className="bi bi-whatsapp"></i> Notificar Entrega por WhatsApp
+                </a>
+              </div>
+
+              {/* Botones de navegación final */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBuscarCodigo(solicitudExito.codigo);
+                    navigate(`?codigo=${solicitudExito.codigo}`);
+                    setSolicitudExito(null);
+                    setShowSolicitar(false);
+                  }}
+                  className="flex-1 py-3.5 bg-gray-900 hover:bg-rose-600 dark:bg-white dark:text-gray-900 dark:hover:bg-rose-600 dark:hover:text-white text-white font-bold rounded-xl transition-all shadow-sm text-center text-xs sm:text-sm"
+                >
+                  Rastrear mi orden de servicio
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSolicitudExito(null);
+                    setShowSolicitar(false);
+                    navigate('/');
+                  }}
+                  className="py-3.5 px-6 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-850 rounded-xl font-bold transition-all text-xs sm:text-sm text-center"
+                >
+                  <i className="bi bi-arrow-left mr-1"></i> Volver al Inicio
+                </button>
+              </div>
             </div>
           )}
         </div>
