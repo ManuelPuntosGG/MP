@@ -12,3 +12,8 @@ db.sqlite3
 venv/
 env/
 .env
+
+# Node.js / React
+frontend-react/node_modules/
+frontend-react/dist/
+frontend-react/.local

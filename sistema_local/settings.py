@@ -83,8 +83,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'MP Tech <noreply@mptech.com>')
 
-# Redirigir login required a nuestra página
-LOGIN_URL = '/login/'
+# Redirigir login required a React (la ruta /login es manejada por el frontend)
+LOGIN_URL = '/login'
 
 # Database configuration (Switch automático entre Postgres y SQLite)
 DATABASES = {
