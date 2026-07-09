@@ -15,8 +15,8 @@ export default function Layout() {
   const navLinks = [
     { name: 'Inicio', path: '/' },
     { name: 'Catálogo', path: '/catalogo' },
-    { name: 'Pedidos', path: '/importaciones' },
     { name: 'Rastrear Orden', path: '/rastrear' },
+    { name: 'Pedidos', path: '/importaciones' },
   ];
 
   const handleLogout = async () => {
@@ -35,8 +35,9 @@ export default function Layout() {
             
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-2xl font-black tracking-tighter text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-md">
-                MP <span className="text-primary-600">Tech</span>
+              <Link to="/" className="flex items-center gap-2 text-2xl font-black tracking-tighter text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 rounded-md">
+                <img src="/logo.png" alt="MP Tech Logo" className="h-8 w-8 object-contain" />
+                <span>MP <span className="text-primary-600">Tech</span></span>
               </Link>
             </div>
 

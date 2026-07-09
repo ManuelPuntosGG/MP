@@ -101,11 +101,11 @@ export default function DetalleImportacion() {
       
       {/* Botón Volver */}
       <Link 
-        to="/perfil" 
+        to="/" 
         className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 mb-8 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-md px-2 py-1 -ml-2"
-        aria-label="Volver al perfil"
+        aria-label="Volver al inicio"
       >
-        <i className="bi bi-arrow-left" aria-hidden="true"></i> Volver al Perfil
+        <i className="bi bi-arrow-left" aria-hidden="true"></i> Volver al Inicio
       </Link>
 
       {/* Tarjeta de Contenedor de Resultados */}

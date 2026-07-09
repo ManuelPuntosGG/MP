@@ -18,7 +18,7 @@ export default function Inicio() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[450px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
 
       {/* 1. Hero Section */}
-      <section className="relative max-w-5xl mx-auto pt-20 pb-16 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
+      <section className="relative max-w-5xl mx-auto pt-12 pb-12 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-tight">
           Soluciones <span className="text-primary-600 dark:text-primary-500">Tecnológicas</span>
         </h1>
@@ -26,24 +26,10 @@ export default function Inicio() {
           Tu aliado en ventas y servicios de técnología al alcance de todos. <br className="hidden sm:inline" />
           Transparencia, rigurosidad y confiabilidad en cada uno de nuestros trabajos.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
-          <Link
-            to="/catalogo"
-            className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-2xl transition-all duration-200 shadow-lg shadow-primary-600/20 hover:shadow-primary-500/50 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-950 flex items-center justify-center gap-2 text-sm"
-          >
-            <i className="bi bi-cpu text-lg" aria-hidden="true"></i> Catálogo de Hardware
-          </Link>
-          <Link
-            to="/rastrear"
-            className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 hover:border-primary-500 dark:hover:border-primary-500 font-bold rounded-2xl transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-950 flex items-center justify-center gap-2 text-sm"
-          >
-            <i className="bi bi-search text-base" aria-hidden="true"></i> Gestionar Mi Reparación
-          </Link>
-        </div>
       </section>
 
       {/* 2. Services Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto pt-2 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Card Servicio Técnico */}

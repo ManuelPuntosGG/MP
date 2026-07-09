@@ -140,9 +140,9 @@ export default function Catalogo() {
 
         {/* Cabecera y Tasa */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
-        <div>
+        <div className="text-center md:text-left">
           <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
-            Tienda Virtual <span className="text-primary-600 dark:text-primary-400">MP</span>
+            Tienda <span className="text-primary-600 dark:text-primary-400">Virtual</span>
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
             Consulta nuestro catálogo de productos técnologicos nuevos y reacondicionados adaptado a todos los presupuestos.

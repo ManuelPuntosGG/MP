@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -17,6 +18,7 @@ interface ImportItem {
 
 export default function Importaciones() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState<ImportItem[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
@@ -36,6 +38,7 @@ export default function Importaciones() {
   const [anonNombre, setAnonNombre] = useState<string>('');
   const [anonTelefono, setAnonTelefono] = useState<string>('');
   const [showCheckoutModal, setShowCheckoutModal] = useState<boolean>(false);
+  const [searchCode, setSearchCode] = useState<string>('');
 
   useEffect(() => {
     const fetchTasa = async () => {
@@ -255,7 +258,7 @@ export default function Importaciones() {
 
         {/* Cabecera y Tasa */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
-          <div>
+          <div className="text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
               Pedidos de <span className="text-primary-600 dark:text-primary-400">Importación</span>
             </h1>
@@ -608,6 +611,46 @@ export default function Importaciones() {
             </button>
           </div>
         )}
+
+        {/* Consultar Estatus */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-md transition-all duration-300 mt-8 animate-slide-up delay-300">
+          <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">
+            Consultar Estatus de Orden
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            Si ya tienes una orden de importación en curso, ingresa el código para consultar su estado.
+          </p>
+          <form 
+            onSubmit={(e) => { 
+              e.preventDefault(); 
+              if (searchCode.trim()) navigate(`/importacion/${searchCode.trim()}`); 
+            }} 
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            <div className="flex-1">
+              <label htmlFor="searchCode" className="sr-only">Código de Orden</label>
+              <input
+                id="searchCode"
+                type="text"
+                required
+                value={searchCode}
+                onChange={e => setSearchCode(e.target.value)}
+                className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 text-sm font-semibold uppercase"
+                placeholder="Ej. IMP-123456"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={!searchCode.trim()}
+              className="px-8 py-3 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-primary-600/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:hover:-translate-y-0 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              Consultar
+            </button>
+          </form>
+        </div>
 
         {/* Checkout Modal for Anonymous Users */}
         {showCheckoutModal && (

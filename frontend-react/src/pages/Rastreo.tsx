@@ -102,8 +102,8 @@ export default function Rastreo() {
   // Polling de 30 segundos si el ticket está activo (no entregado ni cancelado)
   useEffect(() => {
     if (!ticket) return;
-    const isTerminated = 
-      ticket.estado_raw === 'ENTREGADO' || 
+    const isTerminated =
+      ticket.estado_raw === 'ENTREGADO' ||
       ticket.estado_raw === 'CANCELADO';
 
     if (isTerminated) return;
@@ -213,344 +213,377 @@ export default function Rastreo() {
   const currentStageIndex = ticket ? getStageIndex(ticket.estado_raw) : -1;
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-200">
+    <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+
       {/* Background glow just for Dark Mode */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[500px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
-      {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
-      {!ticket && (
-        <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Rastrear Reparación</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-              Ingresa tu código de seguimiento para consultar el estatus de tu equipo en el taller.
+      
+      {/* Cabecera y Tasa */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
+              Ordenes de <span className="text-primary-600 dark:text-primary-400">Servicio</span>
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
+              Consulta el estatus de tu equipo en taller, revisa el diagnóstico técnico y aprueba o rechaza presupuestos de reparación.
             </p>
           </div>
-
-          <form onSubmit={handleBuscar} className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              required
-              aria-label="Código de rastreo"
-              value={buscarCodigo}
-              onChange={e => setBuscarCodigo(e.target.value.toUpperCase())}
-              className="flex-grow bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3.5 text-gray-900 dark:text-white placeholder-gray-400 font-mono font-bold tracking-widest text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200"
-              placeholder="(Ej. ABC123)"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-primary-600 hover:bg-primary-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-primary-600/20 hover:shadow-primary-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:hover:-translate-y-0 active:scale-95"
-            >
-              {loading ? (
-                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              )}
-              Buscar
-            </button>
-          </form>
-
-          {error && (
-            <div className="mt-5 p-4 rounded-2xl bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50 text-sm font-semibold flex items-center gap-2 animate-fade-in">
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-              {error}
+        </div>
+      <div className="pt-2 pb-12 transition-colors duration-200">
+        {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
+        {!ticket && (
+          <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
+            <div className="text-center mb-8">
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                Ingresa tu código de seguimiento para consultar el estatus de tu equipo en el taller.
+              </p>
             </div>
-          )}
 
-          <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-medium">¿No tienes código o deseas ingresar un nuevo equipo?</p>
-            <button
-              type="button"
-              onClick={() => { setShowSolicitar(!showSolicitar); setSolicitudExito(null); }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-950/20 hover:border-primary-100 dark:hover:border-primary-900/50 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-            >
-              <i className="bi bi-tools mr-1" aria-hidden="true"></i> Registrar Solicitud en Línea
-            </button>
+            <form onSubmit={handleBuscar} className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                required
+                aria-label="Código de rastreo"
+                value={buscarCodigo}
+                onChange={e => setBuscarCodigo(e.target.value.toUpperCase())}
+                className="flex-grow bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3.5 text-gray-900 dark:text-white placeholder-gray-400 font-mono font-bold tracking-widest text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200"
+                placeholder="(Ej. ABC123)"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-primary-600 hover:bg-primary-500 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-primary-600/20 hover:shadow-primary-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:hover:-translate-y-0 active:scale-95"
+              >
+                {loading ? (
+                  <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                )}
+                Buscar
+              </button>
+            </form>
+
+            {error && (
+              <div className="mt-5 p-4 rounded-2xl bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50 text-sm font-semibold flex items-center gap-2 animate-fade-in">
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                {error}
+              </div>
+            )}
+
+            <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-medium">¿No tienes código o deseas ingresar un nuevo equipo?</p>
+              <button
+                type="button"
+                onClick={() => { setShowSolicitar(true); setSolicitudExito(null); }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-950/20 hover:border-primary-100 dark:hover:border-primary-900/50 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              >
+                <i className="bi bi-tools mr-1" aria-hidden="true"></i> Registrar Solicitud en Línea
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modal del Formulario de nueva solicitud de reparación o Éxito */}
+        {(showSolicitar || solicitudExito) && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative transition-colors duration-200 my-auto max-h-[95vh] overflow-y-auto">
+              <button
+                type="button"
+                onClick={() => { setShowSolicitar(false); setSolicitudExito(null); }}
+                aria-label="Cerrar modal"
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 z-10"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+
+              {showSolicitar && !solicitudExito && (
+                <div className="animate-slide-up mt-4">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Solicitar <span className="text-primary-600 dark:text-primary-400">Reparación</span></h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed font-medium">
+                    Completa los datos técnicos del equipo para pre-registrarlo. El diagnóstico inicial en taller no genera cargos.
+                  </p>
+
+                  <form onSubmit={handleSolicitar} className="space-y-4" noValidate>
+                    <div>
+                      <label htmlFor="clienteNombre" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Nombre completo del cliente</label>
+                      <input
+                        id="clienteNombre"
+                        type="text"
+                        required
+                        value={clienteNombre}
+                        onChange={e => setClienteNombre(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold"
+                        placeholder="Ej. Juan Pérez"
+                      />
+                      {formErrors.cliente_nombre && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.cliente_nombre}</p>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="clienteTelefono" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">WhatsApp / Teléfono de contacto</label>
+                      <input
+                        id="clienteTelefono"
+                        type="text"
+                        required
+                        value={clienteTelefono}
+                        onChange={e => setClienteTelefono(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold"
+                        placeholder="Ej. 04241234567"
+                      />
+                      {formErrors.cliente_telefono && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.cliente_telefono}</p>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="equipo" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Modelo de Equipo o Componente</label>
+                      <input
+                        id="equipo"
+                        type="text"
+                        required
+                        value={equipo}
+                        onChange={e => setEquipo(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold"
+                        placeholder="Ej. Laptop Asus ROG Strix / RTX 3070 EVGA"
+                      />
+                      {formErrors.equipo && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.equipo}</p>}
+                    </div>
+
+                    <div>
+                      <label htmlFor="fallaReportada" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Descripción de la falla</label>
+                      <textarea
+                        id="fallaReportada"
+                        required
+                        rows={4}
+                        value={fallaReportada}
+                        onChange={e => setFallaReportada(e.target.value)}
+                        className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold resize-y"
+                        placeholder="Describe detalladamente el problema que presenta el equipo..."
+                      />
+                      {formErrors.falla_reportada && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.falla_reportada}</p>}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submittingSolicitar}
+                      className="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-primary-600/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:hover:-translate-y-0 active:scale-95 flex items-center justify-center gap-2 mt-2"
+                    >
+                      {submittingSolicitar ? (
+                        <>
+                          <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Registrando...
+                        </>
+                      ) : 'Registrar Solicitud de Reparación'}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Éxito de pre-registro */}
+              {solicitudExito && (
+                <div className="animate-scale-in text-left mt-4">
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100 dark:border-emerald-900/30">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">¡Ingreso Registrado con Éxito!</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed px-2 font-medium">
+                      Estimado(a) <strong className="text-gray-800 dark:text-gray-200">{solicitudExito.cliente_nombre}</strong>, los parámetros técnicos de su equipo (<strong className="text-gray-800 dark:text-gray-200">{solicitudExito.equipo}</strong>) han sido cargados correctamente al ecosistema operativo de soporte.
+                    </p>
+                  </div>
+
+                  {/* Código destacado */}
+                  <div className="text-center mb-6">
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Código Único de Rastreo</p>
+                    <div className="flex items-center justify-center gap-2 max-w-xs mx-auto bg-primary-50/50 dark:bg-primary-950/20 border border-primary-100 dark:border-primary-900/40 rounded-2xl p-3 transition-colors duration-200">
+                      <span className="font-mono text-2xl font-black tracking-widest text-primary-600 dark:text-primary-400">{solicitudExito.codigo}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(solicitudExito.codigo);
+                          setCopiedCode(true);
+                          setTimeout(() => setCopiedCode(false), 2000);
+                        }}
+                        className="p-1.5 hover:bg-primary-100 dark:hover:bg-primary-900/40 rounded-lg text-primary-600 dark:text-primary-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                        title="Copiar código"
+                        aria-label="Copiar código de rastreo"
+                      >
+                        {copiedCode ? <i className="bi bi-check2 text-emerald-500 font-bold" aria-hidden="true"></i> : <i className="bi bi-clipboard" aria-hidden="true"></i>}
+                      </button>
+                    </div>
+                    <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-primary-500/10 px-3 py-1.5 rounded-full font-medium transition-colors duration-200">
+                      <i className="bi bi-shield-exclamation" aria-hidden="true"></i>
+                      Guarde este código para monitorear el diagnóstico técnico en vivo.
+                    </div>
+                  </div>
+
+                  {/* Caja siguiente paso */}
+                  <div className="bg-gray-50 dark:bg-gray-950/40 border border-gray-200 dark:border-gray-800/80 rounded-2xl p-4 sm:p-5 mb-6 transition-colors duration-200">
+                    <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">
+                      <i className="bi bi-gear-fill text-primary-500 animate-spin-slow" aria-hidden="true"></i>
+                      ¿Cómo vas a entregar tu equipo?
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed font-medium">
+                      Selecciona la modalidad que más te convenga para gestionar la consignación física de tu hardware en nuestro laboratorio central:
+                    </p>
+
+                    <div className="space-y-2.5">
+                      {/* Opción 1: Taller */}
+                      <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-200">
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod(deliveryMethod === 'taller' ? null : 'taller')}
+                          className={`w-full flex items-center justify-between p-3.5 text-sm font-bold text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${deliveryMethod === 'taller' ? 'text-primary-600 bg-primary-50/20 dark:bg-primary-950/10' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'}`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <i className="bi bi-shop" aria-hidden="true"></i> Traer directamente al Taller
+                          </span>
+                          <i className={`bi bi-chevron-down transition-transform duration-300 ${deliveryMethod === 'taller' ? 'rotate-180' : ''}`} aria-hidden="true"></i>
+                        </button>
+                        {deliveryMethod === 'taller' && (
+                          <div className="p-4 border-t border-gray-100 dark:border-gray-800 animate-slide-down">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3 font-medium">
+                              Nos encontramos ubicados en el Estado Carabobo, municipio Naguanagua, Sector Tazajal.
+                            </p>
+                            <a
+                              href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-500/10 hover:bg-primary-100 dark:hover:bg-primary-500/20 text-primary-600 dark:text-primary-400 rounded-lg text-xs font-bold transition-all duration-200 border border-primary-100/50 dark:border-primary-900/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                            >
+                              <i className="bi bi-geo-alt-fill" aria-hidden="true"></i> Ver Ruta en Google Maps
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Opción 2: Envío */}
+                      <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-200">
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod(deliveryMethod === 'envio' ? null : 'envio')}
+                          className={`w-full flex items-center justify-between p-3.5 text-sm font-bold text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${deliveryMethod === 'envio' ? 'text-primary-600 bg-primary-50/20 dark:bg-primary-950/10' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'}`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <i className="bi bi-truck" aria-hidden="true"></i> Envío Nacional (Encomienda)
+                          </span>
+                          <i className={`bi bi-chevron-down transition-transform duration-300 ${deliveryMethod === 'envio' ? 'rotate-180' : ''}`} aria-hidden="true"></i>
+                        </button>
+                        {deliveryMethod === 'envio' && (
+                          <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-4 animate-slide-down">
+                            <div className="bg-gray-50 dark:bg-gray-950/60 border border-gray-200 dark:border-gray-800/80 rounded-xl p-3.5 relative">
+                              <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Datos del Receptor</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const datosTexto = "Receptor: Manuel García\nCédula: V-29685051\nTeléfono: 04245022292\nDestino: Valencia";
+                                  navigator.clipboard.writeText(datosTexto);
+                                  setCopiedShipping(true);
+                                  setTimeout(() => setCopiedShipping(false), 2000);
+                                }}
+                                className={`absolute top-3 right-3 text-[11px] font-bold px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${copiedShipping ? 'text-emerald-500 border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-900/40' : 'text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 bg-white dark:bg-gray-900'}`}
+                                aria-label="Copiar datos de envío"
+                              >
+                                {copiedShipping ? <><i className="bi bi-check-lg" aria-hidden="true"></i> Copiado</> : <><i className="bi bi-files" aria-hidden="true"></i> Copiar</>}
+                              </button>
+                              <div className="space-y-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                <p><strong className="text-gray-900 dark:text-white">Nombre:</strong> Manuel García</p>
+                                <p><strong className="text-gray-900 dark:text-white">Cédula:</strong> V-29685051</p>
+                                <p><strong className="text-gray-900 dark:text-white">Teléfono:</strong> 04245022292</p>
+                              </div>
+                            </div>
+
+                            <div>
+                              <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2.5">Agencias de Envío (Destino Valencia)</span>
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-2 text-xs">
+                                  <i className="bi bi-caret-right-fill text-emerald-500 mt-0.5" aria-hidden="true"></i>
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-1.5">
+                                      <strong className="text-gray-900 dark:text-white">MRW</strong>
+                                      <span className="text-[9px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded-full font-bold border border-emerald-500/20">Recomendada</span>
+                                    </div>
+                                    <p className="text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Cód: 0816000 - Av. Bolivar Norte, Valencia</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs">
+                                  <i className="bi bi-caret-right-fill text-gray-400 dark:text-gray-600 mt-0.5" aria-hidden="true"></i>
+                                  <div className="flex-1">
+                                    <strong className="text-gray-900 dark:text-white">Tealca</strong>
+                                    <p className="text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Zona Industrial Norte 5208, Valencia</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-start gap-2 text-xs">
+                                  <i className="bi bi-caret-right-fill text-gray-400 dark:text-gray-600 mt-0.5" aria-hidden="true"></i>
+                                  <div className="flex-1">
+                                    <strong className="text-gray-900 dark:text-white">Zoom</strong>
+                                    <p className="text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Aliado ZOOM Omega Colors, Valencia</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Botón WhatsApp */}
+                    <a
+                      href={`https://wa.me/584245022292?text=${encodeURIComponent(`Hola MP Tech, acabo de registrar una solicitud de soporte técnico. Código: ${solicitudExito.codigo}, Cliente: ${solicitudExito.cliente_nombre}, Equipo: ${solicitudExito.equipo}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-green-600/20 text-xs sm:text-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+                    >
+                      <i className="bi bi-whatsapp" aria-hidden="true"></i> Notificar Entrega por WhatsApp
+                    </a>
+                  </div>
+
+                  {/* Botones de navegación final */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBuscarCodigo(solicitudExito.codigo);
+                        navigate(`?codigo=${solicitudExito.codigo}`);
+                        setSolicitudExito(null);
+                        setShowSolicitar(false);
+                      }}
+                      className="flex-1 py-3.5 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-primary-600/20 hover:shadow-primary-500/50 hover:-translate-y-0.5 text-center text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 active:scale-95"
+                    >
+                      Rastrear mi orden de servicio
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSolicitudExito(null);
+                        setShowSolicitar(false);
+                        navigate('/');
+                      }}
+                      className="py-3.5 px-6 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl font-bold transition-all duration-200 text-xs sm:text-sm text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+                    >
+                      <i className="bi bi-arrow-left mr-1" aria-hidden="true"></i> Volver al Inicio
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Formulario de nueva solicitud de reparación */}
-          {showSolicitar && !solicitudExito && (
-            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 animate-slide-up">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Solicitar Reparación</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed font-medium">
-                Completa los datos técnicos del equipo para pre-registrarlo. El diagnóstico inicial en taller no genera cargos.
-              </p>
-
-              <form onSubmit={handleSolicitar} className="space-y-4" noValidate>
-                <div>
-                  <label htmlFor="clienteNombre" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Nombre completo del cliente</label>
-                  <input
-                    id="clienteNombre"
-                    type="text"
-                    required
-                    value={clienteNombre}
-                    onChange={e => setClienteNombre(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold"
-                    placeholder="Ej. Juan Pérez"
-                  />
-                  {formErrors.cliente_nombre && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.cliente_nombre}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="clienteTelefono" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">WhatsApp / Teléfono de contacto</label>
-                  <input
-                    id="clienteTelefono"
-                    type="text"
-                    required
-                    value={clienteTelefono}
-                    onChange={e => setClienteTelefono(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold"
-                    placeholder="Ej. 04241234567"
-                  />
-                  {formErrors.cliente_telefono && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.cliente_telefono}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="equipo" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Modelo de Equipo o Componente</label>
-                  <input
-                    id="equipo"
-                    type="text"
-                    required
-                    value={equipo}
-                    onChange={e => setEquipo(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold"
-                    placeholder="Ej. Laptop Asus ROG Strix / RTX 3070 EVGA"
-                  />
-                  {formErrors.equipo && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.equipo}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="fallaReportada" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Descripción de la falla</label>
-                  <textarea
-                    id="fallaReportada"
-                    required
-                    rows={4}
-                    value={fallaReportada}
-                    onChange={e => setFallaReportada(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 font-semibold resize-y"
-                    placeholder="Describe detalladamente el problema que presenta el equipo..."
-                  />
-                  {formErrors.falla_reportada && <p className="text-xs text-red-500 mt-1.5 font-bold animate-fade-in" role="alert">⚠️ {formErrors.falla_reportada}</p>}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submittingSolicitar}
-                  className="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-primary-600/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:hover:-translate-y-0 active:scale-95 flex items-center justify-center gap-2 mt-2"
-                >
-                  {submittingSolicitar ? (
-                    <>
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Registrando...
-                    </>
-                  ) : 'Registrar Solicitud de Reparación'}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* Éxito de pre-registro */}
-          {solicitudExito && (
-            <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 animate-scale-in text-left">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100 dark:border-emerald-900/30">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">¡Ingreso Registrado con Éxito!</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed px-2 font-medium">
-                  Estimado(a) <strong className="text-gray-800 dark:text-gray-200">{solicitudExito.cliente_nombre}</strong>, los parámetros técnicos de su equipo (<strong className="text-gray-800 dark:text-gray-200">{solicitudExito.equipo}</strong>) han sido cargados correctamente al ecosistema operativo de soporte.
-                </p>
-              </div>
-
-              {/* Código destacado */}
-              <div className="text-center mb-6">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Código Único de Rastreo</p>
-                <div className="flex items-center justify-center gap-2 max-w-xs mx-auto bg-primary-50/50 dark:bg-primary-950/20 border border-primary-100 dark:border-primary-900/40 rounded-2xl p-3 transition-colors duration-200">
-                  <span className="font-mono text-2xl font-black tracking-widest text-primary-600 dark:text-primary-400">{solicitudExito.codigo}</span>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(solicitudExito.codigo);
-                      setCopiedCode(true);
-                      setTimeout(() => setCopiedCode(false), 2000);
-                    }}
-                    className="p-1.5 hover:bg-primary-100 dark:hover:bg-primary-900/40 rounded-lg text-primary-600 dark:text-primary-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                    title="Copiar código"
-                    aria-label="Copiar código de rastreo"
-                  >
-                    {copiedCode ? <i className="bi bi-check2 text-emerald-500 font-bold" aria-hidden="true"></i> : <i className="bi bi-clipboard" aria-hidden="true"></i>}
-                  </button>
-                </div>
-                <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-primary-500/10 px-3 py-1.5 rounded-full font-medium transition-colors duration-200">
-                  <i className="bi bi-shield-exclamation" aria-hidden="true"></i>
-                  Guarde este código para monitorear el diagnóstico técnico en vivo.
-                </div>
-              </div>
-
-              {/* Caja siguiente paso */}
-              <div className="bg-gray-50 dark:bg-gray-950/40 border border-gray-200 dark:border-gray-800/80 rounded-2xl p-4 sm:p-5 mb-6 transition-colors duration-200">
-                <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white mb-3 text-sm sm:text-base">
-                  <i className="bi bi-gear-fill text-primary-500 animate-spin-slow" aria-hidden="true"></i>
-                  ¿Cómo vas a entregar tu equipo?
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed font-medium">
-                  Selecciona la modalidad que más te convenga para gestionar la consignación física de tu hardware en nuestro laboratorio central:
-                </p>
-
-                <div className="space-y-2.5">
-                  {/* Opción 1: Taller */}
-                  <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-200">
-                    <button
-                      type="button"
-                      onClick={() => setDeliveryMethod(deliveryMethod === 'taller' ? null : 'taller')}
-                      className={`w-full flex items-center justify-between p-3.5 text-sm font-bold text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${deliveryMethod === 'taller' ? 'text-primary-600 bg-primary-50/20 dark:bg-primary-950/10' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'}`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <i className="bi bi-shop" aria-hidden="true"></i> Traer directamente al Taller
-                      </span>
-                      <i className={`bi bi-chevron-down transition-transform duration-300 ${deliveryMethod === 'taller' ? 'rotate-180' : ''}`} aria-hidden="true"></i>
-                    </button>
-                    {deliveryMethod === 'taller' && (
-                      <div className="p-4 border-t border-gray-100 dark:border-gray-800 animate-slide-down">
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-3 font-medium">
-                          Nos encontramos ubicados en el Estado Carabobo, municipio Naguanagua, Sector Tazajal.
-                        </p>
-                        <a 
-                          href="https://maps.app.goo.gl/qnHXg1ArB95j4iq4A" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 dark:bg-primary-500/10 hover:bg-primary-100 dark:hover:bg-primary-500/20 text-primary-600 dark:text-primary-400 rounded-lg text-xs font-bold transition-all duration-200 border border-primary-100/50 dark:border-primary-900/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                        >
-                          <i className="bi bi-geo-alt-fill" aria-hidden="true"></i> Ver Ruta en Google Maps
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Opción 2: Envío */}
-                  <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-200">
-                    <button
-                      type="button"
-                      onClick={() => setDeliveryMethod(deliveryMethod === 'envio' ? null : 'envio')}
-                      className={`w-full flex items-center justify-between p-3.5 text-sm font-bold text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${deliveryMethod === 'envio' ? 'text-primary-600 bg-primary-50/20 dark:bg-primary-950/10' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'}`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <i className="bi bi-truck" aria-hidden="true"></i> Envío Nacional (Encomienda)
-                      </span>
-                      <i className={`bi bi-chevron-down transition-transform duration-300 ${deliveryMethod === 'envio' ? 'rotate-180' : ''}`} aria-hidden="true"></i>
-                    </button>
-                    {deliveryMethod === 'envio' && (
-                      <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-4 animate-slide-down">
-                        <div className="bg-gray-50 dark:bg-gray-950/60 border border-gray-200 dark:border-gray-800/80 rounded-xl p-3.5 relative">
-                          <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Datos del Receptor</span>
-                          <button 
-                            type="button"
-                            onClick={() => {
-                              const datosTexto = "Receptor: Manuel García\nCédula: V-29685051\nTeléfono: 04245022292\nDestino: Valencia";
-                              navigator.clipboard.writeText(datosTexto);
-                              setCopiedShipping(true);
-                              setTimeout(() => setCopiedShipping(false), 2000);
-                            }}
-                            className={`absolute top-3 right-3 text-[11px] font-bold px-2.5 py-1 rounded-md border transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${copiedShipping ? 'text-emerald-500 border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-900/40' : 'text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 bg-white dark:bg-gray-900'}`}
-                            aria-label="Copiar datos de envío"
-                          >
-                            {copiedShipping ? <><i className="bi bi-check-lg" aria-hidden="true"></i> Copiado</> : <><i className="bi bi-files" aria-hidden="true"></i> Copiar</>}
-                          </button>
-                          <div className="space-y-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
-                            <p><strong className="text-gray-900 dark:text-white">Nombre:</strong> Manuel García</p>
-                            <p><strong className="text-gray-900 dark:text-white">Cédula:</strong> V-29685051</p>
-                            <p><strong className="text-gray-900 dark:text-white">Teléfono:</strong> 04245022292</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2.5">Agencias de Envío (Destino Valencia)</span>
-                          <div className="space-y-2">
-                            <div className="flex items-start gap-2 text-xs">
-                              <i className="bi bi-caret-right-fill text-emerald-500 mt-0.5" aria-hidden="true"></i>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-1.5">
-                                  <strong className="text-gray-900 dark:text-white">MRW</strong>
-                                  <span className="text-[9px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded-full font-bold border border-emerald-500/20">Recomendada</span>
-                                </div>
-                                <p className="text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Cód: 0816000 - Av. Bolivar Norte, Valencia</p>
-                              </div>
-                            </div>
-                            <div className="flex items-start gap-2 text-xs">
-                              <i className="bi bi-caret-right-fill text-gray-400 dark:text-gray-600 mt-0.5" aria-hidden="true"></i>
-                              <div className="flex-1">
-                                <strong className="text-gray-900 dark:text-white">Tealca</strong>
-                                <p className="text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Zona Industrial Norte 5208, Valencia</p>
-                              </div>
-                            </div>
-                            <div className="flex items-start gap-2 text-xs">
-                              <i className="bi bi-caret-right-fill text-gray-400 dark:text-gray-600 mt-0.5" aria-hidden="true"></i>
-                              <div className="flex-1">
-                                <strong className="text-gray-900 dark:text-white">Zoom</strong>
-                                <p className="text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Aliado ZOOM Omega Colors, Valencia</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Botón WhatsApp */}
-                <a
-                  href={`https://wa.me/584245022292?text=${encodeURIComponent(`Hola MP Tech, acabo de registrar una solicitud de soporte técnico. Código: ${solicitudExito.codigo}, Cliente: ${solicitudExito.cliente_nombre}, Equipo: ${solicitudExito.equipo}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-green-600/20 text-xs sm:text-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
-                >
-                  <i className="bi bi-whatsapp" aria-hidden="true"></i> Notificar Entrega por WhatsApp
-                </a>
-              </div>
-
-              {/* Botones de navegación final */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setBuscarCodigo(solicitudExito.codigo);
-                    navigate(`?codigo=${solicitudExito.codigo}`);
-                    setSolicitudExito(null);
-                    setShowSolicitar(false);
-                  }}
-                  className="flex-1 py-3.5 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-primary-600/20 hover:shadow-primary-500/50 hover:-translate-y-0.5 text-center text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 active:scale-95"
-                >
-                  Rastrear mi orden de servicio
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSolicitudExito(null);
-                    setShowSolicitar(false);
-                    navigate('/');
-                  }}
-                  className="py-3.5 px-6 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl font-bold transition-all duration-200 text-xs sm:text-sm text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-                >
-                  <i className="bi bi-arrow-left mr-1" aria-hidden="true"></i> Volver al Inicio
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
+        )}
+      </div>
       {/* 2. Detalle del Ticket Encontrado */}
       {ticket && (
         <div className="space-y-6 max-w-4xl mx-auto animate-slide-up">
-          
+
           {/* Botón Volver */}
           <button
             type="button"
@@ -567,7 +600,7 @@ export default function Rastreo() {
 
           {/* Tarjeta de Progreso Principal */}
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm transition-colors duration-300">
-            
+
             {/* Header del Ticket */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-8 space-y-3 sm:space-y-0">
               <div>
@@ -575,17 +608,17 @@ export default function Rastreo() {
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mt-1">ORDEN {ticket.codigo}</h2>
               </div>
               <span className={`inline-flex px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wider border uppercase transition-colors duration-200
-                ${ticket.estado_raw === 'REPARADO' || ticket.estado_raw === 'ENTREGADO' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/40' 
+                ${ticket.estado_raw === 'REPARADO' || ticket.estado_raw === 'ENTREGADO'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/40'
                   : ''}
-                ${ticket.estado_raw === 'CANCELADO' 
-                  ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/40' 
+                ${ticket.estado_raw === 'CANCELADO'
+                  ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/40'
                   : ''}
-                ${ticket.estado_raw === 'DIAGNOSTICO' || ticket.estado_raw === 'REPUESTOS' 
-                  ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/40' 
+                ${ticket.estado_raw === 'DIAGNOSTICO' || ticket.estado_raw === 'REPUESTOS'
+                  ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/40'
                   : ''}
-                ${ticket.estado_raw === 'ESPERANDO' || ticket.estado_raw === 'RECIBIDO' 
-                  ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/40' 
+                ${ticket.estado_raw === 'ESPERANDO' || ticket.estado_raw === 'RECIBIDO'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/40'
                   : ''}
               `} role="status">
                 {ticket.estado}
@@ -611,8 +644,8 @@ export default function Rastreo() {
                 <div className="hidden sm:block relative">
                   {/* Stepper Progress Bar Line */}
                   <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-gray-100 dark:bg-gray-800 z-0">
-                    <div 
-                      className="h-full bg-primary-600 transition-all duration-500" 
+                    <div
+                      className="h-full bg-primary-600 transition-all duration-500"
                       style={{ width: `${(Math.max(0, currentStageIndex) / (STEPPER_STAGES.length - 1)) * 100}%` }}
                       aria-hidden="true"
                     />
@@ -625,11 +658,11 @@ export default function Rastreo() {
                       return (
                         <div key={stage.key} className="flex flex-col items-center flex-1" aria-current={isActive ? 'step' : undefined}>
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold border transition-all duration-300
-                            ${isCompleted 
-                              ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/25' 
+                            ${isCompleted
+                              ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/25'
                               : ''}
-                            ${isActive 
-                              ? 'bg-white dark:bg-gray-900 border-primary-600 text-primary-600 dark:text-primary-400 ring-4 ring-primary-50 dark:ring-primary-900/30' 
+                            ${isActive
+                              ? 'bg-white dark:bg-gray-900 border-primary-600 text-primary-600 dark:text-primary-400 ring-4 ring-primary-50 dark:ring-primary-900/30'
                               : ''}
                             {!isCompleted && !isActive 
                               ? 'bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-gray-400' 
@@ -652,8 +685,8 @@ export default function Rastreo() {
                 <div className="block sm:hidden relative pl-6">
                   {/* Vertical progress line */}
                   <div className="absolute left-[48px] top-6 bottom-6 w-0.5 bg-gray-200 dark:bg-gray-800 z-0">
-                    <div 
-                      className="w-full bg-primary-600 transition-all duration-500" 
+                    <div
+                      className="w-full bg-primary-600 transition-all duration-500"
                       style={{ height: `${(Math.max(0, currentStageIndex) / (STEPPER_STAGES.length - 1)) * 100}%` }}
                       aria-hidden="true"
                     />
@@ -666,11 +699,11 @@ export default function Rastreo() {
                       return (
                         <div key={stage.key} className="flex items-center gap-4" aria-current={isActive ? 'step' : undefined}>
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold border transition-all duration-300 flex-shrink-0
-                            ${isCompleted 
-                              ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/25' 
+                            ${isCompleted
+                              ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/25'
                               : ''}
-                            ${isActive 
-                              ? 'bg-white dark:bg-gray-900 border-primary-600 text-primary-600 dark:text-primary-400 ring-4 ring-primary-50 dark:ring-primary-900/30' 
+                            ${isActive
+                              ? 'bg-white dark:bg-gray-900 border-primary-600 text-primary-600 dark:text-primary-400 ring-4 ring-primary-50 dark:ring-primary-900/30'
                               : ''}
                             {!isCompleted && !isActive 
                               ? 'bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-gray-400' 
@@ -818,10 +851,10 @@ export default function Rastreo() {
                 <div className="relative pl-6 border-l-2 border-gray-100 dark:border-gray-800 space-y-6">
                   {ticket.avances.map((avance, idx) => (
                     <div key={idx} style={{ animationDelay: `${idx * 80}ms` }} className="relative group animate-slide-up">
-                      
+
                       {/* Timeline Dot */}
                       <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-primary-600 border-4 border-white dark:border-gray-900 transition-transform duration-300 group-hover:scale-125" aria-hidden="true" />
-                      
+
                       <div className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-1 flex items-center gap-1.5">
                         <i className="bi bi-clock text-xs" aria-hidden="true"></i>
                         {new Date(avance.fecha).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
@@ -859,7 +892,7 @@ export default function Rastreo() {
 
       {/* 3. Lightbox Modal */}
       {lightboxImg && (
-        <div 
+        <div
           onClick={() => setLightboxImg(null)}
           className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 cursor-zoom-out animate-fade-in backdrop-blur-sm"
           role="dialog"
