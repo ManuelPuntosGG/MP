@@ -15,7 +15,7 @@ export default function Layout() {
   const navLinks = [
     { name: 'Inicio', path: '/' },
     { name: 'Catálogo', path: '/catalogo' },
-    { name: 'Importaciones', path: '/importaciones' },
+    { name: 'Pedidos', path: '/importaciones' },
     { name: 'Rastrear Orden', path: '/rastrear' },
   ];
 

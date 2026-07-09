@@ -177,12 +177,12 @@ export default function Perfil() {
         {/* Reparaciones / Órdenes de Servicio */}
         <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-primary-200 dark:hover:border-primary-900/50 transition-all duration-200 animate-slide-up delay-100 min-w-0 w-full">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
-            <i className="bi bi-tools mr-2 text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Reparaciones Solicitadas
+            <i className="bi bi-tools mr-2 text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Ordenes de Servicio
           </h2>
           {orders.ordenes.length === 0 ? (
             <div className="py-8 flex flex-col items-center justify-center text-center">
               <i className="bi bi-inbox text-3xl text-gray-300 dark:text-gray-600 mb-2" aria-hidden="true"></i>
-              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">No has solicitado reparaciones de equipos.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">No has solicitado órdenes de servicio.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -213,7 +213,7 @@ export default function Perfil() {
         {/* Pedidos de Catálogo */}
         <div className="lg:col-span-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-primary-200 dark:hover:border-primary-900/50 transition-all duration-200 animate-slide-up delay-150 min-w-0 w-full">
           <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center">
-            <i className="bi bi-bag-check mr-2 text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Pedidos de Catálogo
+            <i className="bi bi-bag-check mr-2 text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Ordenes de Compra
           </h2>
           {orders.pedidos_catalogo.length === 0 ? (
             <div className="py-8 flex flex-col items-center justify-center text-center">

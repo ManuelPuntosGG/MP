@@ -30,7 +30,7 @@ export default function Catalogo() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeCategory, setActiveCategory] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('default'); // 'default', 'price-asc', 'price-desc'
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); 
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Paginación
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -140,18 +140,23 @@ export default function Catalogo() {
 
         {/* Cabecera y Tasa */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white text-center md:text-left">
-            Tienda Virtual
+        <div>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
+            Tienda Virtual <span className="text-primary-600 dark:text-primary-400">MP</span>
           </h1>
-          {tasaVes && (
-            <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 font-medium text-sm border border-primary-100 dark:border-primary-900/50 shadow-sm transition-colors duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 mr-2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Tasa del día: {parseFloat(tasaVes).toFixed(2)} Bs/USD
-            </div>
-          )}
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
+            Consulta nuestro catálogo de productos técnologicos nuevos y reacondicionados adaptado a todos los presupuestos.
+          </p>
         </div>
+        {tasaVes && (
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 font-medium text-sm border border-primary-100 dark:border-primary-900/50 shadow-sm transition-colors duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 mr-2" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Tasa del día: {parseFloat(tasaVes).toFixed(2)} Bs/$
+          </div>
+        )}
+      </div>
 
 
         {/* Barra de Filtros Minimalista */}
@@ -211,11 +216,11 @@ export default function Catalogo() {
                 Por defecto
               </button>
               <button
-                onClick={() => setSortBy(sortBy === 'price-asc' ? 'price-desc' : 'price-asc')}
-                aria-pressed={sortBy === 'price-asc' || sortBy === 'price-desc'}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${sortBy === 'price-asc' || sortBy === 'price-desc' ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                onClick={() => setSortBy(sortBy === 'price-desc' ? 'price-asc' : 'price-desc')}
+                aria-pressed={sortBy === 'price-desc' || sortBy === 'price-asc'}
+                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${sortBy === 'price-desc' || sortBy === 'price-asc' ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'}`}
               >
-                <span>Precio</span> {sortBy === 'price-desc' ? <span className="text-xs font-black">↓</span> : <span className="text-xs font-black">↑</span>}
+                <span>Precio</span> {sortBy === 'price-asc' ? <span className="text-xs font-black">↑</span> : <span className="text-xs font-black">↓</span>}
               </button>
             </div>
 
@@ -264,8 +269,8 @@ export default function Catalogo() {
                 >
                   {/* Contenedor de Imagen */}
                   <div className={`relative overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-300
-                    ${viewMode === 'list' 
-                      ? 'w-full sm:w-56 aspect-square rounded-2xl flex-shrink-0' 
+                    ${viewMode === 'list'
+                      ? 'w-full sm:w-56 aspect-square rounded-2xl flex-shrink-0'
                       : 'w-full aspect-square'
                     }`}
                   >
@@ -300,9 +305,9 @@ export default function Catalogo() {
                       <span className="text-primary-600 dark:text-primary-400 text-[10px] font-bold uppercase tracking-widest block mb-1">
                         {producto.categoria__nombre || 'General'}
                       </span>
-                      <h3 
+                      <h3
                         className={`font-bold text-gray-900 dark:text-white leading-tight tracking-tight hover:text-primary-600 dark:hover:text-primary-400 transition-colors
-                          ${viewMode === 'list' ? 'text-2xl mb-2 font-black' : 'text-base line-clamp-1 font-bold'}`} 
+                          ${viewMode === 'list' ? 'text-2xl mb-2 font-black' : 'text-base line-clamp-1 font-bold'}`}
                         title={producto.nombre}
                       >
                         {producto.nombre}
@@ -436,14 +441,14 @@ export default function Catalogo() {
 
       {/* Modal del Carrito */}
       {isCartOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300"
           role="dialog"
           aria-modal="true"
           aria-label="Carrito de compras"
         >
           <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl max-w-5xl w-full shadow-2xl relative animate-scale-in max-h-[90vh] overflow-y-auto p-2 sm:p-6 transition-colors duration-200">
-            
+
             {/* Botón de Cerrar */}
             <button
               type="button"

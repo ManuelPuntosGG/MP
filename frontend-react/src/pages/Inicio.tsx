@@ -23,7 +23,7 @@ export default function Inicio() {
           Soluciones <span className="text-primary-600 dark:text-primary-500">Tecnológicas</span>
         </h1>
         <p className="mt-6 text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium leading-relaxed">
-          Expertos en reparación a nivel de componentes electrónicos y venta de hardware de todas las gamas. 
+          Tu aliado en ventas y servicios de técnología al alcance de todos. <br className="hidden sm:inline" />
           Transparencia, rigurosidad y confiabilidad en cada uno de nuestros trabajos.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -54,7 +54,7 @@ export default function Inicio() {
               </div>
               <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Servicio Técnico Especializado</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6 font-semibold">
-                Diagnóstico técnico meticuloso y reparación avanzada de equipos informáticos (PCs de escritorio, notebooks corporativas, consolas, placas madre, GPUs e impresoras).
+                Diagnóstico y reparación avanzada de equipos informáticos de todas las gamas (PCs de escritorio, laptops, consolas, placas madre, GPUs, impresoras, entre otros).
               </p>
             </div>
             <Link
@@ -71,9 +71,9 @@ export default function Inicio() {
               <div className="h-14 w-14 rounded-2xl bg-primary-50 dark:bg-primary-950/30 border border-primary-100 dark:border-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 text-2xl shadow-sm mb-6 group-hover:scale-110 transition-transform duration-200">
                 <i className="bi bi-gpu-card" aria-hidden="true"></i>
               </div>
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Tienda de Hardware</h3>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Tienda Virtual</h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6 font-semibold">
-                Disponibilidad constante de componentes informáticos de alto rendimiento, periféricos seleccionados y repuestos originales a precios competitivos del mercado.
+                Equipos, componentes y accesorios tecnológicos de calidad de todas las gamas al mejor precio del mercado.
               </p>
             </div>
             <Link
@@ -236,7 +236,7 @@ export default function Inicio() {
       <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center animate-slide-up delay-300">
         <h2 className="text-3xl font-black text-gray-900 dark:text-white">Nuestra Comunidad Digital</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium max-w-md mx-auto">
-          Conoce nuestros laboratorios de reparación de cerca, aprende con videos técnicos y revisa stock físico al momento.
+          Conoce nuestros trabajos de reparación de cerca, aprende con videos técnicos y revisa nuestra reputación en plataformas digitales.
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">

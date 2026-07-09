@@ -214,14 +214,15 @@ export default function Rastreo() {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-200">
-      
+      {/* Background glow just for Dark Mode */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[500px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
       {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
       {!ticket && (
         <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Rastrear Reparación</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-              Ingresa tu código de seguimiento para consultar los avances técnicos de tu equipo en el taller.
+              Ingresa tu código de seguimiento para consultar el estatus de tu equipo en el taller.
             </p>
           </div>
 
@@ -570,7 +571,7 @@ export default function Rastreo() {
             {/* Header del Ticket */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-8 space-y-3 sm:space-y-0">
               <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">Talonario de Servicio</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">Consulta de Servicio</span>
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mt-1">ORDEN {ticket.codigo}</h2>
               </div>
               <span className={`inline-flex px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wider border uppercase transition-colors duration-200
@@ -720,7 +721,7 @@ export default function Rastreo() {
             {/* Falla Declarada */}
             <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mb-8 hover:border-primary-100 dark:hover:border-primary-900/30 transition-colors duration-200">
               <h4 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-3">
-                <i className="bi bi-exclamation-triangle-fill text-amber-500 text-lg" aria-hidden="true"></i> Falla Reportada por el Cliente
+                <i className="bi bi-exclamation-triangle-fill text-amber-500 text-lg" aria-hidden="true"></i> Falla Reportada
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                 {ticket.falla_reportada || 'Ninguna falla descrita.'}
@@ -731,14 +732,14 @@ export default function Rastreo() {
             {ticket.presupuesto_estado_raw !== 'SIN_PRESUPUESTO' && (
               <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mb-8 bg-gray-50/10 hover:border-primary-100 dark:hover:border-primary-900/30 transition-colors duration-200">
                 <h4 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
-                  <i className="bi bi-cash-coin text-emerald-600 dark:text-emerald-400 text-lg" aria-hidden="true"></i> Relación Presupuestaria de Servicio
+                  <i className="bi bi-cash-coin text-emerald-600 dark:text-emerald-400 text-lg" aria-hidden="true"></i> Presupuesto de Servicio
                 </h4>
 
                 <div className="overflow-x-auto mb-6">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-gray-200 dark:border-gray-800 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                        <th className="pb-3">Concepto de Reparación / Repuesto</th>
+                        <th className="pb-3">Concepto / Repuesto</th>
                         <th className="pb-3 text-right">Costo ($)</th>
                       </tr>
                     </thead>
@@ -754,7 +755,7 @@ export default function Rastreo() {
                         <td className="pt-4 text-right text-primary-600 dark:text-primary-500">
                           ${ticket.total_usd.toFixed(2)}
                           <span className="block text-xs text-gray-400 dark:text-gray-500 font-medium mt-1">
-                            ≈ {ticket.total_ves.toFixed(2)} Bs (Tasa de referencia)
+                            ≈ {ticket.total_ves.toFixed(2)} Bs
                           </span>
                         </td>
                       </tr>
@@ -766,7 +767,8 @@ export default function Rastreo() {
                 {ticket.presupuesto_estado_raw === 'PENDIENTE' && (
                   <div className="space-y-4">
                     <p className="text-xs text-center text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-                      Requerimos tu aprobación formal del presupuesto anterior para proceder a ordenar componentes e iniciar las labores en el taller.
+                      Requerimos tu aprobación formal del presupuesto para proceder a ordenar componentes e iniciar las labores en el taller.
+                      Si deseas rechazarlo, tu equipo estará disponible para retiro y no se realizarán reparaciones ni cargos adicionales.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <button
@@ -795,7 +797,7 @@ export default function Rastreo() {
 
                 {ticket.presupuesto_estado_raw === 'RECHAZADO' && (
                   <div className="bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 p-4 rounded-xl text-center text-sm font-bold text-red-700 dark:text-red-400 flex items-center justify-center gap-1.5 leading-relaxed transition-colors duration-200">
-                    <i className="bi bi-x-circle-fill mr-1.5" aria-hidden="true"></i> Presupuesto Rechazado. Las reparaciones están suspendidas. Por favor, comunícate con soporte para coordinar el retiro de tu equipo.
+                    <i className="bi bi-x-circle-fill mr-1.5" aria-hidden="true"></i> Presupuesto Rechazado. Por favor, comunícate para coordinar el retiro de tu equipo.
                   </div>
                 )}
               </div>
@@ -804,7 +806,7 @@ export default function Rastreo() {
             {/* Bitácora Técnica (Avances) */}
             <div>
               <h4 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-6">
-                <i className="bi bi-journal-text text-lg text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Bitácora Técnica e Informes de Avance
+                <i className="bi bi-journal-text text-lg text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Actualizaciones del Progreso Técnico
               </h4>
 
               {ticket.avances.length === 0 ? (
