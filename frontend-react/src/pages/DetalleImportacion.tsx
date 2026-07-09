@@ -245,12 +245,6 @@ export default function DetalleImportacion() {
             </span>
           </div>
           <div className="text-left">
-            <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"><i className="bi bi-fingerprint mr-1" aria-hidden="true"></i> ID de Seguimiento</span>
-            <span className="text-sm font-mono font-black text-primary-600 dark:text-primary-400 mt-1.5 block">
-              {pedido.codigo}
-            </span>
-          </div>
-          <div className="text-left">
             <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"><i className="bi bi-receipt mr-1" aria-hidden="true"></i> Total Estimado</span>
             <span className="text-base font-black text-gray-900 dark:text-white mt-1.5 block">
               ${pedido.total_usd.toFixed(2)}
@@ -312,12 +306,6 @@ export default function DetalleImportacion() {
                 )}
               </div>
               
-              {pedido.tasa_confirmacion && (
-                <div className="border-t border-gray-100 dark:border-gray-800/60 mt-4 pt-3 text-[10px] font-bold text-gray-400 uppercase flex justify-between">
-                  <span>Tasa congelada:</span>
-                  <span className="text-gray-700 dark:text-gray-300">{pedido.tasa_confirmacion.toFixed(2)} Bs/$</span>
-                </div>
-              )}
             </div>
 
             {/* Card Saldo Pendiente */}
@@ -332,7 +320,7 @@ export default function DetalleImportacion() {
                 <div className="flex justify-between items-center text-sm font-bold text-gray-900 dark:text-white mb-4">
                   <span><i className="bi bi-box-arrow-in-down mr-1.5 text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Entrega (50%)</span>
                   {pedido.estado_raw === 'LISTO_RETIRAR' ? (
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-primary-500 text-white animate-pulse">Disponible</span>
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-primary-500 text-white animate-pulse">Pendiente</span>
                   ) : pedido.estado_raw === 'ENTREGADO' ? (
                     <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/40">Cancelado</span>
                   ) : (
@@ -354,19 +342,6 @@ export default function DetalleImportacion() {
                     <i className="bi bi-lock mr-1" aria-hidden="true"></i> Se liquida al estar disponible
                   </p>
                 )}
-              </div>
-              
-              <div className="border-t border-gray-100 dark:border-gray-800/60 mt-4 pt-3 text-[10px] font-bold text-gray-400 uppercase flex justify-between">
-                <span>Tasa de cambio:</span>
-                <span className="text-gray-700 dark:text-gray-300">
-                  {pedido.estado_raw === 'LISTO_RETIRAR' && tasaActual ? (
-                    <span className="text-primary-600 dark:text-primary-400 font-bold">{parseFloat(tasaActual).toFixed(2)} Bs/$ (P2P)</span>
-                  ) : pedido.estado_raw === 'ENTREGADO' && pedido.tasa_entrega ? (
-                    <span>{pedido.tasa_entrega.toFixed(2)} Bs/$</span>
-                  ) : (
-                    <span>Diferida</span>
-                  )}
-                </span>
               </div>
             </div>
 

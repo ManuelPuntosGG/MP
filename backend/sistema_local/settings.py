@@ -202,14 +202,25 @@ UNFOLD = {
 # ==============================================================================
 # 🚀 CONFIGURACIÓN DE REACT, CORS Y API (DRF)
 # ==============================================================================
-CORS_ALLOWED_ORIGINS = [
+env_cors = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+CORS_ALLOWED_ORIGINS = env_cors.split(',') if env_cors else []
+
+# Agregar siempre los orígenes de desarrollo local de Vite
+local_origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
+for origin in local_origins:
+    if origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(origin)
+
 CORS_ALLOW_CREDENTIALS = True
 
-# Agregar orígenes de Vite a CSRF
-CSRF_TRUSTED_ORIGINS += ["http://localhost:5173", "http://127.0.0.1:5173"]
+# Agregar orígenes de Vite a CSRF si no están presentes
+for origin in local_origins:
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
