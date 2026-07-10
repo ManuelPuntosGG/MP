@@ -216,8 +216,8 @@ export default function Layout() {
 
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16">
             {/* Columna 1: MP Tech Info */}
             <div className="flex flex-col items-center text-center space-y-4">
               <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider">MP Tech</h4>
@@ -276,7 +276,7 @@ export default function Layout() {
           </div>
 
           {/* Línea Divisoria */}
-          <div className="border-t border-gray-100 dark:border-gray-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-400 uppercase tracking-widest">
+          <div className="border-t border-gray-100 dark:border-gray-800 mt-6 pt-6 sm:mt-10 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-widest text-center sm:text-left">
             <p>&copy; {new Date().getFullYear()} MP Tech. Todos los derechos reservados.</p>
             <p className="flex items-center gap-1">
               Desarrollado con <i className="bi bi-heart-fill text-primary-600 dark:text-primary-500 animate-pulse" aria-label="Amor"></i> por ManuelPuntos

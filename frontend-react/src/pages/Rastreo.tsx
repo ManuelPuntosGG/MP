@@ -603,7 +603,7 @@ export default function Rastreo() {
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm transition-colors duration-300">
 
             {/* Header del Ticket */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-2 space-y-3 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-4 space-y-3 sm:space-y-0">
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">Consulta de Servicio</span>
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mt-1">ORDEN {ticket.codigo}</h2>
