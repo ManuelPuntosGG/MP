@@ -35,12 +35,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.producto_id === product.id);
       if (existingItem) {
+        if (existingItem.cantidad >= product.stock) {
+          return prevCart;
+        }
         return prevCart.map(item => 
           item.producto_id === product.id 
             ? { ...item, cantidad: item.cantidad + 1 } 
             : item
         );
       }
+      if (product.stock <= 0) return prevCart;
       return [...prevCart, {
         producto_id: product.id,
         nombre: product.nombre,

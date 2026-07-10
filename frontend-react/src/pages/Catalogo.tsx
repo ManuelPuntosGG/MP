@@ -36,7 +36,7 @@ export default function Catalogo() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 12;
 
-  const { addToCart, totalItems } = useCart();
+  const { cart, addToCart, totalItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
@@ -256,6 +256,9 @@ export default function Catalogo() {
               const precioFloat = parseFloat(producto.precio.toString());
               const precioVes = tasaVes ? (precioFloat * parseFloat(tasaVes)).toFixed(2) : '0.00';
               const agotado = producto.stock === 0;
+              const itemInCart = cart.find(item => item.producto_id === producto.id);
+              const reachedMaxStock = itemInCart ? itemInCart.cantidad >= producto.stock : false;
+              const disabledAction = agotado || reachedMaxStock;
 
               return (
                 <div
@@ -338,26 +341,28 @@ export default function Catalogo() {
                       <div className={`flex gap-2 ${viewMode === 'grid' ? 'w-full' : 'w-full sm:w-auto'}`}>
                         <button
                           onClick={() => addToCart(producto)}
-                          disabled={agotado}
+                          disabled={disabledAction}
                           aria-label={`Añadir ${producto.nombre} al carrito`}
                           className={`flex-1 justify-center rounded-xl flex items-center font-bold transition-all duration-200 whitespace-nowrap h-11 px-4 text-xs sm:text-sm gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-                            ${agotado
+                            ${disabledAction
                               ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                               : 'bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 hover:shadow-md hover:shadow-primary-500/20 active:scale-95'
                             }`}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 flex-shrink-0" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                          </svg>
-                          <span>Añadir</span>
+                          {reachedMaxStock ? null : (
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 flex-shrink-0" aria-hidden="true">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                          )}
+                          <span>{reachedMaxStock ? 'Stock Máx' : 'Añadir'}</span>
                         </button>
 
                         <button
                           onClick={() => handleBuyNow(producto)}
-                          disabled={agotado}
+                          disabled={disabledAction}
                           aria-label={`Comprar ${producto.nombre} ahora`}
                           className={`flex-1 justify-center rounded-xl flex items-center font-bold transition-all duration-200 text-xs sm:text-sm h-11 px-4 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900
-                            ${agotado
+                            ${disabledAction
                               ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
                               : 'bg-primary-600 hover:bg-primary-500 text-white shadow-md shadow-primary-600/20 hover:shadow-primary-500/50 hover:scale-[1.02] active:scale-95'
                             }`}

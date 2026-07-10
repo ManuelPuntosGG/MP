@@ -219,7 +219,7 @@ export default function Rastreo() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[500px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
       
       {/* Cabecera y Tasa */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 space-y-4 md:space-y-0">
           <div className="text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 dark:text-white">
               Ordenes de <span className="text-primary-600 dark:text-primary-400">Servicio</span>
@@ -229,7 +229,7 @@ export default function Rastreo() {
             </p>
           </div>
         </div>
-      <div className="pt-2 pb-12 transition-colors duration-200">
+      <div className="pt-2 pb-2 transition-colors duration-200">
         {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
         {!ticket && (
           <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
@@ -582,7 +582,7 @@ export default function Rastreo() {
       </div>
       {/* 2. Detalle del Ticket Encontrado */}
       {ticket && (
-        <div className="space-y-6 max-w-4xl mx-auto animate-slide-up">
+        <div className="space-y-6 max-w-6xl mx-auto animate-slide-up">
 
           {/* Botón Volver */}
           <button
@@ -602,7 +602,7 @@ export default function Rastreo() {
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm transition-colors duration-300">
 
             {/* Header del Ticket */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-8 space-y-3 sm:space-y-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 dark:border-gray-800 mb-2 space-y-3 sm:space-y-0">
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400">Consulta de Servicio</span>
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mt-1">ORDEN {ticket.codigo}</h2>
