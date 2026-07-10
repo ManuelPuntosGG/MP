@@ -138,7 +138,7 @@ export default function Login() {
               role="alert"
               aria-live="polite"
             >
-              {error}
+              {typeof error === 'string' ? error : (error.message || JSON.stringify(error))}
             </div>
           )}
 

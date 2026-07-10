@@ -138,7 +138,7 @@ export default function Perfil() {
                 role="alert"
                 aria-live="polite"
               >
-                {editError}
+                {typeof editError === 'string' ? editError : (editError.message || JSON.stringify(editError))}
               </div>
             )}
 
