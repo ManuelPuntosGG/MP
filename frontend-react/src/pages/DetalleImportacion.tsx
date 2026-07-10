@@ -302,7 +302,10 @@ export default function DetalleImportacion() {
                 {pedido.pago_inicial_ves ? (
                   <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 mt-2"><i className="bi bi-cash-stack mr-1" aria-hidden="true"></i> {pedido.pago_inicial_ves.toFixed(2)} Bs</p>
                 ) : (
-                  <p className="text-sm font-semibold text-gray-400 dark:text-gray-500 mt-2"><i className="bi bi-hourglass-split mr-1" aria-hidden="true"></i> A confirmar por operador</p>
+                  <p className="text-sm font-semibold text-gray-400 dark:text-gray-500 mt-2">
+                    <i className="bi bi-hourglass-split mr-1" aria-hidden="true"></i>
+                    {tasaActual ? (pedido.saldo_pendiente_usd_estimado * parseFloat(tasaActual)).toFixed(2) + ' Bs' : '—'}
+                  </p>
                 )}
               </div>
               
