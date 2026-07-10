@@ -18,6 +18,7 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
   
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [whatsappUrl, setWhatsappUrl] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -64,7 +65,24 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
         }))
       });
       
-      setSuccess(response.data.codigo);
+      const codigo = response.data.codigo;
+      const fecha = new Date().toLocaleDateString();
+      const num = '584245022292';
+      let msj = `Hola MP Tech, acabo de realizar un pedido de catálogo.\n`;
+      msj += `*Código:* ${codigo}\n`;
+      msj += `*Fecha:* ${fecha}\n`;
+      msj += `*Cliente:* ${nombre}\n\n`;
+      msj += `*Artículos:*\n`;
+      cart.forEach(item => {
+        msj += `- ${item.cantidad}x ${item.nombre} ($${item.precio})\n`;
+      });
+      msj += `\n*Total:* $${totalAmount.toFixed(2)}`;
+      
+      const wpUrl = `https://wa.me/${num}?text=${encodeURIComponent(msj)}`;
+      setWhatsappUrl(wpUrl);
+      window.open(wpUrl, '_blank');
+
+      setSuccess(codigo);
       clearCart();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error al procesar el pedido.');
@@ -87,15 +105,25 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
           <div className="bg-primary-50 dark:bg-primary-950/30 border border-primary-100 dark:border-primary-900/50 py-4 px-6 rounded-2xl mb-8">
             <span className="text-3xl font-mono font-black tracking-widest text-primary-600 dark:text-primary-400">{success}</span>
           </div>
-          <button 
-            type="button"
-            onClick={() => {
-              if (onBackToCatalog) onBackToCatalog();
-            }}
-            className="block w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-bold transition-all duration-200 shadow-md shadow-primary-600/20 hover:shadow-primary-500/50 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900"
-          >
-            Volver al Catálogo
-          </button>
+          <div className="flex flex-col gap-3">
+            <a 
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-4 px-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold transition-all duration-200 shadow-md shadow-green-600/20 hover:shadow-green-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500 dark:focus-visible:ring-offset-gray-900"
+            >
+              <i className="bi bi-whatsapp" aria-hidden="true"></i> Notificar Pedido por WhatsApp
+            </a>
+            <button 
+              type="button"
+              onClick={() => {
+                if (onBackToCatalog) onBackToCatalog();
+              }}
+              className="block w-full py-3.5 px-4 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+            >
+              Volver al Catálogo
+            </button>
+          </div>
         </div>
       </div>
     );

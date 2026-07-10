@@ -18,7 +18,7 @@ export default function Inicio() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[450px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
 
       {/* 1. Hero Section */}
-      <section className="relative max-w-5xl mx-auto pt-6 pb-6 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
+      <section className="relative max-w-5xl mx-auto pt-8 pb-6 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-tight">
           Soluciones <span className="text-primary-600 dark:text-primary-500">Tecnológicas</span>
         </h1>
