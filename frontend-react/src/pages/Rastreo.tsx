@@ -291,11 +291,11 @@ export default function Rastreo() {
         {/* Modal del Formulario de nueva solicitud de reparación o Éxito */}
         {(showSolicitar || solicitudExito) && (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in overflow-y-auto"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in"
             role="dialog"
             aria-modal="true"
           >
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative transition-colors duration-200 my-auto max-h-[95vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative transition-colors duration-200 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto flex flex-col">
               <button
                 type="button"
                 onClick={() => { setShowSolicitar(false); setSolicitudExito(null); }}

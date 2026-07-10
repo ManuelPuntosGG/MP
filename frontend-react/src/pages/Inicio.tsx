@@ -18,7 +18,7 @@ export default function Inicio() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[450px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
 
       {/* 1. Hero Section */}
-      <section className="relative max-w-5xl mx-auto pt-6 pb-12 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
+      <section className="relative max-w-5xl mx-auto pt-6 pb-6 px-4 sm:px-6 lg:px-8 text-center animate-slide-up">
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-gray-900 dark:text-white leading-tight">
           Soluciones <span className="text-primary-600 dark:text-primary-500">Tecnológicas</span>
         </h1>
@@ -29,7 +29,7 @@ export default function Inicio() {
       </section>
 
       {/* 2. Services Section */}
-      <section className="max-w-7xl mx-auto pt-2 pb-12 px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto pt-2 pb-6 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Card Servicio Técnico */}
@@ -75,7 +75,7 @@ export default function Inicio() {
 
       {/* 3. User Dashboard Section (Only when Logged In) */}
       {user && (
-        <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-slide-up delay-200">
+        <section className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-slide-up delay-200">
           <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm hover:border-primary-200 dark:hover:border-primary-900/40 hover:shadow-lg transition-all duration-200">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white">Mi Actividad Reciente</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5 font-medium">
@@ -188,7 +188,7 @@ export default function Inicio() {
       )}
 
       {/* 4. Trust / Value Proposition Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-slide-up delay-250">
+      <section className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-slide-up delay-250">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm text-center">
           
           <div className="p-4 flex flex-col items-center">
@@ -219,7 +219,7 @@ export default function Inicio() {
       </section>
 
       {/* 5. Community Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center animate-slide-up delay-300">
+      <section className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center animate-slide-up delay-300">
         <h2 className="text-3xl font-black text-gray-900 dark:text-white">Nuestra Comunidad Digital</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium max-w-md mx-auto">
           Conoce nuestros trabajos de reparación de cerca, aprende con videos técnicos y revisa nuestra reputación en plataformas digitales.
@@ -271,7 +271,7 @@ export default function Inicio() {
       </section>
 
       {/* 6. Contact & Location Section */}
-      <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 mb-8 animate-slide-up delay-350">
+      <section className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 mb-8 animate-slide-up delay-350">
         <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col lg:flex-row gap-8 items-stretch">
           
           {/* Info Contacto */}

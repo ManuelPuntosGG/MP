@@ -102,7 +102,7 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 animate-fade-in">
+    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 animate-fade-in">
       <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-10">Tu Carrito</h1>
       
       <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start">

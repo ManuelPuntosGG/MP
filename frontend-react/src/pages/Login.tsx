@@ -26,7 +26,7 @@ export default function Login() {
   const [telefono, setTelefono] = useState<string>('');
   
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | { message?: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,7 +57,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-200 animate-fade-in">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-6 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-200 animate-fade-in">
       <div className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8 shadow-xl shadow-primary-150/10 dark:shadow-black/30 hover:shadow-primary-250/20 dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.2)] hover:border-primary-200 dark:hover:border-primary-900/50 transition-all duration-200 animate-scale-in">
         
         {/* Encabezado */}

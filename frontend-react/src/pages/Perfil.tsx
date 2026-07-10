@@ -59,7 +59,7 @@ export default function Perfil() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-200 animate-fade-in overflow-hidden">
+    <div className="w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-200 animate-fade-in overflow-hidden">
       
       {/* Header Perfil - Corregido para Mobile */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] hover:border-primary-100 dark:hover:border-primary-900/50 transition-all duration-200 mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 animate-slide-up">
