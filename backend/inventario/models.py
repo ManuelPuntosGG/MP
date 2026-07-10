@@ -200,7 +200,7 @@ class OrdenServicio(models.Model):
         mensaje = (
             f"¡Hola *{self.cliente_nombre}*! Tu equipo (*{self.equipo}*) "
             f"tiene una actualización registrada. "
-            f"Consulta los detalles en: https://mp-tech-4x0a.onrender.com//rastrear?codigo={self.codigo_rastreo}"
+            f"Consulta los detalles en: https://mp-tech-4x0a.onrender.com/rastrear?codigo={self.codigo_rastreo}"
         )
         mensaje_url = urllib.parse.quote(mensaje)
         return f"https://wa.me/{numero_limpio}?text={mensaje_url}"

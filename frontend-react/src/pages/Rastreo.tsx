@@ -397,7 +397,7 @@ export default function Rastreo() {
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">¡Ingreso Registrado con Éxito!</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed px-2 font-medium">
-                      Estimado(a) <strong className="text-gray-800 dark:text-gray-200">{solicitudExito.cliente_nombre}</strong>, los parámetros técnicos de su equipo (<strong className="text-gray-800 dark:text-gray-200">{solicitudExito.equipo}</strong>) han sido cargados correctamente al ecosistema operativo de soporte.
+                      Estimado(a) <strong className="text-gray-800 dark:text-gray-200">{solicitudExito.cliente_nombre}</strong>, se ha cargado la solicitud de servicio del equipo (<strong className="text-gray-800 dark:text-gray-200">{solicitudExito.equipo}</strong>).
                     </p>
                   </div>
 
@@ -422,7 +422,7 @@ export default function Rastreo() {
                     </div>
                     <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary-600 dark:text-primary-400 bg-primary-500/5 dark:bg-primary-500/10 px-3 py-1.5 rounded-full font-medium transition-colors duration-200">
                       <i className="bi bi-shield-exclamation" aria-hidden="true"></i>
-                      Guarde este código para monitorear el diagnóstico técnico en vivo.
+                      Use este código para monitorear el diagnóstico.
                     </div>
                   </div>
 
@@ -433,7 +433,7 @@ export default function Rastreo() {
                       ¿Cómo vas a entregar tu equipo?
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 leading-relaxed font-medium">
-                      Selecciona la modalidad que más te convenga para gestionar la consignación física de tu hardware en nuestro laboratorio central:
+                      Selecciona la modalidad más conveniente para la consignación física de tu hardware en nuestro laboratorio:
                     </p>
 
                     <div className="space-y-2.5">
