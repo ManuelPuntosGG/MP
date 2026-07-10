@@ -641,10 +641,10 @@ export default function Rastreo() {
               </div>
             ) : (
               <div className="relative mb-6" aria-label="Progreso de la reparación">
-                {/* Horizontal Stepper (Desktop) */}
-                <div className="hidden sm:block relative">
+                {/* Horizontal Stepper (Responsive) */}
+                <div className="block relative">
                   {/* Stepper Progress Bar Line */}
-                  <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-gray-100 dark:bg-gray-800 z-0">
+                  <div className="absolute top-5 sm:top-6 left-[10%] right-[10%] h-1 bg-gray-100 dark:bg-gray-800 z-0">
                     <div
                       className="h-full bg-primary-600 transition-all duration-500"
                       style={{ width: `${(Math.max(0, currentStageIndex) / (STEPPER_STAGES.length - 1)) * 100}%` }}
@@ -652,13 +652,13 @@ export default function Rastreo() {
                     />
                   </div>
 
-                  <div className="flex justify-between items-center relative z-10">
+                  <div className="flex justify-between items-start sm:items-center relative z-10">
                     {STEPPER_STAGES.map((stage, idx) => {
                       const isCompleted = idx < currentStageIndex;
                       const isActive = idx === currentStageIndex;
                       return (
-                        <div key={stage.key} className="flex flex-col items-center flex-1" aria-current={isActive ? 'step' : undefined}>
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold border transition-all duration-300
+                        <div key={stage.key} className="flex flex-col items-center flex-1 px-0.5" aria-current={isActive ? 'step' : undefined}>
+                          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm sm:text-base font-bold border transition-all duration-300
                             ${isCompleted
                               ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/25'
                               : ''}
@@ -671,59 +671,11 @@ export default function Rastreo() {
                           `}>
                             <i className={`${stage.iconClass} ${isCompleted ? 'text-white' : isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`} aria-hidden="true"></i>
                           </div>
-                          <span className={`text-xs font-bold uppercase tracking-wider mt-3
+                          <span className={`text-[9px] sm:text-xs font-bold uppercase tracking-wider mt-2 sm:mt-3 text-center leading-tight
                             ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'}
                           `}>
                             {stage.label}
                           </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Vertical Stepper (Mobile) */}
-                <div className="block sm:hidden relative pl-6">
-                  {/* Vertical progress line */}
-                  <div className="absolute left-[48px] top-6 bottom-6 w-0.5 bg-gray-200 dark:bg-gray-800 z-0">
-                    <div
-                      className="w-full bg-primary-600 transition-all duration-500"
-                      style={{ height: `${(Math.max(0, currentStageIndex) / (STEPPER_STAGES.length - 1)) * 100}%` }}
-                      aria-hidden="true"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-4 relative z-10">
-                    {STEPPER_STAGES.map((stage, idx) => {
-                      const isCompleted = idx < currentStageIndex;
-                      const isActive = idx === currentStageIndex;
-                      return (
-                        <div key={stage.key} className="flex items-center gap-4" aria-current={isActive ? 'step' : undefined}>
-                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold border transition-all duration-300 flex-shrink-0
-                            ${isCompleted
-                              ? 'bg-primary-600 border-primary-600 text-white shadow-md shadow-primary-600/25'
-                              : ''}
-                            ${isActive
-                              ? 'bg-white dark:bg-gray-900 border-primary-600 text-primary-600 dark:text-primary-400 ring-4 ring-primary-50 dark:ring-primary-900/30'
-                              : ''}
-                            {!isCompleted && !isActive 
-                              ? 'bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800 text-gray-400' 
-                              : ''}
-                          `}>
-                            <i className={`${stage.iconClass} ${isCompleted ? 'text-white' : isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`} aria-hidden="true"></i>
-                          </div>
-                          <div className="text-left">
-                            <span className={`text-xs font-bold uppercase tracking-wider block
-                              ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'}
-                            `}>
-                              {stage.label}
-                            </span>
-                            {isActive && (
-                              <span className="text-[10px] text-primary-600 dark:text-primary-400 font-bold block mt-0.5 animate-pulse">
-                                Estado Actual
-                              </span>
-                            )}
-                          </div>
                         </div>
                       );
                     })}
