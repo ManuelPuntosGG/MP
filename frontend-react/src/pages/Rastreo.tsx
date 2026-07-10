@@ -232,7 +232,7 @@ export default function Rastreo() {
       <div className="pt-2 pb-2 transition-colors duration-200">
         {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
         {!ticket && (
-          <div className="max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
+          <div className="max-w-x6 mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
             <div className="text-center mb-8">
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                 Ingresa tu código de seguimiento para consultar el estatus de tu equipo en el taller.
