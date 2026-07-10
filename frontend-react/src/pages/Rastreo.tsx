@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
@@ -289,9 +290,9 @@ export default function Rastreo() {
         )}
 
         {/* Modal del Formulario de nueva solicitud de reparación o Éxito */}
-        {(showSolicitar || solicitudExito) && (
+        {(showSolicitar || solicitudExito) && createPortal(
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in"
             role="dialog"
             aria-modal="true"
           >
@@ -576,8 +577,8 @@ export default function Rastreo() {
                 </div>
               )}
             </div>
-          </div>
-
+          </div>,
+          document.body
         )}
       </div>
       {/* 2. Detalle del Ticket Encontrado */}
@@ -891,10 +892,10 @@ export default function Rastreo() {
       )}
 
       {/* 3. Lightbox Modal */}
-      {lightboxImg && (
+      {lightboxImg && createPortal(
         <div
           onClick={() => setLightboxImg(null)}
-          className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 cursor-zoom-out animate-fade-in backdrop-blur-sm"
+          className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 cursor-zoom-out animate-fade-in backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label="Vista ampliada de imagen"
@@ -914,7 +915,8 @@ export default function Rastreo() {
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           />
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
