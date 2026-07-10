@@ -636,7 +636,7 @@ export default function Importaciones() {
                 value={searchCode}
                 onChange={e => setSearchCode(e.target.value)}
                 className="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 text-sm font-semibold uppercase"
-                placeholder="Ej. IMP-123456"
+                placeholder="Ej. ABC123456"
               />
             </div>
             <button
