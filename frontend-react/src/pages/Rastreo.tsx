@@ -213,7 +213,7 @@ export default function Rastreo() {
   const currentStageIndex = ticket ? getStageIndex(ticket.estado_raw) : -1;
 
   return (
-    <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+    <div className="relative max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-fade-in">
 
       {/* Background glow just for Dark Mode */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[500px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
@@ -232,7 +232,7 @@ export default function Rastreo() {
       <div className="pt-2 pb-2 transition-colors duration-200">
         {/* 1. Panel de Consulta Inicial (Buscar o Registrar) */}
         {!ticket && (
-          <div className="max-w-x6 mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
+          <div className="max-w-6xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-sm hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.15)] dark:hover:shadow-[0_15px_40px_-10px_rgba(225,29,72,0.25)] transition-all duration-200 animate-scale-in">
             <div className="text-center mb-8">
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                 Ingresa tu código de seguimiento para consultar el estatus de tu equipo en el taller.
@@ -639,7 +639,7 @@ export default function Rastreo() {
                 </div>
               </div>
             ) : (
-              <div className="relative mb-12" aria-label="Progreso de la reparación">
+              <div className="relative mb-6" aria-label="Progreso de la reparación">
                 {/* Horizontal Stepper (Desktop) */}
                 <div className="hidden sm:block relative">
                   {/* Stepper Progress Bar Line */}
@@ -692,7 +692,7 @@ export default function Rastreo() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-6 relative z-10">
+                  <div className="flex flex-col gap-4 relative z-10">
                     {STEPPER_STAGES.map((stage, idx) => {
                       const isCompleted = idx < currentStageIndex;
                       const isActive = idx === currentStageIndex;

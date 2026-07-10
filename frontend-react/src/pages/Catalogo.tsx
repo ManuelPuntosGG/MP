@@ -136,7 +136,7 @@ export default function Catalogo() {
       {/* Background glow just for Dark Mode */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[500px] bg-primary-600/10 dark:bg-primary-600/15 blur-[120px] rounded-full pointer-events-none" aria-hidden="true" />
 
-      <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+      <div className="relative max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-fade-in">
 
         {/* Cabecera y Tasa */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">

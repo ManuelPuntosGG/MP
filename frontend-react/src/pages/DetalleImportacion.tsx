@@ -78,7 +78,7 @@ export default function DetalleImportacion() {
 
   if (error || !pedido) {
     return (
-      <div className="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white dark:bg-gray-900 border border-red-100 dark:border-red-950 p-8 rounded-3xl text-center shadow-md animate-scale-in">
           <div className="w-16 h-16 bg-red-50 dark:bg-red-950/20 text-red-500 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-6">
             <i className="bi bi-exclamation-triangle text-2xl" aria-hidden="true"></i>
@@ -97,12 +97,12 @@ export default function DetalleImportacion() {
   const currentStageIndex = IMPORT_STAGES.findIndex(s => s.key === pedido.estado_raw);
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
+    <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
       
       {/* Botón Volver */}
       <Link 
         to="/" 
-        className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 mb-8 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-md px-2 py-1 -ml-2"
+        className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 mb-6 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-md px-2 py-1 -ml-2"
         aria-label="Volver al inicio"
       >
         <i className="bi bi-arrow-left" aria-hidden="true"></i> Volver al Inicio
