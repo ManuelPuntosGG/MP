@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import colors from 'tailwindcss/colors';
+
 export default {
   content: [
     "./index.html",
@@ -11,6 +13,7 @@ export default {
         sans: ['"Space Grotesk"', 'sans-serif'],
       },
       colors: {
+        gray: colors.neutral,
         primary: {
           50: '#fff1f2',
           100: '#ffe4e6',
