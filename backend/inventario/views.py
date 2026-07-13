@@ -291,6 +291,7 @@ def api_importacion_detalle(request, codigo):
     return JsonResponse({
         'codigo': pedido.codigo_seguimiento,
         'fecha': pedido.fecha.isoformat(),
+        'cliente_nombre': pedido.cliente_nombre or (pedido.usuario.nombre_completo if pedido.usuario else "Cliente"),
         'estado_raw': pedido.estado,
         'estado': pedido.get_estado_display(),
         'total_usd': float(pedido.total_usd),

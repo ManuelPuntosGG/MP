@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axios';
+import PaymentModal from '../components/PaymentModal';
 
 const IMPORT_STAGES = [
   { key: 'PENDIENTE', label: 'Pendiente', iconClass: 'bi bi-clock' },
@@ -21,6 +22,7 @@ interface ProductoImportacion {
 interface PedidoImportacion {
   codigo: string;
   fecha: string;
+  cliente_nombre: string;
   estado: string;
   estado_raw: string;
   total_usd: number;
@@ -45,25 +47,31 @@ export default function DetalleImportacion() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchDetalles = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const [pedidoRes, tasaRes] = await Promise.all([
-          api.get(`/importaciones/${codigo}/`),
-          api.get('/tasa/')
-        ]);
-        setPedido(pedidoRes.data);
-        setTasaActual(tasaRes.data.tasa_ves);
-      } catch (err: any) {
-        console.error('Error cargando detalles de importación:', err);
-        setError(err.response?.data?.error || 'No se pudo cargar la orden de importación.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Estados para PaymentModal
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentConcept, setPaymentConcept] = useState("");
+  const [paymentAmountUsd, setPaymentAmountUsd] = useState(0);
+  const [paymentAmountVes, setPaymentAmountVes] = useState<number | null>(null);
 
+  const fetchDetalles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [pedidoRes, tasaRes] = await Promise.all([
+        api.get(`/importaciones/${codigo}/`),
+        api.get('/tasa/')
+      ]);
+      setPedido(pedidoRes.data);
+      setTasaActual(tasaRes.data.tasa_ves);
+    } catch (err: any) {
+      console.error('Error cargando detalles de importación:', err);
+      setError(err.response?.data?.error || 'No se pudo cargar la orden de importación.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (codigo) {
       fetchDetalles();
     }
@@ -96,6 +104,13 @@ export default function DetalleImportacion() {
 
   // Encontrar el índice de etapa actual
   const currentStageIndex = IMPORT_STAGES.findIndex(s => s.key === pedido.estado_raw);
+
+  const handleOpenPayment = (concepto: string, montoUsd: number, montoVes: number | null) => {
+    setPaymentConcept(concepto);
+    setPaymentAmountUsd(montoUsd);
+    setPaymentAmountVes(montoVes);
+    setIsPaymentModalOpen(true);
+  };
 
   return (
     <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50/50 dark:bg-gray-950/20 transition-colors duration-300 animate-fade-in">
@@ -456,6 +471,22 @@ export default function DetalleImportacion() {
         )}
 
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        concept={paymentConcept}
+        amountUsd={paymentAmountUsd}
+        amountVes={paymentAmountVes}
+        orderCode={codigo || ""}
+        clientName={pedido?.cliente_nombre || ""}
+        orderType="importacion"
+        onNotifyComplete={async () => {
+          setIsPaymentModalOpen(false);
+          await fetchDetalles();
+        }}
+      />
     </div>
   );
 }
