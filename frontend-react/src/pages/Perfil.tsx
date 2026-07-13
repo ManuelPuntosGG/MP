@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, Navigate } from 'react-router-dom';
 import api from '../api/axios';
+import PaymentModal from '../components/PaymentModal';
 
 export default function Perfil() {
   const { user, orders, loading, refreshUser } = useAuth();
@@ -12,6 +13,21 @@ export default function Perfil() {
   const [editError, setEditError] = useState<string | null>(null);
   const [editSuccess, setEditSuccess] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
+
+  // Estados para PaymentModal
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentConcept, setPaymentConcept] = useState("");
+  const [paymentAmountUsd, setPaymentAmountUsd] = useState(0);
+  const [paymentAmountVes, setPaymentAmountVes] = useState<number | null>(null);
+  const [paymentOrderCode, setPaymentOrderCode] = useState("");
+
+  const handleOpenPayment = (concepto: string, amountUsd: number, amountVes: number | null, orderCode: string) => {
+    setPaymentConcept(concepto);
+    setPaymentAmountUsd(amountUsd);
+    setPaymentAmountVes(amountVes);
+    setPaymentOrderCode(orderCode);
+    setIsPaymentModalOpen(true);
+  };
 
   if (loading) {
     return (
@@ -138,7 +154,7 @@ export default function Perfil() {
                 role="alert"
                 aria-live="polite"
               >
-                {typeof editError === 'string' ? editError : (editError.message || JSON.stringify(editError))}
+                {editError}
               </div>
             )}
 
@@ -242,6 +258,28 @@ export default function Perfil() {
                       ))}
                     </ul>
                   </div>
+
+                  {p.estado_raw === 'PENDIENTE' && (
+                    <div className="mt-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                      {p.estado_pago === 'PENDIENTE' ? (
+                        <div className="w-full py-2 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-500 font-bold rounded-xl border border-amber-200 dark:border-amber-900/50 flex items-center justify-center gap-1.5 text-xs">
+                          <i className="bi bi-hourglass-split mr-1" aria-hidden="true"></i> Verificando Pago
+                        </div>
+                      ) : p.estado_pago === 'VERIFICADO' ? (
+                        <div className="w-full py-2 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-500 font-bold rounded-xl border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-center gap-1.5 text-xs">
+                          <i className="bi bi-check-circle-fill mr-1" aria-hidden="true"></i> Pago procesado exitosamente
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPayment("Pago de Pedido de Catálogo", p.total, p.total_ves || null, p.codigo)}
+                          className="w-full py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-bold transition-colors text-xs shadow-sm flex items-center justify-center"
+                        >
+                          <i className="bi bi-wallet2 mr-1.5" aria-hidden="true"></i> Pagar Pedido
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -295,6 +333,22 @@ export default function Perfil() {
         </div>
 
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        concept={paymentConcept}
+        amountUsd={paymentAmountUsd}
+        amountVes={paymentAmountVes}
+        orderCode={paymentOrderCode}
+        clientName={user.nombre_completo || user.email}
+        orderType="catalogo"
+        onNotifyComplete={async () => {
+          setIsPaymentModalOpen(false);
+          await refreshUser();
+        }}
+      />
 
     </div>
   );

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import PaymentModal from '../components/PaymentModal';
 
 const STEPPER_STAGES = [
   { key: 'ESPERANDO', label: 'Espera', iconClass: 'bi bi-hourglass-split' },
@@ -34,6 +35,8 @@ interface Ticket {
   lineas_presupuesto: LineaPresupuesto[];
   total_usd: number;
   total_ves: number;
+  tasa_ves: number;
+  estado_pago?: 'PENDIENTE' | 'VERIFICADO' | null;
   avances: Avance[];
 }
 
@@ -76,6 +79,9 @@ export default function Rastreo() {
 
   // Lightbox State
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+
+  // Modal Pago State
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
 
   // Leer código de la URL (?codigo=XXX o ?solicitar=true) al montar
   useEffect(() => {
@@ -750,7 +756,7 @@ export default function Rastreo() {
                 </div>
 
                 {/* Acciones de Presupuesto */}
-                {ticket.presupuesto_estado_raw === 'PENDIENTE' && (
+                {ticket.presupuesto_estado_raw === 'PENDIENTE' && !['REPARADO', 'ENTREGADO', 'CANCELADO'].includes(ticket.estado_raw) && (
                   <div className="space-y-4">
                     <p className="text-xs text-center text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                       Requerimos tu aprobación formal del presupuesto para proceder a ordenar componentes e iniciar las labores en el taller.
@@ -775,15 +781,37 @@ export default function Rastreo() {
                   </div>
                 )}
 
-                {ticket.presupuesto_estado_raw === 'APROBADO' && (
+                {ticket.presupuesto_estado_raw === 'APROBADO' && !['REPARADO', 'ENTREGADO', 'CANCELADO'].includes(ticket.estado_raw) && (
                   <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 p-4 rounded-xl text-center text-sm font-bold text-emerald-700 dark:text-emerald-400 flex items-center justify-center gap-1.5 leading-relaxed transition-colors duration-200">
                     <i className="bi bi-check-circle-fill mr-1.5" aria-hidden="true"></i> ¡Presupuesto Aprobado! Tu equipo se encuentra asignado a la línea de trabajo activo del taller.
                   </div>
                 )}
 
-                {ticket.presupuesto_estado_raw === 'RECHAZADO' && (
+                {ticket.presupuesto_estado_raw === 'RECHAZADO' && !['REPARADO', 'ENTREGADO', 'CANCELADO'].includes(ticket.estado_raw) && (
                   <div className="bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 p-4 rounded-xl text-center text-sm font-bold text-red-700 dark:text-red-400 flex items-center justify-center gap-1.5 leading-relaxed transition-colors duration-200">
                     <i className="bi bi-x-circle-fill mr-1.5" aria-hidden="true"></i> Presupuesto Rechazado. Por favor, comunícate para coordinar el retiro de tu equipo.
+                  </div>
+                )}
+
+                {ticket.estado_raw === 'REPARADO' && ticket.total_usd > 0 && (
+                  <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6">
+                    {ticket.estado_pago === 'PENDIENTE' ? (
+                      <div className="w-full py-3.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-500 font-bold rounded-xl border border-amber-200 dark:border-amber-900/50 flex items-center justify-center gap-1.5 text-sm">
+                        <i className="bi bi-hourglass-split mr-1.5" aria-hidden="true"></i> Pago en verificación
+                      </div>
+                    ) : ticket.estado_pago === 'VERIFICADO' ? (
+                      <div className="w-full py-3.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-500 font-bold rounded-xl border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-center gap-1.5 text-sm">
+                        <i className="bi bi-check-circle-fill mr-1.5" aria-hidden="true"></i> Pago procesado exitosamente
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setIsPaymentModalOpen(true)}
+                        className="w-full py-3.5 bg-primary-600 hover:bg-primary-500 text-white font-bold rounded-xl transition-all duration-200 shadow-md shadow-primary-600/30 flex items-center justify-center gap-1.5 text-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:focus-visible:ring-offset-gray-900 active:scale-95"
+                      >
+                        <i className="bi bi-wallet2 mr-1.5" aria-hidden="true"></i> Pagar y Notificar Retiro
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -871,6 +899,19 @@ export default function Rastreo() {
         document.body
       )}
 
+      {/* 4. Modal de Pago (para tickets REPARADO) */}
+      {ticket && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          amountUsd={ticket.total_usd}
+          amountVes={ticket.total_ves}
+          orderCode={ticket.codigo}
+          clientName={user ? user.nombre_completo || "Cliente" : "Cliente"}
+          concept="Servicio Técnico (Reparación)"
+          orderType="servicio"
+        />
+      )}
     </div>
   );
 }

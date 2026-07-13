@@ -12,7 +12,7 @@ from unfold.admin import ModelAdmin, TabularInline
 from unfold.decorators import action
 
 # Importación de tus modelos locales
-from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto, PedidoImportacion, PedidoCatalogo, UserProfile
+from .models import Producto, OrdenServicio, AvanceOrden, Categoria, LineaPresupuesto, PedidoImportacion, PedidoCatalogo, UserProfile, Pago
 
 
 # =========================================================
@@ -81,6 +81,13 @@ class LineaPresupuestoInline(TabularInline):
     model = LineaPresupuesto
     extra = 0 
 
+class PagoInline(TabularInline):
+    """Permite visualizar y verificar pagos anclados a esta orden o pedido"""
+    model = Pago
+    extra = 0
+    readonly_fields = ('fecha_registro',)
+    fields = ('estado', 'metodo', 'monto_usd', 'fecha_pago', 'referencia', 'concepto', 'fecha_registro')
+
 
 # =========================================================
 # 3. Configuración Principal del Taller
@@ -103,13 +110,13 @@ class OrdenServicioAdmin(ModelAdmin):
             'all': ('inventario/css/custom_admin.css',)
         }
         
-    list_editable = ('estado', 'presupuesto_estado')
+    list_editable = ('estado',)
     list_filter = (ReparacionesActivasFilter, 'estado', 'presupuesto_estado', 'fecha_ingreso')
     search_fields = ('codigo_rastreo', 'cliente_nombre', 'cliente_telefono', 'equipo')
     ordering = ('-fecha_ingreso',)
     
-    inlines = [AvanceOrdenInline, LineaPresupuestoInline]
-    readonly_fields = ('codigo_rastreo', 'fecha_ingreso', 'qr_code')
+    inlines = [AvanceOrdenInline, LineaPresupuestoInline, PagoInline]
+    readonly_fields = ('codigo_rastreo', 'fecha_ingreso', 'qr_code', 'presupuesto_estado')
 
     # 🚀 CONFIGURACIÓN DE DISEÑO EN REJILLA (Campos emparejados lado a lado)
     fieldsets = (
@@ -178,13 +185,18 @@ class PedidoImportacionAdmin(ModelAdmin):
     list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'pago_inicial_usd', 'saldo_pendiente_usd', 'estado', 'fecha']
     list_filter = ['estado', 'fecha']
     search_fields = ['codigo_seguimiento', 'cliente_nombre', 'cliente_telefono']
-    readonly_fields = ['codigo_seguimiento', 'fecha']
+    readonly_fields = [
+        'codigo_seguimiento', 'fecha', 'total_ves',
+        'tasa_confirmacion', 'pago_inicial_usd', 'pago_inicial_ves',
+        'tasa_entrega', 'saldo_pendiente_usd', 'saldo_pendiente_ves'
+    ]
     fieldsets = [
         ('Información del Cliente', {'fields': ['usuario', 'cliente_nombre', 'cliente_telefono']}),
         ('Detalles del Pedido', {'fields': ['estado', 'total_usd', 'total_ves', 'productos_json', 'nota']}),
         ('Pago 50/50', {'fields': [('tasa_confirmacion', 'pago_inicial_usd', 'pago_inicial_ves'), ('tasa_entrega', 'saldo_pendiente_usd', 'saldo_pendiente_ves')]}),
         ('Seguimiento', {'fields': ['carrier_nombre', 'carrier_tracking', 'codigo_seguimiento', 'fecha']}),
     ]
+    inlines = [PagoInline]
 
 
 class PedidoCatalogoAdmin(ModelAdmin):
@@ -197,6 +209,7 @@ class PedidoCatalogoAdmin(ModelAdmin):
         ('Detalles del Pedido', {'fields': ['estado', 'total_usd', 'productos_json']}),
         ('Seguimiento', {'fields': ['codigo_seguimiento', 'fecha']}),
     ]
+    inlines = [PagoInline]
     actions = ['cancelar_pedidos']
 
     @action(description="Cancelar pedidos seleccionados (Restaurando stock)")
@@ -219,6 +232,21 @@ class UserProfileAdmin(ModelAdmin):
 admin.site.register(PedidoImportacion, PedidoImportacionAdmin)
 admin.site.register(PedidoCatalogo, PedidoCatalogoAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
+
+class PagoAdmin(ModelAdmin):
+    list_display = ('id', 'metodo', 'monto_usd', 'estado', 'fecha_pago', 'referencia', 'get_orden')
+    list_filter = ('estado', 'metodo', 'fecha_pago')
+    search_fields = ('referencia', 'concepto', 'orden_servicio__codigo_rastreo', 'pedido_importacion__codigo_seguimiento', 'pedido_catalogo__codigo_seguimiento')
+    list_editable = ('estado',)
+
+    def get_orden(self, obj):
+        if obj.orden_servicio: return f"Servicio: {obj.orden_servicio.codigo_rastreo}"
+        if obj.pedido_importacion: return f"Importación: {obj.pedido_importacion.codigo_seguimiento}"
+        if obj.pedido_catalogo: return f"Catálogo: {obj.pedido_catalogo.codigo_seguimiento}"
+        return "-"
+    get_orden.short_description = "Orden / Pedido"
+
+admin.site.register(Pago, PagoAdmin)
 
 # Eliminar la gestión de "Grupos de usuarios" de Django por defecto
 admin.site.unregister(Group)

@@ -67,4 +67,9 @@ urlpatterns = [
     path('api/ordenes/<str:codigo>/', views.api_ordenes, name='api_orden_detalle'),
     path('api/solicitar-reparacion/', views.api_solicitar_reparacion, name='api_solicitar_reparacion'),
     path('api/responder-presupuesto/', views.api_responder_presupuesto, name='api_responder_presupuesto'),
+
+    # ==========================================================================
+    # API REST — Pagos
+    # ==========================================================================
+    path('api/pagos/registrar/', views.api_registrar_pago, name='api_registrar_pago'),
 ]

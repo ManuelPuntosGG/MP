@@ -285,6 +285,9 @@ def api_importacion_detalle(request, codigo):
     if pedido.usuario and pedido.usuario != request.user:
         return JsonResponse({'error': 'No autorizado'}, status=403)
 
+    pago_activo = pedido.pagos.filter(estado__in=['PENDIENTE', 'VERIFICADO']).order_by('-fecha_registro').first()
+    estado_pago = pago_activo.estado if pago_activo else None
+
     return JsonResponse({
         'codigo': pedido.codigo_seguimiento,
         'fecha': pedido.fecha.isoformat(),
@@ -302,6 +305,7 @@ def api_importacion_detalle(request, codigo):
         'pago_inicial_ves': float(pedido.pago_inicial_ves) if pedido.pago_inicial_ves else None,
         'saldo_pendiente_usd_estimado': float(pedido.saldo_pendiente_usd_estimado),
         'saldo_pendiente_ves': float(pedido.saldo_pendiente_ves) if pedido.saldo_pendiente_ves else None,
+        'estado_pago': estado_pago,
     })
 
 
@@ -347,6 +351,9 @@ def api_ordenes(request, codigo=None):
             'imagen': av.imagen.url if av.imagen else None
         })
 
+    pago_activo = orden.pagos.filter(estado__in=['PENDIENTE', 'VERIFICADO']).order_by('-fecha_registro').first()
+    estado_pago = pago_activo.estado if pago_activo else None
+
     return JsonResponse({
         'id': orden.pk,
         'codigo': orden.codigo_rastreo,
@@ -362,7 +369,8 @@ def api_ordenes(request, codigo=None):
         'avances': avances_data,
         'total_usd': float(total_usd),
         'total_ves': float(total_ves),
-        'tasa_ves': tasa_usdt
+        'tasa_ves': tasa_usdt,
+        'estado_pago': estado_pago
     })
 
 
@@ -518,14 +526,27 @@ def api_user(request):
         nombre = ""
         telefono = ""
 
+    try:
+        tasa_usdt = float(obtener_tasa_binance())
+    except Exception:
+        tasa_usdt = 760.00
+
     # Pedidos de catálogo
     pedidos_qs = PedidoCatalogo.objects.filter(usuario=user).order_by('-fecha')
-    pedidos = [{
-        'codigo': p.codigo_seguimiento,
-        'fecha': p.fecha.isoformat(),
-        'total': float(p.total_usd),
-        'productos': json.loads(p.productos_json)
-    } for p in pedidos_qs]
+    pedidos = []
+    for p in pedidos_qs:
+        pago_activo = p.pagos.filter(estado__in=['PENDIENTE', 'VERIFICADO']).order_by('-fecha_registro').first()
+        total_usd = float(p.total_usd)
+        pedidos.append({
+            'codigo': p.codigo_seguimiento,
+            'fecha': p.fecha.isoformat(),
+            'total': total_usd,
+            'total_ves': total_usd * tasa_usdt,
+            'productos': json.loads(p.productos_json),
+            'estado_raw': p.estado,
+            'estado': p.get_estado_display(),
+            'estado_pago': pago_activo.estado if pago_activo else None,
+        })
 
     # Reparaciones (Órdenes de Servicio)
     ordenes_qs = OrdenServicio.objects.filter(usuario=user).order_by('-fecha_ingreso')
@@ -581,3 +602,65 @@ def api_editar_perfil(request):
     else:
         errors = {field: msgs[0] for field, msgs in form.errors.items()}
         return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+
+@csrf_exempt
+def api_registrar_pago(request):
+    """
+    Registra un pago reportado por el cliente desde el modal de React.
+    Espera un JSON con:
+    - tipo_orden ('servicio', 'importacion', 'catalogo')
+    - codigo_orden
+    - monto_usd
+    - monto_ves (opcional)
+    - metodo
+    - fecha
+    - referencia
+    - concepto
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except ValueError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+
+    tipo_orden = data.get('tipo_orden')
+    codigo_orden = data.get('codigo_orden')
+    
+    # Preparamos los kwargs para el pago
+    pago_kwargs = {
+        'monto_usd': data.get('monto_usd'),
+        'monto_ves': data.get('monto_ves') or None,
+        'metodo': data.get('metodo'),
+        'fecha_pago': data.get('fecha') or None,
+        'referencia': data.get('referencia', ''),
+        'concepto': data.get('concepto', 'Abono/Pago'),
+        'estado': 'PENDIENTE'
+    }
+
+    try:
+        if tipo_orden == 'servicio':
+            orden = OrdenServicio.objects.get(codigo_rastreo=codigo_orden)
+            pago_kwargs['orden_servicio'] = orden
+        elif tipo_orden == 'importacion':
+            orden = PedidoImportacion.objects.get(codigo_seguimiento=codigo_orden)
+            pago_kwargs['pedido_importacion'] = orden
+        elif tipo_orden == 'catalogo':
+            orden = PedidoCatalogo.objects.get(codigo_seguimiento=codigo_orden)
+            pago_kwargs['pedido_catalogo'] = orden
+        else:
+            return JsonResponse({'error': 'Tipo de orden desconocido'}, status=400)
+
+        # Crear el pago
+        from .models import Pago
+        Pago.objects.create(**pago_kwargs)
+
+        return JsonResponse({'success': True, 'message': 'Pago registrado exitosamente'})
+        
+    except (OrdenServicio.DoesNotExist, PedidoImportacion.DoesNotExist, PedidoCatalogo.DoesNotExist):
+        return JsonResponse({'error': 'Orden o Pedido no encontrado'}, status=404)
+    except Exception as e:
+        logger.error(f"Error al registrar pago: {e}")
+        return JsonResponse({'error': str(e)}, status=500)

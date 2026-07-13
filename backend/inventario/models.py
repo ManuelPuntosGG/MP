@@ -12,6 +12,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.models import Sum
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 
 from .utils import obtener_tasa_binance
@@ -374,32 +377,31 @@ class PedidoImportacion(models.Model):
 
         total_usd = decimal.Decimal(str(self.total_usd)) if self.total_usd is not None else decimal.Decimal('0')
 
-        # 1. Asegurar cálculos y tasas al confirmar
-        if self.estado == 'CONFIRMADA':
-            if not self.pago_inicial_usd:
-                self.pago_inicial_usd = total_usd / 2
-            if not self.saldo_pendiente_usd:
-                self.saldo_pendiente_usd = total_usd - decimal.Decimal(str(self.pago_inicial_usd))
-            if not self.tasa_confirmacion:
-                self.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
-            if not self.pago_inicial_ves and self.tasa_confirmacion:
-                self.pago_inicial_ves = decimal.Decimal(str(self.pago_inicial_usd)) * self.tasa_confirmacion
+        # Siempre calcular el pago inicial y el saldo en USD basado en el total (50/50)
+        self.pago_inicial_usd = total_usd / decimal.Decimal('2')
+        self.saldo_pendiente_usd = total_usd - self.pago_inicial_usd
 
-        # 2. Asegurar cálculos y tasas al entregar (congelar todo)
-        elif self.estado == 'ENTREGADO':
-            if not self.pago_inicial_usd:
-                self.pago_inicial_usd = total_usd / 2
-            if not self.saldo_pendiente_usd:
-                self.saldo_pendiente_usd = total_usd - decimal.Decimal(str(self.pago_inicial_usd))
-            if not self.tasa_confirmacion:
+        # 1. Congelar tasa de confirmación la primera vez que se guarda
+        if not self.tasa_confirmacion:
+            try:
                 self.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
-            if not self.pago_inicial_ves and self.tasa_confirmacion:
-                self.pago_inicial_ves = decimal.Decimal(str(self.pago_inicial_usd)) * self.tasa_confirmacion
+            except Exception:
+                self.tasa_confirmacion = decimal.Decimal('760.00')
 
+        if self.tasa_confirmacion:
+            self.total_ves = total_usd * self.tasa_confirmacion
+            self.pago_inicial_ves = self.pago_inicial_usd * self.tasa_confirmacion
+
+        # 2. Congelar tasa de entrega cuando llega a LISTO_RETIRAR o ENTREGADO
+        if self.estado in ['LISTO_RETIRAR', 'ENTREGADO']:
             if not self.tasa_entrega:
-                self.tasa_entrega = decimal.Decimal(str(obtener_tasa_binance()))
-            if not self.saldo_pendiente_ves and self.tasa_entrega:
-                self.saldo_pendiente_ves = decimal.Decimal(str(self.saldo_pendiente_usd)) * self.tasa_entrega
+                try:
+                    self.tasa_entrega = decimal.Decimal(str(obtener_tasa_binance()))
+                except Exception:
+                    self.tasa_entrega = decimal.Decimal('760.00')
+
+        if self.tasa_entrega:
+            self.saldo_pendiente_ves = self.saldo_pendiente_usd * self.tasa_entrega
 
         super().save(*args, **kwargs)
 
@@ -479,3 +481,107 @@ def restaurar_stock_al_eliminar_pedido(sender, instance, **kwargs):
     if instance.estado == 'PENDIENTE':
         instance.devolver_unidades_al_stock()
 
+
+class Pago(models.Model):
+    METODOS = [
+        ('PAGO_MOVIL', 'Transferencia / Pago Móvil'),
+        ('BINANCE', 'Binance Pay'),
+        ('WALLY', 'Wally'),
+        ('EFECTIVO', 'Divisas Efectivo'),
+    ]
+
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente de Verificación'),
+        ('VERIFICADO', 'Verificado'),
+        ('RECHAZADO', 'Rechazado'),
+    ]
+
+    orden_servicio = models.ForeignKey(OrdenServicio, on_delete=models.CASCADE, null=True, blank=True, related_name='pagos', verbose_name="Orden de Servicio")
+    pedido_importacion = models.ForeignKey(PedidoImportacion, on_delete=models.CASCADE, null=True, blank=True, related_name='pagos', verbose_name="Pedido de Importación")
+    pedido_catalogo = models.ForeignKey(PedidoCatalogo, on_delete=models.CASCADE, null=True, blank=True, related_name='pagos', verbose_name="Pedido de Catálogo")
+    
+    monto_usd = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto (USD)")
+    monto_ves = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Monto (Bs)")
+    
+    metodo = models.CharField(max_length=20, choices=METODOS, verbose_name="Método de Pago")
+    fecha_pago = models.DateField(null=True, blank=True, verbose_name="Fecha del Pago")
+    referencia = models.CharField(max_length=100, blank=True, verbose_name="Referencia")
+    
+    concepto = models.CharField(max_length=150, verbose_name="Concepto")
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE', verbose_name="Estado")
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-fecha_registro']
+        verbose_name = "Pago"
+        verbose_name_plural = "Pagos"
+
+    def __str__(self):
+        return f"Pago {self.pk} - {self.metodo} - ${self.monto_usd}"
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_estado = None
+        if not is_new:
+            try:
+                old_pago = Pago.objects.get(pk=self.pk)
+                old_estado = old_pago.estado
+            except Pago.DoesNotExist:
+                pass
+
+        super().save(*args, **kwargs)
+
+        # Automatización de estados al verificar pago
+        if self.estado == 'VERIFICADO' and old_estado != 'VERIFICADO':
+            if self.pedido_importacion:
+                pi = self.pedido_importacion
+                pagos_verificados = pi.pagos.filter(estado='VERIFICADO').aggregate(models.Sum('monto_usd'))['monto_usd__sum'] or 0
+                if pi.estado == 'PENDIENTE' and pagos_verificados >= (pi.pago_inicial_usd or (pi.total_usd / 2)):
+                    pi.estado = 'CONFIRMADA'
+                    pi.save(update_fields=['estado'])
+                elif pi.estado == 'LISTO_RETIRAR' and pagos_verificados >= pi.total_usd:
+                    pi.estado = 'ENTREGADO'
+                    pi.save(update_fields=['estado'])
+            
+            elif self.pedido_catalogo:
+                pc = self.pedido_catalogo
+                pagos_verificados = pc.pagos.filter(estado='VERIFICADO').aggregate(models.Sum('monto_usd'))['monto_usd__sum'] or 0
+                if pc.estado == 'PENDIENTE' and pagos_verificados >= pc.total_usd:
+                    # Lo marcamos como ENTREGADO o listo? Mejor dejar a criterio manual o entregado
+                    # Depende del negocio. Por ahora lo dejamos PENDIENTE para que se encarguen de la entrega física.
+                    pass
+            
+            elif self.orden_servicio:
+                osv = self.orden_servicio
+                pagos_verificados = osv.pagos.filter(estado='VERIFICADO').aggregate(models.Sum('monto_usd'))['monto_usd__sum'] or 0
+                if osv.estado == 'REPARADO' and pagos_verificados >= osv.total_usd:
+                    osv.estado = 'ENTREGADO'
+                    osv.save(update_fields=['estado'])
+
+
+# =========================================================
+# Señales para automatizar estados (Presupuesto)
+# =========================================================
+@receiver([post_save, post_delete], sender=LineaPresupuesto)
+def actualizar_estado_presupuesto_orden(sender, instance, **kwargs):
+    """
+    Automatiza el cambio de estado del presupuesto a PENDIENTE 
+    cuando se le agregan líneas de presupuesto a la orden y 
+    a SIN_PRESUPUESTO si se eliminan todas.
+    No interfiere si el cliente ya lo Aprobó o Rechazó.
+    """
+    if not hasattr(instance, 'orden'):
+        return
+        
+    orden = instance.orden
+    
+    # Solo automatizamos si está en estados iniciales
+    if orden.presupuesto_estado in ['SIN_PRESUPUESTO', 'PENDIENTE']:
+        tiene_lineas = orden.lineas_presupuesto.exists()
+        
+        if tiene_lineas and orden.presupuesto_estado == 'SIN_PRESUPUESTO':
+            orden.presupuesto_estado = 'PENDIENTE'
+            orden.save(update_fields=['presupuesto_estado'])
+        elif not tiene_lineas and orden.presupuesto_estado == 'PENDIENTE':
+            orden.presupuesto_estado = 'SIN_PRESUPUESTO'
+            orden.save(update_fields=['presupuesto_estado'])

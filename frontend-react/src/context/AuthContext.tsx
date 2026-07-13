@@ -24,6 +24,10 @@ export interface Importation {
 export interface CatalogOrder {
   codigo: string;
   total: number;
+  total_ves?: number;
+  estado_raw?: string;
+  estado?: string;
+  estado_pago?: 'PENDIENTE' | 'VERIFICADO' | null;
   [key: string]: any;
 }
 

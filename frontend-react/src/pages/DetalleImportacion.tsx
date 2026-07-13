@@ -29,6 +29,7 @@ interface PedidoImportacion {
   pago_inicial_ves?: number;
   saldo_pendiente_usd_estimado: number;
   saldo_pendiente_ves?: number;
+  estado_pago?: 'PENDIENTE' | 'VERIFICADO' | null;
   tasa_confirmacion?: number;
   tasa_entrega?: number;
   carrier_nombre?: string;
@@ -236,7 +237,6 @@ export default function DetalleImportacion() {
           )}
         </div>
 
-        {/* Resumen Rápido */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-gray-50/50 dark:bg-gray-950/30 border border-gray-100 dark:border-gray-800 p-6 rounded-2xl mb-8 transition-colors duration-200">
           <div className="text-left">
             <span className="block text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"><i className="bi bi-calendar3 mr-1" aria-hidden="true"></i> Fecha de Orden</span>
@@ -253,7 +253,6 @@ export default function DetalleImportacion() {
           </div>
         </div>
 
-        {/* Envio / Courier Card (Si carrier está disponible) */}
         {pedido.carrier_nombre && (
           <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mb-8 bg-gray-50/10 transition-colors duration-200">
             <h4 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
@@ -274,7 +273,6 @@ export default function DetalleImportacion() {
           </div>
         )}
 
-        {/* Paneles de Pago Detallado */}
         <div className="mb-8">
           <h3 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-6">
             <i className="bi bi-credit-card-2-back text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Estructura de Pago (50% / 50%)
@@ -282,7 +280,6 @@ export default function DetalleImportacion() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             
-            {/* Card Pago Inicial */}
             <div className={`border rounded-2xl p-5 text-left flex flex-col justify-between transition-colors duration-200
               ${pedido.estado_raw === 'PENDIENTE'
                 ? 'bg-primary-50/15 dark:bg-primary-950/5 border-primary-200/50 dark:border-primary-900/30'
@@ -309,9 +306,31 @@ export default function DetalleImportacion() {
                 )}
               </div>
               
+              {pedido.estado_pago === 'PENDIENTE' ? (
+                <div className="mt-4 w-full py-2.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-500 font-bold text-center rounded-xl border border-amber-200 dark:border-amber-900/50 text-sm flex items-center justify-center gap-1">
+                  <i className="bi bi-hourglass-split"></i> Verificando Pago
+                </div>
+              ) : pedido.estado_pago === 'VERIFICADO' ? (
+                <div className="mt-4 w-full py-2.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-500 font-bold text-center rounded-xl border border-emerald-200 dark:border-emerald-900/50 text-sm flex items-center justify-center gap-1">
+                  <i className="bi bi-check-circle-fill"></i> Pago procesado exitosamente
+                </div>
+              ) : (
+                pedido.estado_raw === 'PENDIENTE' && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenPayment(
+                      "Inicial de Importación", 
+                      pedido.pago_inicial_usd_estimado, 
+                      pedido.pago_inicial_ves || (tasaActual ? pedido.pago_inicial_usd_estimado * parseFloat(tasaActual) : null)
+                    )}
+                    className="mt-4 w-full py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-bold transition-colors text-sm shadow-sm"
+                  >
+                    <i className="bi bi-wallet2 mr-1"></i> Pagar Inicial
+                  </button>
+                )
+              )}
             </div>
 
-            {/* Card Saldo Pendiente */}
             <div className={`border rounded-2xl p-5 text-left flex flex-col justify-between transition-colors duration-200
               ${pedido.estado_raw === 'LISTO_RETIRAR'
                 ? 'bg-primary-50/15 dark:bg-primary-950/5 border-primary-200 dark:border-primary-800 ring-2 ring-primary-50 dark:ring-primary-900/30'
@@ -346,12 +365,35 @@ export default function DetalleImportacion() {
                   </p>
                 )}
               </div>
+
+              {pedido.estado_pago === 'PENDIENTE' && pedido.estado_raw === 'LISTO_RETIRAR' ? (
+                <div className="mt-4 w-full py-2.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-500 font-bold text-center rounded-xl border border-amber-200 dark:border-amber-900/50 text-sm flex items-center justify-center gap-1">
+                  <i className="bi bi-hourglass-split"></i> Verificando Pago
+                </div>
+              ) : pedido.estado_pago === 'VERIFICADO' && pedido.estado_raw === 'LISTO_RETIRAR' ? (
+                <div className="mt-4 w-full py-2.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-500 font-bold text-center rounded-xl border border-emerald-200 dark:border-emerald-900/50 text-sm flex items-center justify-center gap-1">
+                  <i className="bi bi-check-circle-fill"></i> Pago procesado exitosamente
+                </div>
+              ) : (
+                pedido.estado_raw === 'LISTO_RETIRAR' && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenPayment(
+                      "Restante de Importación", 
+                      pedido.saldo_pendiente_usd_estimado, 
+                      tasaActual ? pedido.saldo_pendiente_usd_estimado * parseFloat(tasaActual) : null
+                    )}
+                    className="mt-4 w-full py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-bold transition-colors text-sm shadow-sm"
+                  >
+                    <i className="bi bi-wallet2 mr-1"></i> Pagar Restante
+                  </button>
+                )
+              )}
             </div>
 
           </div>
         </div>
 
-        {/* Listado de Artículos */}
         <div className="border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mb-8 text-left transition-colors duration-200">
           <h3 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 border-b border-gray-100 dark:border-gray-800/60 pb-3">
             <i className="bi bi-boxes text-primary-600 dark:text-primary-400" aria-hidden="true"></i> Lista de Artículos

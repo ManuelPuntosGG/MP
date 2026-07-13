@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import PaymentModal from '../components/PaymentModal';
 
 interface CarritoProps {
   onBackToCatalog?: () => void;
@@ -18,8 +19,10 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
   
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<string | null>(null);
-  const [whatsappUrl, setWhatsappUrl] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
+  const [savedTotalUsd, setSavedTotalUsd] = useState<number>(0);
+  const [savedTotalVes, setSavedTotalVes] = useState<number | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -66,22 +69,8 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
       });
       
       const codigo = response.data.codigo;
-      const fecha = new Date().toLocaleDateString();
-      const num = '584245022292';
-      let msj = `Hola MP Tech, acabo de realizar un pedido de catálogo.\n`;
-      msj += `*Código:* ${codigo}\n`;
-      msj += `*Fecha:* ${fecha}\n`;
-      msj += `*Cliente:* ${nombre}\n\n`;
-      msj += `*Artículos:*\n`;
-      cart.forEach(item => {
-        msj += `- ${item.cantidad}x ${item.nombre} ($${item.precio})\n`;
-      });
-      msj += `\n*Total:* $${totalAmount.toFixed(2)}`;
-      
-      const wpUrl = `https://wa.me/${num}?text=${encodeURIComponent(msj)}`;
-      setWhatsappUrl(wpUrl);
-      window.open(wpUrl, '_blank');
-
+      setSavedTotalUsd(totalAmount);
+      setSavedTotalVes(totalAmountVes ? parseFloat(totalAmountVes) : null);
       setSuccess(codigo);
       clearCart();
     } catch (err: any) {
@@ -106,14 +95,13 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
             <span className="text-3xl font-mono font-black tracking-widest text-primary-600 dark:text-primary-400">{success}</span>
           </div>
           <div className="flex flex-col gap-3">
-            <a 
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button 
+              type="button"
+              onClick={() => setIsPaymentModalOpen(true)}
               className="flex items-center justify-center gap-2 w-full py-4 px-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold transition-all duration-200 shadow-md shadow-green-600/20 hover:shadow-green-500/50 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500 dark:focus-visible:ring-offset-gray-900"
             >
-              <i className="bi bi-whatsapp" aria-hidden="true"></i> Notificar Pedido por WhatsApp
-            </a>
+              <i className="bi bi-wallet2" aria-hidden="true"></i> Pagar y Notificar por WhatsApp
+            </button>
             <button 
               type="button"
               onClick={() => {
@@ -125,6 +113,20 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
             </button>
           </div>
         </div>
+
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          onNotifyComplete={() => {
+            if (onBackToCatalog) onBackToCatalog();
+          }}
+          amountUsd={savedTotalUsd}
+          amountVes={savedTotalVes}
+          orderCode={success}
+          clientName={nombre}
+          concept="Pedido de Catálogo"
+          orderType="catalogo"
+        />
       </div>
     );
   }
