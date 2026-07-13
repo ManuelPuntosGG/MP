@@ -158,8 +158,11 @@ if 'AWS_STORAGE_BUCKET_NAME' in os.environ:
 # ==============================================================================
 # 🔒 CONFIGURACIÓN DE SEGURIDAD HTTPS (PRODUCCIÓN)
 # ==============================================================================
+import sys
+TESTING = 'test' in sys.argv
+
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = not TESTING
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
