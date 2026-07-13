@@ -15,10 +15,6 @@ export default function Login() {
     }
   }, [user, navigate, from]);
 
-  if (user) {
-    return null;
-  }
-
   const [isRegister, setIsRegister] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -27,6 +23,10 @@ export default function Login() {
   
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | { message?: string } | null>(null);
+
+  if (user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
