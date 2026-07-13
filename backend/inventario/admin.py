@@ -152,7 +152,12 @@ class OrdenServicioAdmin(ModelAdmin):
         actualizados = queryset.update(estado='ENTREGADO')
         self.message_user(request, f"{actualizados} órdenes actualizadas a ENTREGADO.")
 
-    actions = [marcar_reparados, marcar_entregados]
+    @action(description='🔄 Revertir Presupuesto a PENDIENTE')
+    def revertir_presupuesto(self, request, queryset):
+        actualizados = queryset.update(presupuesto_estado='PENDIENTE')
+        self.message_user(request, f"{actualizados} presupuestos revertidos a PENDIENTE por aprobar.")
+
+    actions = [marcar_reparados, marcar_entregados, revertir_presupuesto]
 
     # Botón de WhatsApp estilizado para la paleta de Unfold
     def notificar_cliente(self, obj):
