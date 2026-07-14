@@ -554,7 +554,8 @@ class Pago(models.Model):
             elif self.orden_servicio:
                 osv = self.orden_servicio
                 pagos_verificados = osv.pagos.filter(estado='VERIFICADO').aggregate(models.Sum('monto_usd'))['monto_usd__sum'] or 0
-                if osv.estado == 'REPARADO' and pagos_verificados >= osv.total_usd:
+                total_orden_usd = osv.lineas_presupuesto.aggregate(total=models.Sum('monto'))['total'] or 0
+                if osv.estado == 'REPARADO' and pagos_verificados >= total_orden_usd:
                     osv.estado = 'ENTREGADO'
                     osv.save(update_fields=['estado'])
 
