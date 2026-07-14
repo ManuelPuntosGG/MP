@@ -221,11 +221,10 @@ class PedidoImportacionModelTest(TestCase):
             cliente_nombre='Test Importacion'
         )
         self.assertEqual(pedido.estado, 'PENDIENTE')
-        self.assertNil = lambda x: self.assertIsNone(x)
-        self.assertIsNone(pedido.tasa_confirmacion)
-        self.assertIsNone(pedido.pago_inicial_usd)
-        self.assertIsNone(pedido.pago_inicial_ves)
-        self.assertIsNone(pedido.saldo_pendiente_usd)
+        self.assertEqual(pedido.tasa_confirmacion, 40.00)
+        self.assertEqual(pedido.pago_inicial_usd, 50.00)
+        self.assertEqual(pedido.pago_inicial_ves, 2000.00)
+        self.assertEqual(pedido.saldo_pendiente_usd, 50.00)
         
         # 2. Transición a CONFIRMADA (se debe congelar el 50% abono inicial a tasa de confirmación)
         pedido.estado = 'CONFIRMADA'
@@ -240,10 +239,10 @@ class PedidoImportacionModelTest(TestCase):
         
         # 3. Transición a LISTO_RETIRAR (Disponible para retiro)
         # El saldo pendiente en Bs debe calcularse en base a la tasa actual (por ejemplo, si subió a 42.0)
+        mock_tasa.return_value = 42.00
         pedido.estado = 'LISTO_RETIRAR'
         pedido.save()
         
-        mock_tasa.return_value = 42.00
         self.assertEqual(pedido.saldo_pendiente_ves_actual, 2100.00) # 50 * 42 (tasa actual)
         
         # 4. Transición a ENTREGADO
