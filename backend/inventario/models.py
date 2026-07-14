@@ -292,7 +292,7 @@ class PedidoImportacion(models.Model):
     cliente_nombre = models.CharField(max_length=150, blank=True, verbose_name="Nombre")
     cliente_telefono = models.CharField(max_length=20, blank=True, verbose_name="Teléfono")
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=25, choices=ESTADOS, default='PENDIENTE')
+    estado = models.CharField(max_length=25, choices=ESTADOS, default='PENDIENTE', db_index=True)
     total_usd = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     total_ves = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     productos_json = models.TextField(blank=True, verbose_name="Productos (JSON)")
@@ -421,7 +421,7 @@ class PedidoCatalogo(models.Model):
     cliente_nombre = models.CharField(max_length=150, blank=True, verbose_name="Nombre")
     cliente_telefono = models.CharField(max_length=20, blank=True, verbose_name="Teléfono")
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE')
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE', db_index=True)
     total_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     productos_json = models.TextField(blank=True, verbose_name="Productos (JSON)")
     codigo_seguimiento = models.CharField(
@@ -503,12 +503,12 @@ class Pago(models.Model):
     monto_usd = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Monto (USD)")
     monto_ves = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Monto (Bs)")
     
-    metodo = models.CharField(max_length=20, choices=METODOS, verbose_name="Método de Pago")
+    metodo = models.CharField(max_length=20, choices=METODOS, verbose_name="Método de Pago", db_index=True)
     fecha_pago = models.DateField(null=True, blank=True, verbose_name="Fecha del Pago")
     referencia = models.CharField(max_length=100, blank=True, verbose_name="Referencia")
     
     concepto = models.CharField(max_length=150, verbose_name="Concepto")
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE', verbose_name="Estado")
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE', verbose_name="Estado", db_index=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
     
     class Meta:

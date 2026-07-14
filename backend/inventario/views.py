@@ -25,6 +25,7 @@ from .models import (
     PedidoImportacion,
     Producto,
     UserProfile,
+    Pago,
 )
 from .utils import obtener_tasa_binance
 
@@ -146,29 +147,34 @@ def finalizar_pedido_catalogo(request):
 
     try:
         with transaction.atomic():
+            # Optimización: Obtener IDs y cantidades
+            prod_cantidades = {}
             for item in productos:
                 try:
                     prod_id = int(item['producto_id'])
                     cantidad = int(item['cantidad'])
+                    prod_cantidades[prod_id] = prod_cantidades.get(prod_id, 0) + cantidad
                 except (KeyError, ValueError, TypeError):
                     return JsonResponse({'success': False, 'error': 'Datos de producto inválidos'}, status=400)
 
-                try:
-                    producto = Producto.objects.select_for_update().get(pk=prod_id, disponible=True)
-                except Producto.DoesNotExist:
-                    return JsonResponse({
-                        'success': False,
-                        'error': f"El producto '{item.get('nombre', 'Desconocido')}' no está disponible o no existe."
-                    }, status=400)
+            # Buscar todos los productos en una sola consulta con bloqueo (ordenados para evitar deadlocks)
+            productos_db = list(Producto.objects.filter(pk__in=prod_cantidades.keys(), disponible=True).select_for_update().order_by('pk'))
+            
+            if len(productos_db) != len(prod_cantidades):
+                return JsonResponse({'success': False, 'error': 'Algunos productos no están disponibles o no existen.'}, status=400)
 
+            # Validar stock y actualizar en memoria
+            for producto in productos_db:
+                cantidad = prod_cantidades[producto.pk]
                 if producto.stock < cantidad:
                     return JsonResponse({
                         'success': False,
                         'error': f"Stock insuficiente para '{producto.nombre}'. Disponible: {producto.stock}."
                     }, status=400)
-
                 producto.stock = F('stock') - cantidad
-                producto.save()
+            
+            # Guardar todos los cambios de stock en una sola consulta
+            Producto.objects.bulk_update(productos_db, ['stock'])
 
             pedido = PedidoCatalogo.objects.create(
                 usuario=request.user if request.user.is_authenticated else None,
@@ -533,10 +539,11 @@ def api_user(request):
         tasa_usdt = 760.00
 
     # Pedidos de catálogo
-    pedidos_qs = PedidoCatalogo.objects.filter(usuario=user).order_by('-fecha')
+    pagos_prefetch = Prefetch('pagos', queryset=Pago.objects.filter(estado__in=['PENDIENTE', 'VERIFICADO']).order_by('-fecha_registro'), to_attr='pagos_activos')
+    pedidos_qs = PedidoCatalogo.objects.filter(usuario=user).prefetch_related(pagos_prefetch).order_by('-fecha')
     pedidos = []
     for p in pedidos_qs:
-        pago_activo = p.pagos.filter(estado__in=['PENDIENTE', 'VERIFICADO']).order_by('-fecha_registro').first()
+        pago_activo = p.pagos_activos[0] if p.pagos_activos else None
         total_usd = float(p.total_usd)
         pedidos.append({
             'codigo': p.codigo_seguimiento,
