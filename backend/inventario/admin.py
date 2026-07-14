@@ -97,8 +97,8 @@ class OrdenServicioAdmin(ModelAdmin):
         'codigo_rastreo', 
         'cliente_nombre', 
         'equipo', 
-        'estado',              
-        'presupuesto_estado',   
+        'estado_badge',              
+        'presupuesto_badge',   
         'fecha_ingreso', 
         'notificar_cliente', 
         'imprimir_ticket_link'
@@ -110,7 +110,6 @@ class OrdenServicioAdmin(ModelAdmin):
             'all': ('inventario/css/custom_admin.css',)
         }
         
-    list_editable = ('estado',)
     list_filter = (ReparacionesActivasFilter, 'estado', 'presupuesto_estado', 'fecha_ingreso')
     search_fields = ('codigo_rastreo', 'cliente_nombre', 'cliente_telefono', 'equipo')
     ordering = ('-fecha_ingreso',)
@@ -142,6 +141,30 @@ class OrdenServicioAdmin(ModelAdmin):
     )
 
     # Decoradores de acción propios de Unfold
+    @admin.display(description='Estado')
+    def estado_badge(self, obj):
+        color = 'info'
+        if obj.estado in ['ENTREGADO', 'REPARADO', 'VERIFICADO', 'CONFIRMADA']:
+            color = 'success'
+        elif obj.estado in ['PENDIENTE', 'ESPERANDO']:
+            color = 'pending'
+        elif obj.estado in ['CANCELADO', 'RECHAZADO']:
+            color = 'danger'
+        return format_html('<span class="badge badge-{}">{}</span>', color, obj.get_estado_display())
+
+    @admin.display(description='Presupuesto')
+    def presupuesto_badge(self, obj):
+        color = 'info'
+        if obj.presupuesto_estado == 'APROBADO':
+            color = 'success'
+        elif obj.presupuesto_estado == 'PENDIENTE':
+            color = 'pending'
+        elif obj.presupuesto_estado == 'RECHAZADO':
+            color = 'danger'
+        elif obj.presupuesto_estado == 'SIN_PRESUPUESTO':
+            color = 'purple'
+        return format_html('<span class="badge badge-{}">{}</span>', color, obj.get_presupuesto_estado_display())
+
     @action(description='🔧 Marcar seleccionados como REPARADOS')
     def marcar_reparados(self, request, queryset):
         actualizados = queryset.update(estado='REPARADO')
@@ -187,7 +210,7 @@ admin.site.register(OrdenServicio, OrdenServicioAdmin)
 
 
 class PedidoImportacionAdmin(ModelAdmin):
-    list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'pago_inicial_usd', 'saldo_pendiente_usd', 'estado', 'fecha']
+    list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'pago_inicial_usd', 'saldo_pendiente_usd', 'estado_badge', 'fecha']
     list_filter = ['estado', 'fecha']
     search_fields = ['codigo_seguimiento', 'cliente_nombre', 'cliente_telefono']
     readonly_fields = [
@@ -203,9 +226,19 @@ class PedidoImportacionAdmin(ModelAdmin):
     ]
     inlines = [PagoInline]
 
+    @admin.display(description='Estado')
+    def estado_badge(self, obj):
+        color = 'info'
+        if obj.estado in ['ENTREGADO', 'LISTO_RETIRAR', 'CONFIRMADA']:
+            color = 'success'
+        elif obj.estado in ['PENDIENTE']:
+            color = 'pending'
+        elif obj.estado in ['CANCELADO']:
+            color = 'danger'
+        return format_html('<span class="badge badge-{}">{}</span>', color, obj.get_estado_display())
 
 class PedidoCatalogoAdmin(ModelAdmin):
-    list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'estado', 'fecha']
+    list_display = ['codigo_seguimiento', 'cliente_nombre', 'total_usd', 'estado_badge', 'fecha']
     list_filter = ['estado', 'fecha']
     search_fields = ['codigo_seguimiento', 'cliente_nombre']
     readonly_fields = ['codigo_seguimiento', 'fecha']
@@ -216,6 +249,17 @@ class PedidoCatalogoAdmin(ModelAdmin):
     ]
     inlines = [PagoInline]
     actions = ['cancelar_pedidos']
+
+    @admin.display(description='Estado')
+    def estado_badge(self, obj):
+        color = 'info'
+        if obj.estado in ['ENTREGADO', 'CONFIRMADA']:
+            color = 'success'
+        elif obj.estado in ['PENDIENTE']:
+            color = 'pending'
+        elif obj.estado in ['CANCELADO']:
+            color = 'danger'
+        return format_html('<span class="badge badge-{}">{}</span>', color, obj.get_estado_display())
 
     @action(description="Cancelar pedidos seleccionados (Restaurando stock)")
     def cancelar_pedidos(self, request, queryset):
@@ -239,10 +283,32 @@ admin.site.register(PedidoCatalogo, PedidoCatalogoAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 
 class PagoAdmin(ModelAdmin):
-    list_display = ('id', 'metodo', 'monto_usd', 'estado', 'fecha_pago', 'referencia', 'get_orden')
+    list_display = ('id', 'metodo', 'monto_usd', 'estado_badge', 'fecha_pago', 'referencia', 'get_orden')
     list_filter = ('estado', 'metodo', 'fecha_pago')
     search_fields = ('referencia', 'concepto', 'orden_servicio__codigo_rastreo', 'pedido_importacion__codigo_seguimiento', 'pedido_catalogo__codigo_seguimiento')
-    list_editable = ('estado',)
+    actions = ['verificar_pagos']
+
+    @admin.display(description='Estado')
+    def estado_badge(self, obj):
+        color = 'info'
+        if obj.estado == 'VERIFICADO':
+            color = 'success'
+        elif obj.estado == 'PENDIENTE':
+            color = 'pending'
+        elif obj.estado == 'RECHAZADO':
+            color = 'danger'
+        return format_html('<span class="badge badge-{}">{}</span>', color, obj.get_estado_display())
+
+    @action(description="✅ Verificar Pagos Seleccionados")
+    def verificar_pagos(self, request, queryset):
+        pagos_pendientes = queryset.filter(estado='PENDIENTE')
+        contador = 0
+        for pago in pagos_pendientes:
+            pago.estado = 'VERIFICADO'
+            pago.save()  # Usamos save() para disparar los signals
+            contador += 1
+        
+        self.message_user(request, f"Se han verificado {contador} pagos y actualizado las órdenes correspondientes.")
 
     def get_orden(self, obj):
         if obj.orden_servicio: return f"Servicio: {obj.orden_servicio.codigo_rastreo}"

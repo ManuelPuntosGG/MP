@@ -6,7 +6,7 @@ __pycache__/
 # Django
 db.sqlite3
 /media/
-/staticfiles/
+backend/staticfiles/
 
 # Entorno virtual
 venv/
