@@ -653,7 +653,7 @@ export default function Rastreo() {
                   <div className="absolute top-5 sm:top-6 left-[10%] right-[10%] h-1 bg-gray-100 dark:bg-gray-800 z-0">
                     <div
                       className="h-full bg-primary-600 transition-all duration-500"
-                      style={{ width: `${(Math.max(0, currentStageIndex) / (STEPPER_STAGES.length - 1)) * 100}%` }}
+                      style={{ width: `${Math.min(100, (Math.max(0, currentStageIndex) / (STEPPER_STAGES.length - 1)) * 100)}%` }}
                       aria-hidden="true"
                     />
                   </div>
@@ -793,7 +793,7 @@ export default function Rastreo() {
                   </div>
                 )}
 
-                {ticket.estado_raw === 'REPARADO' && ticket.total_usd > 0 && (
+                {['REPARADO', 'ENTREGADO'].includes(ticket.estado_raw) && ticket.total_usd > 0 && (
                   <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6">
                     {ticket.estado_pago === 'PENDIENTE' ? (
                       <div className="w-full py-3.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-500 font-bold rounded-xl border border-amber-200 dark:border-amber-900/50 flex items-center justify-center gap-1.5 text-sm">
