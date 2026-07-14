@@ -54,7 +54,7 @@ interface FormErrors {
 }
 
 export default function Rastreo() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -168,6 +168,7 @@ export default function Rastreo() {
       });
 
       if (response.data.success) {
+        if (user) refreshUser();
         setSolicitudExito({
           codigo: response.data.codigo,
           cliente_nombre: response.data.cliente_nombre,

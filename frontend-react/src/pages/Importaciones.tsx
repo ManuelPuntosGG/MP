@@ -17,7 +17,7 @@ interface ImportItem {
 }
 
 export default function Importaciones() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<ImportItem[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -169,6 +169,7 @@ export default function Importaciones() {
       });
 
       if (response.data.success) {
+        if (user) refreshUser();
         setSuccessCode(response.data.codigo);
         sendWhatsAppMessage(nombre, telefono);
         setItems([]);

@@ -11,7 +11,7 @@ interface CarritoProps {
 
 export default function Carrito({ onBackToCatalog }: CarritoProps) {
   const { cart, removeFromCart, updateQuantity, totalAmount, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   
   const [nombre, setNombre] = useState<string>('');
   const [telefono, setTelefono] = useState<string>('');
@@ -69,6 +69,7 @@ export default function Carrito({ onBackToCatalog }: CarritoProps) {
       });
       
       const codigo = response.data.codigo;
+      if (user) refreshUser();
       setSavedTotalUsd(totalAmount);
       setSavedTotalVes(totalAmountVes ? parseFloat(totalAmountVes) : null);
       setSuccess(codigo);

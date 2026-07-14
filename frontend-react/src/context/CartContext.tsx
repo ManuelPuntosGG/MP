@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 
 export interface CartItem {
   producto_id: number;
@@ -74,16 +74,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = cart.reduce((sum, item) => sum + item.cantidad, 0);
   const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.precio.toString()) * item.cantidad), 0);
 
+  const contextValue = useMemo(() => ({
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    totalItems,
+    totalAmount
+  }), [cart, totalItems, totalAmount]);
+
   return (
-    <CartContext.Provider value={{
-      cart,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      totalItems,
-      totalAmount
-    }}>
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );
