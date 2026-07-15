@@ -42,6 +42,19 @@ El proyecto está compuesto por los siguientes componentes clave y dependencias:
 
 - `/backend/`: Carpeta principal que contiene todo el código y configuración de Django.
   - `/backend/sistema_local/`: Configuración central de Django (CORS, seguridad, base de datos).
-  - `/backend/inventario/`: Aplicación Django (API REST, modelos, validaciones).
+  - `/backend/inventario/`: Aplicación Django (API REST, modelos, validaciones, panel de administración con Unfold).
   - `/backend/media/`: Directorio de archivos cargados por los usuarios.
 - `/frontend-react/`: Código fuente de la SPA de React (Vite).
+  - `/src/pages/`: Contiene las vistas principales (`Inicio.tsx`, `Catalogo.tsx`, `Carrito.tsx`, `Importaciones.tsx`, `DetalleImportacion.tsx`, `Rastreo.tsx`, `Perfil.tsx`, `Login.tsx`).
+  - `/src/components/`: Componentes de interfaz reutilizables.
+  - `/src/context/`: Manejo del estado global de la aplicación.
+  - `/src/api/`: Configuración de Axios e interceptores para llamadas al backend.
+
+---
+
+## 🚀 Últimas Implementaciones y Optimizaciones
+
+- **Optimizaciones de Rendimiento**: Ajustes recientes de optimización en el frontend y el backend.
+- **Rastreo de Reparaciones**: Actualizaciones en la vista de rastreo (`Rastreo.tsx`) para mejorar la retroalimentación al usuario.
+- **Panel de Administración**: Mejoras y correcciones en la integración con Django Unfold (`admin.py`).
+- **Arquitectura**: Migración completa de vistas, consolidando el backend estrictamente como API REST y delegando todo el enrutamiento a React.
