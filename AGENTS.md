@@ -10,7 +10,6 @@ El proyecto se encuentra en una fase de **transición arquitectónica completa**
 
 1. **Migración del Frontend a React**: Toda la interfaz del cliente (Página de Inicio, Catálogo, Carrito de Compras, Cotizador de Importaciones, Rastreo de Reparaciones, Gestión de Perfil y Autenticación) ha sido migrada a una Single Page Application (SPA) moderna desarrollada en React.
 2. **Backend como API REST**: El backend desarrollado en Django ha sido limpiado de sus vistas HTML legacy y ahora funciona exclusivamente como una API de servicios REST, además de servir el Panel de Control Interno (`/admin/` y `/dashboard/`) y la generación e impresión de tickets de servicio en formato térmico.
-3. **Rama Activa**: Todo el desarrollo seguro se está llevando a cabo en la rama `React` antes de ser integrado definitivamente a `main` por el equipo de desarrollo.
 
 ---
 
