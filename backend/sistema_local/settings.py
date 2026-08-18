@@ -74,14 +74,21 @@ WSGI_APPLICATION = 'sistema_local.wsgi.application'
 # Autenticación con email
 AUTHENTICATION_BACKENDS = ['inventario.auth_backend.EmailBackend', 'django.contrib.auth.backends.ModelBackend']
 
-# Email (consola para desarrollo, SMTP en producción)
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+# Email (consola para desarrollo por defecto, SMTP de Gmail en producción sin costo)
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
+)
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'grupomptech@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'MP Tech <noreply@mptech.com>')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'MP Tech <grupomptech@gmail.com>')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'grupomptech@gmail.com')
+
+# URL del Frontend para enlaces en los correos y redirecciones
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://mp-tech-4x0a.onrender.com' if not DEBUG else 'http://localhost:5173')
 
 # Redirigir login required a React (la ruta /login es manejada por el frontend)
 LOGIN_URL = '/login'

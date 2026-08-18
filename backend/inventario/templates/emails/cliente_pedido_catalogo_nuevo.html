@@ -1,0 +1,44 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>¡Gracias por tu compra, {{ cliente_nombre }}! 🛒</h1>
+
+<p>Hemos registrado exitosamente tu pedido de catálogo en <strong>MP Tech</strong>. Aquí tienes los detalles y el código para su seguimiento:</p>
+
+<div class="code-box">
+  <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Código de Seguimiento</div>
+  <div class="code-val">{{ pedido.codigo_seguimiento }}</div>
+</div>
+
+<div class="highlight-card">
+  <p style="margin: 0; font-weight: 700; color: #ffffff;">Resumen del Pedido</p>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th style="text-align: center;">Cant.</th>
+        <th style="text-align: right;">Total USD</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in productos %}
+      <tr>
+        <td>{{ item.nombre }}</td>
+        <td style="text-align: center;">{{ item.cantidad }}</td>
+        <td style="text-align: right; font-weight: 700;">${{ item.precio }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div style="text-align: right; margin-top: 12px; font-size: 16px;">
+    <span style="color: #94a3b8;">Total General:</span>
+    <strong style="color: #fb7185; font-size: 18px; margin-left: 8px;">${{ pedido.total_usd }}</strong>
+  </div>
+</div>
+
+<p>Puedes consultar el estado de tu pedido, realizar el pago y reportar tu comprobante desde tu perfil de usuario en la plataforma.</p>
+
+<div class="btn-container">
+  <a href="{{ frontend_url }}/perfil" class="btn">Ver en Mi Perfil</a>
+</div>
+{% endblock %}

@@ -157,6 +157,11 @@ class OrdenServicio(models.Model):
     fecha_ingreso = models.DateTimeField(default=timezone.now, db_index=True)
     fecha_entrega = models.DateTimeField(blank=True, null=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._estado_inicial = self.estado
+        self._presupuesto_estado_inicial = self.presupuesto_estado
+
     def generar_qr(self):
         """Genera el código QR con la URL de seguimiento."""
         base_url = getattr(settings, 'SITE_BASE_URL', 'http://127.0.0.1:8000')
@@ -184,7 +189,30 @@ class OrdenServicio(models.Model):
             except Exception as e:
                 logger.error("Error generando QR para orden %s: %s", self.codigo_rastreo, e)
 
+        estado_cambio = (self.pk is not None and self.estado != self._estado_inicial)
+        presupuesto_cambio = (self.pk is not None and self.presupuesto_estado != self._presupuesto_estado_inicial)
+        estado_previo = self._estado_inicial
+
         super().save(*args, **kwargs)
+
+        # Actualizar memoria de estado
+        self._estado_inicial = self.estado
+        self._presupuesto_estado_inicial = self.presupuesto_estado
+
+        # Notificaciones por email a clientes logueados
+        if estado_cambio:
+            try:
+                from .emails import enviar_email_cambio_estado_reparacion
+                enviar_email_cambio_estado_reparacion(self, estado_previo)
+            except Exception as e:
+                logger.error("Error al despachar email de cambio de estado en orden %s: %s", self.codigo_rastreo, e)
+
+        if presupuesto_cambio and self.presupuesto_estado == 'PENDIENTE':
+            try:
+                from .emails import enviar_email_presupuesto_reparacion
+                enviar_email_presupuesto_reparacion(self)
+            except Exception as e:
+                logger.error("Error al despachar email de presupuesto en orden %s: %s", self.codigo_rastreo, e)
 
     @property
     def enlace_whatsapp(self):
@@ -226,6 +254,7 @@ class AvanceOrden(models.Model):
         verbose_name_plural = "Avances de Órdenes"
 
     def save(self, *args, **kwargs):
+        es_nuevo = self.pk is None
         if self.imagen:
             es_nueva = True
             if self.pk:
@@ -241,6 +270,13 @@ class AvanceOrden(models.Model):
                     self.imagen = imagen_optimizada
 
         super().save(*args, **kwargs)
+
+        if es_nuevo:
+            try:
+                from .emails import enviar_email_nuevo_avance_reparacion
+                enviar_email_nuevo_avance_reparacion(self)
+            except Exception as e:
+                logger.error("Error al despachar email de nuevo avance en orden %s: %s", self.orden.codigo_rastreo, e)
 
     def __str__(self):
         return f"Avance del {self.fecha.strftime('%d/%m/%Y')} - Ticket {self.orden.codigo_rastreo}"
@@ -332,6 +368,10 @@ class PedidoImportacion(models.Model):
         verbose_name = "Pedido de Importación"
         verbose_name_plural = "Pedidos de Importación"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._estado_inicial = self.estado
+
     def productos_parsed(self):
         """Retorna la lista de productos parseada desde JSON."""
         try:
@@ -403,7 +443,19 @@ class PedidoImportacion(models.Model):
         if self.tasa_entrega:
             self.saldo_pendiente_ves = self.saldo_pendiente_usd * self.tasa_entrega
 
+        estado_cambio = (self.pk is not None and self.estado != self._estado_inicial)
+        estado_previo = self._estado_inicial
+
         super().save(*args, **kwargs)
+
+        self._estado_inicial = self.estado
+
+        if estado_cambio:
+            try:
+                from .emails import enviar_email_cambio_estado_importacion
+                enviar_email_cambio_estado_importacion(self, estado_previo)
+            except Exception as e:
+                logger.error("Error al despachar email de cambio de estado en importación %s: %s", self.codigo_seguimiento, e)
 
 
 class PedidoCatalogo(models.Model):
@@ -427,6 +479,10 @@ class PedidoCatalogo(models.Model):
     codigo_seguimiento = models.CharField(
         max_length=20, unique=True, default=generar_codigo_unico, editable=False
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._estado_inicial = self.estado
 
     class Meta:
         ordering = ['-fecha']
@@ -462,10 +518,22 @@ class PedidoCatalogo(models.Model):
             except PedidoCatalogo.DoesNotExist:
                 pass
 
+        estado_cambio = (self.pk is not None and self.estado != self._estado_inicial)
+        estado_previo = self._estado_inicial
+
         super().save(*args, **kwargs)
+
+        self._estado_inicial = self.estado
 
         if restaurar_stock:
             self.devolver_unidades_al_stock()
+
+        if estado_cambio:
+            try:
+                from .emails import enviar_email_cambio_estado_pedido_catalogo
+                enviar_email_cambio_estado_pedido_catalogo(self, estado_previo)
+            except Exception as e:
+                logger.error("Error al despachar email de cambio de estado en pedido catálogo %s: %s", self.codigo_seguimiento, e)
 
     def __str__(self):
         return f"Pedido {self.codigo_seguimiento}"
@@ -510,6 +578,10 @@ class Pago(models.Model):
     concepto = models.CharField(max_length=150, verbose_name="Concepto")
     estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE', verbose_name="Estado", db_index=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._estado_inicial = self.estado
     
     class Meta:
         ordering = ['-fecha_registro']
@@ -521,18 +593,20 @@ class Pago(models.Model):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
-        old_estado = None
-        if not is_new:
-            try:
-                old_pago = Pago.objects.get(pk=self.pk)
-                old_estado = old_pago.estado
-            except Pago.DoesNotExist:
-                pass
+        old_estado = self._estado_inicial if not is_new else None
 
         super().save(*args, **kwargs)
 
+        self._estado_inicial = self.estado
+
         # Automatización de estados al verificar pago
         if self.estado == 'VERIFICADO' and old_estado != 'VERIFICADO':
+            try:
+                from .emails import enviar_email_pago_verificado
+                enviar_email_pago_verificado(self)
+            except Exception as e:
+                logger.error("Error al despachar email de pago verificado %s: %s", self.pk, e)
+
             if self.pedido_importacion:
                 pi = self.pedido_importacion
                 pagos_verificados = pi.pagos.filter(estado='VERIFICADO').aggregate(models.Sum('monto_usd'))['monto_usd__sum'] or 0
@@ -547,8 +621,6 @@ class Pago(models.Model):
                 pc = self.pedido_catalogo
                 pagos_verificados = pc.pagos.filter(estado='VERIFICADO').aggregate(models.Sum('monto_usd'))['monto_usd__sum'] or 0
                 if pc.estado == 'PENDIENTE' and pagos_verificados >= pc.total_usd:
-                    # Lo marcamos como ENTREGADO o listo? Mejor dejar a criterio manual o entregado
-                    # Depende del negocio. Por ahora lo dejamos PENDIENTE para que se encarguen de la entrega física.
                     pass
             
             elif self.orden_servicio:
@@ -582,7 +654,7 @@ def actualizar_estado_presupuesto_orden(sender, instance, **kwargs):
         
         if tiene_lineas and orden.presupuesto_estado == 'SIN_PRESUPUESTO':
             orden.presupuesto_estado = 'PENDIENTE'
-            orden.save(update_fields=['presupuesto_estado'])
+            orden.save()
         elif not tiene_lineas and orden.presupuesto_estado == 'PENDIENTE':
             orden.presupuesto_estado = 'SIN_PRESUPUESTO'
-            orden.save(update_fields=['presupuesto_estado'])
+            orden.save()

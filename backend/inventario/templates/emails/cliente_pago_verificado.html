@@ -1,0 +1,37 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>¡Pago Verificado con Éxito! ✅</h1>
+
+<p>Hola <strong>{{ cliente_nombre }}</strong>,</p>
+<p>Te confirmamos que tu reporte de pago para <strong>{{ concepto_orden }}</strong> ha sido verificado y aprobado por nuestro equipo de administración:</p>
+
+<div class="highlight-card">
+  <table style="width: 100%; font-size: 14px; color: #cbd5e1;">
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>Método de Pago:</strong></td>
+      <td style="padding: 6px 0; text-align: right; color: #ffffff;">{{ pago.get_metodo_display }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>Monto Aprobado:</strong></td>
+      <td style="padding: 6px 0; text-align: right; color: #34d399; font-weight: 800; font-size: 16px;">${{ pago.monto_usd }} {% if pago.monto_ves %}({{ pago.monto_ves }} Bs.){% endif %}</td>
+    </tr>
+    {% if pago.referencia %}
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>N° de Referencia:</strong></td>
+      <td style="padding: 6px 0; text-align: right; font-family: monospace;">{{ pago.referencia }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>Estado:</strong></td>
+      <td style="padding: 6px 0; text-align: right;"><span class="badge badge-success">Verificado</span></td>
+    </tr>
+  </table>
+</div>
+
+<p>Tu orden continúa su procesamiento habitual. Puedes revisar los detalles y el saldo restante en tu cuenta.</p>
+
+<div class="btn-container">
+  <a href="{{ enlace_seguimiento }}" class="btn">Ver Estatus de la Orden</a>
+</div>
+{% endblock %}

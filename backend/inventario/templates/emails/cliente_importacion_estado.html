@@ -1,0 +1,44 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>Actualización de tu Importación 📦✈️</h1>
+
+<p>Hola <strong>{{ cliente_nombre }}</strong>,</p>
+<p>Tu pedido de importación con código <strong style="color: #fb7185;">{{ pedido.codigo_seguimiento }}</strong> ha avanzado de estado:</p>
+
+<div class="highlight-card" style="text-align: center;">
+  <p style="margin-bottom: 8px; color: #94a3b8; font-size: 13px;">Nuevo Estado de Importación:</p>
+  {% if pedido.estado == 'ENTREGADO' or pedido.estado == 'CONFIRMADA' or pedido.estado == 'LISTO_RETIRAR' %}
+    <span class="badge badge-success">{{ pedido.get_estado_display }}</span>
+  {% elif pedido.estado == 'CANCELADO' %}
+    <span class="badge badge-danger">{{ pedido.get_estado_display }}</span>
+  {% else %}
+    <span class="badge badge-info">{{ pedido.get_estado_display }}</span>
+  {% endif %}
+
+  {% if pedido.carrier_nombre or pedido.carrier_tracking %}
+  <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #334155; text-align: left; font-size: 14px;">
+    {% if pedido.carrier_nombre %}
+      <p style="margin: 4px 0;"><strong>Courier / Encomienda:</strong> {{ pedido.carrier_nombre }}</p>
+    {% endif %}
+    {% if pedido.carrier_tracking %}
+      <p style="margin: 4px 0;"><strong>N° de Seguimiento:</strong> <span style="font-family: monospace; color: #38bdf8;">{{ pedido.carrier_tracking }}</span></p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if pedido.estado == 'LISTO_RETIRAR' %}
+  <div style="margin-top: 14px; background-color: #1e1b4b; padding: 12px; border-radius: 8px; border: 1px solid #6366f1; text-align: left;">
+    <p style="margin: 0; font-weight: 700; color: #a5b4fc; font-size: 14px;">🎉 ¡Tu paquete ya está listo para retirar!</p>
+    <p style="margin: 6px 0 0 0; font-size: 13px; color: #e0e7ff;">
+      Saldo pendiente al retirar: <strong>${{ pedido.saldo_pendiente_usd_estimado }}</strong>
+      {% if pedido.saldo_pendiente_ves_actual %} (~{{ pedido.saldo_pendiente_ves_actual }} Bs.){% endif %}
+    </p>
+  </div>
+  {% endif %}
+</div>
+
+<div class="btn-container">
+  <a href="{{ frontend_url }}/importacion/{{ pedido.codigo_seguimiento }}" class="btn">Rastrear Importación</a>
+</div>
+{% endblock %}

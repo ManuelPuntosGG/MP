@@ -1,0 +1,25 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>Actualización de tu Pedido 📦</h1>
+
+<p>Hola <strong>{{ cliente_nombre }}</strong>,</p>
+<p>Te informamos que tu pedido con código de seguimiento <strong style="color: #fb7185;">{{ pedido.codigo_seguimiento }}</strong> ha cambiado de estado:</p>
+
+<div class="highlight-card" style="text-align: center;">
+  <p style="margin-bottom: 8px; color: #94a3b8; font-size: 13px;">Nuevo Estado:</p>
+  {% if pedido.estado == 'ENTREGADO' or pedido.estado == 'CONFIRMADA' %}
+    <span class="badge badge-success">{{ pedido.get_estado_display }}</span>
+  {% elif pedido.estado == 'CANCELADO' or pedido.estado == 'CERRADA' %}
+    <span class="badge badge-danger">{{ pedido.get_estado_display }}</span>
+  {% else %}
+    <span class="badge badge-info">{{ pedido.get_estado_display }}</span>
+  {% endif %}
+</div>
+
+<p>Puedes verificar los detalles actualizados y tu historial ingresando a tu cuenta en MP Tech.</p>
+
+<div class="btn-container">
+  <a href="{{ frontend_url }}/perfil" class="btn">Ir a Mi Perfil</a>
+</div>
+{% endblock %}

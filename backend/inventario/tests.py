@@ -296,6 +296,244 @@ class PedidoCatalogoModelPropertyTest(TestCase):
         self.assertEqual(pedido.productos_parsed(), [])
 
 
+import time
+from django.core import mail
+from .models import Pago
+
+
+class EmailNotificationsTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user('comprador@gmail.com', 'comprador@gmail.com', 'password123')
+        UserProfile.objects.create(usuario=self.user, nombre_completo="Carlos Méndez", telefono="04245022292")
+        self.categoria = Categoria.objects.create(nombre="Graficas")
+        self.producto = Producto.objects.create(
+            categoria=self.categoria,
+            nombre="RTX 4060",
+            descripcion="GPU Nvidia",
+            precio=350.00,
+            stock=10
+        )
+
+    def _esperar_emails(self, cantidad_esperada=1, timeout=2.0):
+        """Espera a que los hilos de envío asíncrono completen los correos en mail.outbox."""
+        start = time.time()
+        while len(mail.outbox) < cantidad_esperada and (time.time() - start) < timeout:
+            time.sleep(0.05)
+
+    def test_notificacion_nuevo_pedido_catalogo_usuario_logueado(self):
+        """Un usuario logueado compra en catálogo: se envía confirmación al cliente y alerta al admin."""
+        self.client.force_login(self.user)
+        mail.outbox.clear()
+
+        response = self.client.post(
+            reverse('inventario:api_finalizar_catalogo'),
+            data=json.dumps({
+                'nombre': 'Carlos Méndez',
+                'telefono': '04245022292',
+                'productos': [{
+                    'producto_id': self.producto.id,
+                    'nombre': self.producto.nombre,
+                    'precio': '350.00',
+                    'cantidad': 1
+                }]
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self._esperar_emails(cantidad_esperada=2)
+
+        # Se deben haber enviado 2 correos: 1 al cliente registrado y 1 al admin
+        self.assertEqual(len(mail.outbox), 2)
+        destinatarios = [m.to[0] for m in mail.outbox]
+        self.assertIn('comprador@gmail.com', destinatarios)
+        self.assertIn('grupomptech@gmail.com', destinatarios)
+
+    def test_notificacion_nuevo_pedido_catalogo_anonimo(self):
+        """Un usuario invitado compra en catálogo: NO se envía al cliente, SÍ se envía al admin."""
+        mail.outbox.clear()
+
+        response = self.client.post(
+            reverse('inventario:api_finalizar_catalogo'),
+            data=json.dumps({
+                'nombre': 'Invitado Anónimo',
+                'telefono': '04141112233',
+                'productos': [{
+                    'producto_id': self.producto.id,
+                    'nombre': self.producto.nombre,
+                    'precio': '350.00',
+                    'cantidad': 1
+                }]
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self._esperar_emails(cantidad_esperada=1)
+
+        # Solo debe haber 1 correo: para el admin
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'grupomptech@gmail.com')
+
+    def test_cambio_estado_pedido_catalogo(self):
+        """Al cambiar el estado de un pedido con usuario, se le notifica por correo."""
+        pedido = PedidoCatalogo.objects.create(
+            usuario=self.user,
+            cliente_nombre="Carlos Méndez",
+            total_usd=350.00,
+            productos_json=json.dumps([{'nombre': 'RTX 4060', 'precio': 350, 'cantidad': 1}])
+        )
+        mail.outbox.clear()
+
+        pedido.estado = 'ENTREGADO'
+        pedido.save()
+        self._esperar_emails(cantidad_esperada=1)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'comprador@gmail.com')
+        self.assertIn("Actualización de Pedido", mail.outbox[0].subject)
+
+    def test_notificacion_nueva_importacion_y_cambio_estado(self):
+        """Creación y actualización de importación para usuario logueado."""
+        self.client.force_login(self.user)
+        mail.outbox.clear()
+
+        response = self.client.post(
+            reverse('inventario:api_guardar_importacion'),
+            data=json.dumps({
+                'nombre': 'Carlos Méndez',
+                'telefono': '04245022292',
+                'total_usd': 200.00,
+                'total_ves': 152000.00,
+                'productos': [{'tienda': 'Amazon', 'url': 'https://amazon.com/item', 'precio': 150, 'peso': 2}],
+                'nota': 'Urgente'
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self._esperar_emails(cantidad_esperada=2)
+
+        # 2 correos: 1 al cliente, 1 al admin
+        self.assertEqual(len(mail.outbox), 2)
+        destinatarios = [m.to[0] for m in mail.outbox]
+        self.assertIn('comprador@gmail.com', destinatarios)
+        self.assertIn('grupomptech@gmail.com', destinatarios)
+
+        # Cambio de estado de importación
+        mail.outbox.clear()
+        pedido_import = PedidoImportacion.objects.get(usuario=self.user)
+        pedido_import.estado = 'EN_TRANSITO_VENEZUELA'
+        pedido_import.carrier_nombre = 'DHL'
+        pedido_import.carrier_tracking = 'DHL-987654'
+        pedido_import.save()
+        self._esperar_emails(cantidad_esperada=1)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'comprador@gmail.com')
+        self.assertIn("Estado de Importación", mail.outbox[0].subject)
+
+    def test_notificacion_reparacion_avances_y_presupuesto(self):
+        """Flujo técnico de reparación: creación, cambio de estado, bitácora y presupuesto."""
+        self.client.force_login(self.user)
+        mail.outbox.clear()
+
+        # 1. Crear solicitud de reparación
+        response = self.client.post(
+            reverse('inventario:api_solicitar_reparacion'),
+            data=json.dumps({
+                'cliente_nombre': 'Carlos Méndez',
+                'cliente_telefono': '04245022292',
+                'equipo': 'Laptop ASUS ROG',
+                'falla_reportada': 'No enciende, posible corto en línea de 19V'
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self._esperar_emails(cantidad_esperada=2)
+
+        # 2 correos: 1 al cliente, 1 al admin
+        self.assertEqual(len(mail.outbox), 2)
+        destinatarios = [m.to[0] for m in mail.outbox]
+        self.assertIn('comprador@gmail.com', destinatarios)
+        self.assertIn('grupomptech@gmail.com', destinatarios)
+
+        orden = OrdenServicio.objects.get(usuario=self.user)
+
+        # 2. Técnico añade avance a la bitácora
+        mail.outbox.clear()
+        AvanceOrden.objects.create(
+            orden=orden,
+            descripcion="Se identificó MOSFET en corto en la etapa de potencia principal."
+        )
+        self._esperar_emails(cantidad_esperada=1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'comprador@gmail.com')
+        self.assertIn("Nuevo Avance Técnico", mail.outbox[0].subject)
+
+        # 3. Se carga presupuesto detallado (pasa a PENDIENTE)
+        mail.outbox.clear()
+        LineaPresupuesto.objects.create(orden=orden, concepto="Reemplazo MOSFETs y reballing", monto=85.00)
+        self._esperar_emails(cantidad_esperada=1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'comprador@gmail.com')
+        self.assertIn("Presupuesto Disponible", mail.outbox[0].subject)
+
+        # 4. Cambio de estado de la orden a REPARADO
+        mail.outbox.clear()
+        orden.estado = 'REPARADO'
+        orden.save()
+        self._esperar_emails(cantidad_esperada=1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'comprador@gmail.com')
+        self.assertIn("Estado de Reparación", mail.outbox[0].subject)
+
+    def test_notificacion_pago_reportado_y_verificado(self):
+        """Registro de pago (alerta al admin) y verificación (alerta al cliente)."""
+        orden = OrdenServicio.objects.create(
+            usuario=self.user,
+            cliente_nombre="Carlos Méndez",
+            cliente_telefono="04245022292",
+            equipo="GPU RX 6700 XT",
+            falla_reportada="Artefactos en pantalla"
+        )
+        mail.outbox.clear()
+
+        # 1. Cliente reporta pago
+        response = self.client.post(
+            reverse('inventario:api_registrar_pago'),
+            data=json.dumps({
+                'tipo_orden': 'servicio',
+                'codigo_orden': orden.codigo_rastreo,
+                'monto_usd': 85.00,
+                'monto_ves': 64600.00,
+                'metodo': 'PAGO_MOVIL',
+                'fecha': '2026-08-18',
+                'referencia': 'PM-998877',
+                'concepto': 'Reparación GPU'
+            }),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self._esperar_emails(cantidad_esperada=1)
+
+        # Debe llegarle correo al admin para verificar
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'grupomptech@gmail.com')
+        self.assertIn("Nuevo Pago Reportado", mail.outbox[0].subject)
+
+        # 2. Admin verifica el pago
+        mail.outbox.clear()
+        pago = Pago.objects.get(referencia='PM-998877')
+        pago.estado = 'VERIFICADO'
+        pago.save()
+        self._esperar_emails(cantidad_esperada=1)
+
+        # Debe llegarle confirmación al cliente logueado
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'comprador@gmail.com')
+        self.assertIn("Pago Verificado", mail.outbox[0].subject)
+
+
+
 
 
 

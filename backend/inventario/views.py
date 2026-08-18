@@ -187,6 +187,13 @@ def finalizar_pedido_catalogo(request):
         logger.error("Error al procesar el pedido de catálogo: %s", e)
         return JsonResponse({'success': False, 'error': 'Error interno al procesar el pedido'}, status=500)
 
+    try:
+        from .emails import enviar_email_nuevo_pedido_catalogo, notificar_admin_nuevo_pedido_catalogo
+        enviar_email_nuevo_pedido_catalogo(pedido)
+        notificar_admin_nuevo_pedido_catalogo(pedido)
+    except Exception as email_err:
+        logger.error("Error enviando notificaciones para pedido %s: %s", pedido.codigo_seguimiento, email_err)
+
     return JsonResponse({
         'success': True,
         'codigo': pedido.codigo_seguimiento,
@@ -235,6 +242,13 @@ def comprar_producto(request, producto_id):
         logger.error("Error al procesar la compra directa: %s", e)
         return JsonResponse({'success': False, 'error': 'Error interno al procesar la compra'}, status=500)
 
+    try:
+        from .emails import enviar_email_nuevo_pedido_catalogo, notificar_admin_nuevo_pedido_catalogo
+        enviar_email_nuevo_pedido_catalogo(pedido)
+        notificar_admin_nuevo_pedido_catalogo(pedido)
+    except Exception as email_err:
+        logger.error("Error enviando notificaciones para compra directa %s: %s", pedido.codigo_seguimiento, email_err)
+
     return JsonResponse({
         'success': True,
         'codigo': pedido.codigo_seguimiento,
@@ -280,6 +294,13 @@ def api_guardar_importacion(request):
             productos_json=json.dumps(productos),
             nota=data.get('nota', '').strip(),
         )
+
+    try:
+        from .emails import enviar_email_nueva_importacion, notificar_admin_nueva_importacion
+        enviar_email_nueva_importacion(pedido)
+        notificar_admin_nueva_importacion(pedido)
+    except Exception as email_err:
+        logger.error("Error enviando notificaciones para importación %s: %s", pedido.codigo_seguimiento, email_err)
 
     return JsonResponse({'success': True, 'codigo': pedido.codigo_seguimiento})
 
@@ -399,6 +420,13 @@ def api_solicitar_reparacion(request):
             nueva_orden.usuario = request.user
         nueva_orden.save()
 
+        try:
+            from .emails import enviar_email_nueva_reparacion, notificar_admin_nueva_reparacion
+            enviar_email_nueva_reparacion(nueva_orden)
+            notificar_admin_nueva_reparacion(nueva_orden)
+        except Exception as email_err:
+            logger.error("Error enviando notificaciones para reparación %s: %s", nueva_orden.codigo_rastreo, email_err)
+
         return JsonResponse({
             'success': True,
             'codigo': nueva_orden.codigo_rastreo,
@@ -446,6 +474,13 @@ def api_responder_presupuesto(request):
         return JsonResponse({'error': 'Acción no válida'}, status=400)
 
     orden.save()
+
+    try:
+        from .emails import notificar_admin_respuesta_presupuesto
+        notificar_admin_respuesta_presupuesto(orden, accion)
+    except Exception as email_err:
+        logger.error("Error notificando al admin respuesta a presupuesto %s: %s", orden.codigo_rastreo, email_err)
+
     return JsonResponse({'success': True})
 
 
@@ -663,7 +698,13 @@ def api_registrar_pago(request):
 
         # Crear el pago
         from .models import Pago
-        Pago.objects.create(**pago_kwargs)
+        pago = Pago.objects.create(**pago_kwargs)
+
+        try:
+            from .emails import notificar_admin_nuevo_pago
+            notificar_admin_nuevo_pago(pago)
+        except Exception as email_err:
+            logger.error("Error notificando al admin nuevo pago %s: %s", pago.pk, email_err)
 
         return JsonResponse({'success': True, 'message': 'Pago registrado exitosamente'})
         

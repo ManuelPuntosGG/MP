@@ -1,0 +1,33 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>Actualización de tu Reparación ⚙️</h1>
+
+<p>Hola <strong>{{ cliente_nombre }}</strong>,</p>
+<p>Tu equipo <strong style="color: #ffffff;">{{ orden.equipo }}</strong> (Ticket: <strong style="color: #fb7185;">{{ orden.codigo_rastreo }}</strong>) tiene una actualización en taller:</p>
+
+<div class="highlight-card" style="text-align: center;">
+  <p style="margin-bottom: 8px; color: #94a3b8; font-size: 13px;">Nueva Fase de Servicio:</p>
+  {% if orden.estado == 'REPARADO' or orden.estado == 'ENTREGADO' %}
+    <span class="badge badge-success">{{ orden.get_estado_display }}</span>
+  {% elif orden.estado == 'CANCELADO' %}
+    <span class="badge badge-danger">{{ orden.get_estado_display }}</span>
+  {% elif orden.estado == 'ESPERANDO' %}
+    <span class="badge badge-pending">{{ orden.get_estado_display }}</span>
+  {% else %}
+    <span class="badge badge-info">{{ orden.get_estado_display }}</span>
+  {% endif %}
+</div>
+
+{% if orden.estado == 'REPARADO' %}
+<div style="background-color: #064e3b; border: 1px solid #059669; border-radius: 10px; padding: 14px; margin: 20px 0; text-align: center;">
+  <p style="margin: 0; font-weight: 800; color: #a7f3d0; font-size: 15px;">🎉 ¡Tu equipo ha sido reparado con éxito y está listo para ser retirado o despachado!</p>
+</div>
+{% endif %}
+
+<p>Puedes consultar el informe técnico en tiempo real y los avances fotográficos en el portal de seguimiento:</p>
+
+<div class="btn-container">
+  <a href="{{ frontend_url }}/rastrear?codigo={{ orden.codigo_rastreo }}" class="btn">Ver Seguimiento en Vivo</a>
+</div>
+{% endblock %}

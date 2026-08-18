@@ -1,0 +1,36 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>Solicitud de Reparación Recibida 🔧</h1>
+
+<p>Hola <strong>{{ cliente_nombre }}</strong>,</p>
+<p>Hemos registrado la solicitud de servicio técnico para tu equipo en <strong>MP Tech</strong>. Aquí tienes tu ticket de seguimiento oficial:</p>
+
+<div class="code-box">
+  <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Código de Ticket / Rastreo</div>
+  <div class="code-val">{{ orden.codigo_rastreo }}</div>
+</div>
+
+<div class="highlight-card">
+  <table style="width: 100%; font-size: 14px; color: #cbd5e1;">
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>Equipo:</strong></td>
+      <td style="padding: 6px 0; text-align: right; color: #ffffff; font-weight: 700;">{{ orden.equipo }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>Falla Reportada:</strong></td>
+      <td style="padding: 6px 0; text-align: right; color: #e2e8f0;">{{ orden.falla_reportada }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 6px 0; color: #94a3b8;"><strong>Estado Actual:</strong></td>
+      <td style="padding: 6px 0; text-align: right;"><span class="badge badge-pending">{{ orden.get_estado_display }}</span></td>
+    </tr>
+  </table>
+</div>
+
+<p><strong>Próximos pasos:</strong> Consigna tu equipo en nuestro taller o prepáralo para envío nacional indicando tu código de ticket <strong>{{ orden.codigo_rastreo }}</strong>. Una vez recibido, nuestros técnicos realizarán la inspección y diagnóstico detallado.</p>
+
+<div class="btn-container">
+  <a href="{{ frontend_url }}/rastrear?codigo={{ orden.codigo_rastreo }}" class="btn">Consultar Estatus del Ticket</a>
+</div>
+{% endblock %}

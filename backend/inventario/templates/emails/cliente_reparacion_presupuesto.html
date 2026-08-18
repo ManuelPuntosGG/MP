@@ -1,0 +1,39 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h1>Presupuesto de Reparación Disponible 📋</h1>
+
+<p>Hola <strong>{{ cliente_nombre }}</strong>,</p>
+<p>Hemos completado el diagnóstico de tu equipo <strong style="color: #ffffff;">{{ orden.equipo }}</strong> (Ticket: <strong style="color: #fb7185;">{{ orden.codigo_rastreo }}</strong>) y generado el presupuesto detallado de reparación:</p>
+
+<div class="highlight-card">
+  <p style="margin: 0 0 10px 0; font-weight: 700; color: #ffffff;">Detalle de Repuestos y Mano de Obra</p>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Concepto / Repuesto</th>
+        <th style="text-align: right;">Monto USD</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for linea in lineas %}
+      <tr>
+        <td>{{ linea.concepto }}</td>
+        <td style="text-align: right; font-weight: 700;">${{ linea.monto }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <div style="text-align: right; margin-top: 14px; font-size: 16px;">
+    <span style="color: #94a3b8;">Total Presupuesto:</span>
+    <strong style="color: #fb7185; font-size: 20px; margin-left: 8px;">${{ total_usd }}</strong>
+  </div>
+</div>
+
+<p>Por favor ingresa al portal de seguimiento para **Aprobar** o **Rechazar** el presupuesto y permitirnos iniciar los trabajos operativos:</p>
+
+<div class="btn-container">
+  <a href="{{ frontend_url }}/rastrear?codigo={{ orden.codigo_rastreo }}" class="btn">Revisar y Responder Presupuesto</a>
+</div>
+{% endblock %}

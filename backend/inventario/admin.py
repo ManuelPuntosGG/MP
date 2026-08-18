@@ -167,18 +167,30 @@ class OrdenServicioAdmin(ModelAdmin):
 
     @action(description='🔧 Marcar seleccionados como REPARADOS')
     def marcar_reparados(self, request, queryset):
-        actualizados = queryset.update(estado='REPARADO')
-        self.message_user(request, f"{actualizados} órdenes actualizadas a REPARADO.")
+        contador = 0
+        for orden in queryset:
+            orden.estado = 'REPARADO'
+            orden.save()
+            contador += 1
+        self.message_user(request, f"{contador} órdenes actualizadas a REPARADO y notificaciones despachadas.")
 
     @action(description='📦 Marcar seleccionados como ENTREGADOS')
     def marcar_entregados(self, request, queryset):
-        actualizados = queryset.update(estado='ENTREGADO')
-        self.message_user(request, f"{actualizados} órdenes actualizadas a ENTREGADO.")
+        contador = 0
+        for orden in queryset:
+            orden.estado = 'ENTREGADO'
+            orden.save()
+            contador += 1
+        self.message_user(request, f"{contador} órdenes actualizadas a ENTREGADO y notificaciones despachadas.")
 
     @action(description='🔄 Revertir Presupuesto a PENDIENTE')
     def revertir_presupuesto(self, request, queryset):
-        actualizados = queryset.update(presupuesto_estado='PENDIENTE')
-        self.message_user(request, f"{actualizados} presupuestos revertidos a PENDIENTE por aprobar.")
+        contador = 0
+        for orden in queryset:
+            orden.presupuesto_estado = 'PENDIENTE'
+            orden.save()
+            contador += 1
+        self.message_user(request, f"{contador} presupuestos revertidos a PENDIENTE por aprobar.")
 
     actions = [marcar_reparados, marcar_entregados, revertir_presupuesto]
 
