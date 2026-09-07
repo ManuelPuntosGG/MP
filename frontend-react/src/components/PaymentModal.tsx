@@ -226,8 +226,8 @@ export default function PaymentModal({
                   <li className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <span className="text-gray-500 dark:text-gray-400">Email asociado:</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-gray-900 dark:text-white text-xs break-all">hellomanuelgarcia@gmail.com</span>
-                      <button onClick={() => handleCopy('hellomanuelgarcia@gmail.com', 'binance_email')} className="text-gray-400 hover:text-yellow-600 transition-colors shrink-0" title="Copiar"><i className={`bi ${copiedData === 'binance_email' ? 'bi-check2 text-green-500' : 'bi-clipboard'}`}></i></button>
+                      <span className="font-mono font-bold text-gray-900 dark:text-white text-xs break-all">grupomptech@gmail.com</span>
+                      <button onClick={() => handleCopy('grupomptech@gmail.com', 'binance_email')} className="text-gray-400 hover:text-yellow-600 transition-colors shrink-0" title="Copiar"><i className={`bi ${copiedData === 'binance_email' ? 'bi-check2 text-green-500' : 'bi-clipboard'}`}></i></button>
                     </div>
                   </li>
                 </ul>
