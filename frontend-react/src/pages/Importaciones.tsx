@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
-const TARIFA_LIBRA = 9.00;
-const COMISION_MINIMA = 5.00;
+const TARIFA_LIBRA = 6.50;
+const COMISION_MINIMA = 7.00;
 const STORAGE_KEY = 'mptech_import_cart';
 const TELEFONO_WHATSAPP = "584245022292";
 
