@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Space Grotesk"', 'sans-serif'],
+        sans: ['"Space Grotesk"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
         gray: colors.neutral,
@@ -27,9 +27,11 @@ export default {
           900: '#881337',
           950: '#4c0519',
         },
-      }
+      },
+      animation: {
+        'spin-slow': 'spin 4s linear infinite',
+      },
     },
   },
   plugins: [],
 }
-
