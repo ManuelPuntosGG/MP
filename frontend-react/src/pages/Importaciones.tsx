@@ -366,7 +366,7 @@ export default function Importaciones() {
           {tasaVes && (
             <div className="inline-flex items-center self-start md:self-auto px-3.5 py-1.5 rounded-full bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400 font-bold text-xs border border-primary-100 dark:border-primary-900/50 tabular-nums">
               <i className="bi bi-currency-exchange mr-2" aria-hidden="true"></i>
-              Tasa BCV: {parseFloat(tasaVes).toFixed(2)} Bs/$
+              Tasa BCV (Euro): {parseFloat(tasaVes).toFixed(2)} Bs/$
             </div>
           )}
         </div>

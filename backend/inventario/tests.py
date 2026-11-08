@@ -2,7 +2,7 @@ import io
 import json
 from PIL import Image
 from django.test import TestCase, Client
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from django.urls import reverse
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
@@ -210,7 +210,7 @@ class PedidoImportacionModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('test@test.com', 'test@test.com', 'testpass')
 
-    @patch('inventario.models.obtener_tasa_binance')
+    @patch('inventario.models.obtener_tasa_bcv_euro')
     def test_import_order_state_flow_and_rates(self, mock_tasa):
         # 1. Creamos un pedido en estado PENDIENTE
         mock_tasa.return_value = 40.00
@@ -533,8 +533,69 @@ class EmailNotificationsTest(TestCase):
         self.assertIn("Pago Verificado", mail.outbox[0].subject)
 
 
+class TasaBcvEuroTest(TestCase):
+    def setUp(self):
+        from django.core.cache import cache
+        from .utils import TASA_CACHE_KEY
+        cache.delete(TASA_CACHE_KEY)
+        cache.delete(f"{TASA_CACHE_KEY}_stale")
+        cache.delete(f"{TASA_CACHE_KEY}_updating")
 
+    @patch('requests.get')
+    def test_fetch_dolarvzla_success(self, mock_get):
+        from .utils import _fetch_tasa_bcv_dolarvzla
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            'current': {'date': '2026-11-09', 'usd': 897.53, 'eur': 1001.186}
+        }
+        mock_resp.raise_for_status = MagicMock()
+        mock_get.return_value = mock_resp
 
+        val = _fetch_tasa_bcv_dolarvzla()
+        self.assertEqual(val, 1001.19)
 
+    @patch('requests.get')
+    def test_fetch_dolarapi_success(self, mock_get):
+        from .utils import _fetch_tasa_bcv_dolarapi
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            'moneda': 'EUR',
+            'fuente': 'oficial',
+            'promedio': 1001.18
+        }
+        mock_resp.raise_for_status = MagicMock()
+        mock_get.return_value = mock_resp
 
+        val = _fetch_tasa_bcv_dolarapi()
+        self.assertEqual(val, 1001.18)
+
+    @patch('requests.get')
+    def test_fetch_bcv_directo_html_parsing(self, mock_get):
+        from .utils import _fetch_tasa_bcv_directo
+        mock_resp = MagicMock()
+        mock_resp.text = """
+        <div id="euro" class="col-sm-12">
+            <strong class="strong-tb"> 1.001,18602288</strong>
+        </div>
+        """
+        mock_resp.raise_for_status = MagicMock()
+        mock_get.return_value = mock_resp
+
+        val = _fetch_tasa_bcv_directo()
+        self.assertEqual(val, 1001.19)
+
+    @patch('inventario.utils._FUENTES_BCV_EURO', [])
+    def test_obtener_tasa_fallback_when_sources_fail(self):
+        from .utils import obtener_tasa_bcv_euro, TASA_FALLBACK
+        tasa = obtener_tasa_bcv_euro()
+        self.assertEqual(tasa, TASA_FALLBACK)
+
+    def test_api_tasa_endpoint(self):
+        with patch('inventario.views.obtener_tasa_bcv_euro', return_value=1001.18):
+            response = self.client.get(reverse('inventario:api_tasa'))
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+            self.assertEqual(data['tasa_ves'], 1001.18)
+            self.assertEqual(data['moneda'], 'EUR')
+            self.assertEqual(data['fuente'], 'BCV Euro')
 

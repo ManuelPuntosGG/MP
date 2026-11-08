@@ -1,62 +1,83 @@
 import logging
+import re
 import threading
 import requests
+import urllib3
 from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
-TASA_CACHE_KEY = 'tasa_usdt_ves'
+TASA_CACHE_KEY = 'tasa_bcv_euro_ves'
 TASA_CACHE_TTL = 3600          # 1 hora de vigencia fresca
 TASA_STALE_TTL = 86400         # 24 horas de vigencia de respaldo (stale)
 TASA_UPDATING_TTL = 60         # 1 minuto de bloqueo para hilos duplicados
-FACTOR_AJUSTE_BCV = 1.13
-TASA_FALLBACK = 760.00
+TASA_FALLBACK = 1001.18        # Valor oficial de contingencia (Fecha Valor: 09/11/2026)
 
 _tasa_lock = threading.Lock()
 
 
-def _fetch_tasa_binance_p2p():
-    """Obtiene la tasa promedio de los primeros 10 anuncios de compra de USDT/VES en Binance P2P."""
-    url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
-    payload = {
-        "asset": "USDT",
-        "fiat": "VES",
-        "merchantCheck": False,
-        "page": 1,
-        "payTypes": [],
-        "publisherType": None,
-        "rows": 10,
-        "tradeType": "BUY"
-    }
+def _fetch_tasa_bcv_dolarvzla():
+    """Obtiene la tasa oficial BCV Euro desde la API de DolarVzla."""
+    url = "https://rates.dolarvzla.com/bcv/current.json"
     headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MPTech/1.0"
     }
-    response = requests.post(url, json=payload, headers=headers, timeout=5)
-    response.raise_for_status()
-
-    res_json = response.json()
-    ads = res_json.get('data', [])
-    if not ads:
-        raise ValueError("No se obtuvieron anuncios de Binance P2P")
-
-    prices = [float(ad['adv']['price']) for ad in ads if 'adv' in ad and 'price' in ad['adv']]
-    if not prices:
-        raise ValueError("No se encontraron precios en los anuncios de Binance P2P")
-
-    promedio = sum(prices) / len(prices)
-    return round(promedio, 2)
-
-
-def _fetch_tasa_bcv():
-    """Obtiene la tasa oficial BCV y aplica factor de ajuste."""
-    url = "https://open.er-api.com/v6/latest/USD"
-    response = requests.get(url, timeout=5)
+    response = requests.get(url, headers=headers, timeout=6)
     response.raise_for_status()
 
     data = response.json()
-    tasa_bcv = float(data['rates']['VES'])
-    return round(tasa_bcv * FACTOR_AJUSTE_BCV, 2)
+    eur = data.get('current', {}).get('eur')
+    if not eur:
+        raise ValueError("Campo 'eur' no presente en la respuesta de DolarVzla")
+
+    return round(float(eur), 2)
+
+
+def _fetch_tasa_bcv_dolarapi():
+    """Obtiene la tasa oficial BCV Euro desde el endpoint de DolarApi Venezuela."""
+    url = "https://ve.dolarapi.com/v1/euros/oficial"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MPTech/1.0"
+    }
+    response = requests.get(url, headers=headers, timeout=6)
+    response.raise_for_status()
+
+    data = response.json()
+    promedio = data.get('promedio')
+    if not promedio:
+        raise ValueError("Campo 'promedio' no presente en la respuesta de DolarApi")
+
+    return round(float(promedio), 2)
+
+
+def _fetch_tasa_bcv_directo():
+    """Scraping de contingencia directo al portal del Banco Central de Venezuela."""
+    url = "https://www.bcv.org.ve"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    with urllib3.warnings.catch_warnings():
+        urllib3.disable_warnings()
+        response = requests.get(url, headers=headers, timeout=8, verify=False)
+    response.raise_for_status()
+
+    match = re.search(
+        r'id=["\']euro["\'].*?<strong[^>]*>\s*([0-9.,]+)\s*</strong>',
+        response.text,
+        re.DOTALL | re.IGNORECASE
+    )
+    if not match:
+        raise ValueError("No se pudo extraer la tasa EUR del HTML oficial del BCV")
+
+    val_str = match.group(1).replace('.', '').replace(',', '.')
+    return round(float(val_str), 2)
+
+
+_FUENTES_BCV_EURO = [
+    ('DolarVzla API (BCV EUR)', _fetch_tasa_bcv_dolarvzla),
+    ('DolarApi (BCV EUR)', _fetch_tasa_bcv_dolarapi),
+    ('BCV Directo (Portal Oficial)', _fetch_tasa_bcv_directo),
+]
 
 
 def _actualizar_tasa_async():
@@ -68,17 +89,12 @@ def _actualizar_tasa_async():
             if tasa:
                 return
 
-            fuentes = [
-                ('Binance P2P', _fetch_tasa_binance_p2p),
-                ('ExchangeRate-API', _fetch_tasa_bcv),
-            ]
-
-            for nombre, fetch_fn in fuentes:
+            for nombre, fetch_fn in _FUENTES_BCV_EURO:
                 try:
                     precio = fetch_fn()
                     cache.set(TASA_CACHE_KEY, precio, TASA_CACHE_TTL)
                     cache.set(f"{TASA_CACHE_KEY}_stale", precio, TASA_STALE_TTL)
-                    logger.info("Tasa de cambio actualizada asíncronamente vía %s: %s VES/USDT", nombre, precio)
+                    logger.info("Tasa BCV Euro actualizada asíncronamente vía %s: %s VES", nombre, precio)
                     return
                 except Exception as e:
                     logger.warning("Fallo en obtención de tasa vía %s: %s", nombre, e)
@@ -94,8 +110,11 @@ def _actualizar_tasa_async():
     threading.Thread(target=run, daemon=True).start()
 
 
-def obtener_tasa_binance():
-    """Obtiene la tasa de cambio USD/VE utilizando el patrón Stale-While-Revalidate asíncrono."""
+def obtener_tasa_bcv_euro():
+    """
+    Obtiene la tasa de referencia BCV Euro en Bolívares (VES)
+    utilizando el patrón Stale-While-Revalidate asíncrono con múltiples fuentes de respaldo.
+    """
     tasa = cache.get(TASA_CACHE_KEY)
     if tasa:
         return tasa
@@ -103,18 +122,14 @@ def obtener_tasa_binance():
     stale_tasa = cache.get(f"{TASA_CACHE_KEY}_stale")
 
     # Si no hay tasa fresca ni stale en caché (inicio en frío del servidor),
-    # realizamos una actualización síncrona en este hilo para evitar retornar el fallback 760.
+    # realizamos una actualización síncrona en este hilo para evitar retornar el fallback estático.
     if not stale_tasa:
-        fuentes = [
-            ('Binance P2P', _fetch_tasa_binance_p2p),
-            ('ExchangeRate-API', _fetch_tasa_bcv),
-        ]
-        for nombre, fetch_fn in fuentes:
+        for nombre, fetch_fn in _FUENTES_BCV_EURO:
             try:
                 precio = fetch_fn()
                 cache.set(TASA_CACHE_KEY, precio, TASA_CACHE_TTL)
                 cache.set(f"{TASA_CACHE_KEY}_stale", precio, TASA_STALE_TTL)
-                logger.info("Tasa de cambio inicial obtenida síncronamente vía %s: %s VES/USDT", nombre, precio)
+                logger.info("Tasa BCV Euro inicial obtenida síncronamente vía %s: %s VES", nombre, precio)
                 return precio
             except Exception as e:
                 logger.warning("Fallo síncrono al obtener tasa vía %s: %s", nombre, e)
@@ -127,3 +142,7 @@ def obtener_tasa_binance():
         _actualizar_tasa_async()
 
     return stale_tasa
+
+
+# Alias de retrocompatibilidad para llamadas existentes en el proyecto
+obtener_tasa_binance = obtener_tasa_bcv_euro

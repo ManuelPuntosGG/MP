@@ -17,7 +17,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 
-from .utils import obtener_tasa_binance
+from .utils import obtener_tasa_bcv_euro, obtener_tasa_binance
 
 logger = logging.getLogger(__name__)
 
@@ -403,7 +403,7 @@ class PedidoImportacion(models.Model):
         import decimal
         if self.estado == 'LISTO_RETIRAR':
             try:
-                tasa_actual = obtener_tasa_binance()
+                tasa_actual = obtener_tasa_bcv_euro()
                 if self.saldo_pendiente_usd:
                     return self.saldo_pendiente_usd * decimal.Decimal(str(tasa_actual))
             except Exception:
@@ -424,9 +424,9 @@ class PedidoImportacion(models.Model):
         # 1. Congelar tasa de confirmación la primera vez que se guarda
         if not self.tasa_confirmacion:
             try:
-                self.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_binance()))
+                self.tasa_confirmacion = decimal.Decimal(str(obtener_tasa_bcv_euro()))
             except Exception:
-                self.tasa_confirmacion = decimal.Decimal('760.00')
+                self.tasa_confirmacion = decimal.Decimal('1001.18')
 
         if self.tasa_confirmacion:
             self.total_ves = total_usd * self.tasa_confirmacion
@@ -436,9 +436,9 @@ class PedidoImportacion(models.Model):
         if self.estado in ['LISTO_RETIRAR', 'ENTREGADO']:
             if not self.tasa_entrega:
                 try:
-                    self.tasa_entrega = decimal.Decimal(str(obtener_tasa_binance()))
+                    self.tasa_entrega = decimal.Decimal(str(obtener_tasa_bcv_euro()))
                 except Exception:
-                    self.tasa_entrega = decimal.Decimal('760.00')
+                    self.tasa_entrega = decimal.Decimal('1001.18')
 
         if self.tasa_entrega:
             self.saldo_pendiente_ves = self.saldo_pendiente_usd * self.tasa_entrega

@@ -27,7 +27,7 @@ from .models import (
     UserProfile,
     Pago,
 )
-from .utils import obtener_tasa_binance
+from .utils import obtener_tasa_bcv_euro, obtener_tasa_binance
 
 logger = logging.getLogger(__name__)
 
@@ -109,12 +109,17 @@ def api_categorias(request):
 
 
 def api_tasa(request):
-    """Devuelve la tasa de cambio USD→VES desde Binance P2P."""
+    """Devuelve la tasa de cambio oficial de referencia BCV Euro (VES)."""
     try:
-        tasa = float(obtener_tasa_binance())
+        tasa = float(obtener_tasa_bcv_euro())
     except Exception:
-        tasa = 760.00  # Fallback en caso de error de conexión
-    return JsonResponse({'tasa_ves': tasa})
+        tasa = 1001.18  # Fallback en caso de error de conexión (Fecha Valor: 09/11/2026)
+    return JsonResponse({
+        'tasa_ves': tasa,
+        'moneda': 'EUR',
+        'fuente': 'BCV Euro',
+        'fecha_valor': 'Lunes, 09 Noviembre 2026'
+    })
 
 
 # ==============================================================================
@@ -365,10 +370,10 @@ def api_ordenes(request, codigo=None):
         total_usd = resultado['total'] or decimal.Decimal('0.00')
 
     try:
-        tasa_usdt = float(obtener_tasa_binance())
+        tasa_ref = float(obtener_tasa_bcv_euro())
     except Exception:
-        tasa_usdt = 760.00
-    total_ves = total_usd * decimal.Decimal(str(tasa_usdt))
+        tasa_ref = 1001.18
+    total_ves = total_usd * decimal.Decimal(str(tasa_ref))
 
     # Formatear avances con imágenes adjuntas
     avances_data = []
@@ -397,7 +402,7 @@ def api_ordenes(request, codigo=None):
         'avances': avances_data,
         'total_usd': float(total_usd),
         'total_ves': float(total_ves),
-        'tasa_ves': tasa_usdt,
+        'tasa_ves': tasa_ref,
         'estado_pago': estado_pago
     })
 
@@ -569,9 +574,9 @@ def api_user(request):
         telefono = ""
 
     try:
-        tasa_usdt = float(obtener_tasa_binance())
+        tasa_ref = float(obtener_tasa_bcv_euro())
     except Exception:
-        tasa_usdt = 760.00
+        tasa_ref = 1001.18
 
     # Pedidos de catálogo
     pagos_prefetch = Prefetch('pagos', queryset=Pago.objects.filter(estado__in=['PENDIENTE', 'VERIFICADO']).order_by('-fecha_registro'), to_attr='pagos_activos')
@@ -584,7 +589,7 @@ def api_user(request):
             'codigo': p.codigo_seguimiento,
             'fecha': p.fecha.isoformat(),
             'total': total_usd,
-            'total_ves': total_usd * tasa_usdt,
+            'total_ves': total_usd * tasa_ref,
             'productos': json.loads(p.productos_json),
             'estado_raw': p.estado,
             'estado': p.get_estado_display(),
